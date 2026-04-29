@@ -38,7 +38,6 @@
       -webkit-font-smoothing:antialiased;
     }
 
-    /* ─── BACKGROUND ─── */
     #bg-canvas {
       position:fixed; inset:0; z-index:0; pointer-events:none;
       background:
@@ -54,7 +53,6 @@
       background-size: 48px 48px;
     }
 
-    /* ─── GATE ─── */
     #gate {
       position:fixed; inset:0; z-index:20;
       display:flex; align-items:center; justify-content:center; padding:16px;
@@ -79,7 +77,6 @@
       background:linear-gradient(90deg,transparent,rgba(225,29,72,.7),transparent);
     }
 
-    /* LOGO */
     .logo-zone { position:relative; width:120px; height:120px; margin:0 auto 28px; }
     .ring-outer {
       position:absolute; inset:-20px; border-radius:50%;
@@ -118,7 +115,6 @@
     .logo-wrap img { width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
-    /* BRAND LOGO kecil di topbar */
     .brand-logo {
       width:34px; height:34px; border-radius:50%; overflow:hidden; flex-shrink:0;
       border:1.5px solid rgba(225,29,72,.4); box-shadow:0 0 12px rgba(225,29,72,.2);
@@ -133,7 +129,6 @@
     }
     .gate-sub { font-size:13px; color:var(--text2); line-height:1.6; margin-bottom:28px; }
 
-    /* TOKEN INPUT FIELD */
     .token-field-wrap {
       position:relative; margin-bottom:14px;
     }
@@ -159,7 +154,6 @@
       font-size:11.5px; color:var(--muted); margin-bottom:18px; padding:0 2px;
     }
 
-    /* BUTTONS */
     .btn {
       display:flex; align-items:center; justify-content:center; gap:9px;
       width:100%; padding:14px 20px; border:none; border-radius:14px;
@@ -182,7 +176,6 @@
     }
     .btn-green:not(:disabled):hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(34,197,94,.4); }
 
-    /* STATUS BAR */
     .status-bar {
       display:flex; align-items:center; gap:10px;
       background:var(--s2); border:1px solid var(--b1); border-radius:12px;
@@ -194,7 +187,6 @@
     .dot.error    { background:var(--red);    animation:blink .8s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
 
-    /* BOT LINK */
     .bot-link-row {
       display:flex; align-items:center; justify-content:center; gap:6px;
       margin-top:14px; font-size:12px; color:var(--muted);
@@ -202,7 +194,6 @@
     .bot-link-row a { color:var(--text2); text-decoration:none; font-weight:500; }
     .bot-link-row a:hover { color:var(--red); }
 
-    /* DIVIDER */
     .divider {
       display:flex; align-items:center; gap:12px; margin:20px 0 16px;
       font-size:11px; color:var(--muted); font-weight:500;
@@ -211,7 +202,6 @@
       content:''; flex:1; height:1px; background:var(--b2);
     }
 
-    /* ─── APP SHELL ─── */
     #app { display:none; min-height:100vh; position:relative; z-index:1; }
 
     .topbar {
@@ -241,7 +231,6 @@
     }
     .btn-xs:hover { background:var(--s2); color:var(--text); }
 
-    /* ─── PAGE SYSTEM ─── */
     .page { display:none; max-width:680px; margin:0 auto; padding:28px 16px 80px; }
     .page.active { display:block; }
     .page-back {
@@ -253,7 +242,6 @@
     .page-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; letter-spacing:-.4px; margin-bottom:6px; }
     .page-sub   { font-size:13px; color:var(--text2); line-height:1.6; margin-bottom:24px; }
 
-    /* Dashboard */
     .welcome-box {
       background:linear-gradient(135deg, var(--s1) 0%, rgba(225,29,72,.04) 100%);
       border:1px solid var(--b2); border-radius:22px;
@@ -305,13 +293,11 @@
       color:#fb7185; font-size:10.5px; font-weight:600; padding:3px 9px; border-radius:100px;
     }
 
-    /* Panel */
     .panel { background:var(--s1); border:1px solid var(--b1); border-radius:20px; overflow:hidden; margin-bottom:14px; }
     .panel-head { display:flex; align-items:center; justify-content:space-between; padding:15px 20px; border-bottom:1px solid var(--b1); }
     .panel-head-title { font-family:'Syne',sans-serif; font-size:13.5px; font-weight:700; }
     .panel-body { padding:20px; }
 
-    /* Form */
     .field { margin-bottom:14px; }
     .field label { display:block; font-size:12px; font-weight:600; color:var(--text2); margin-bottom:7px; letter-spacing:.01em; }
     .field input {
@@ -334,7 +320,6 @@
     .chip-gray { background:var(--s3); border:1px solid var(--b2); color:var(--text2); }
     .chip-red  { background:var(--red-s); border:1px solid rgba(225,29,72,.2); color:#fb7185; }
 
-    /* Email list */
     .email-list { display:flex; flex-direction:column; gap:10px; }
     .email-item { display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--s2); border:1px solid var(--b1); border-radius:14px; padding:13px 16px; }
     .ei-left    { display:flex; align-items:center; gap:11px; min-width:0; flex:1; }
@@ -344,7 +329,6 @@
     .del-btn    { background:none; border:1px solid var(--b2); border-radius:8px; color:var(--text2); font-size:11.5px; padding:5px 10px; cursor:pointer; flex-shrink:0; transition:.15s; }
     .del-btn:hover { background:var(--red-s); border-color:rgba(225,29,72,.3); color:#fb7185; }
 
-    /* Send page */
     .ae-card { display:flex; align-items:center; gap:12px; background:var(--s2); border:1px solid var(--b2); border-radius:16px; padding:15px; margin-bottom:16px; }
     .ae-icon  { width:42px; height:42px; border-radius:12px; flex-shrink:0; background:linear-gradient(135deg,var(--red-dk),var(--red)); color:#fff; font-size:16px; font-weight:700; display:flex; align-items:center; justify-content:center; }
     .ae-info  { min-width:0; flex:1; }
@@ -373,7 +357,6 @@
 
     .spin { animation:spin .7s linear infinite; display:inline-block; }
 
-    /* ─── TOKEN DISPLAY on dashboard ─── */
     .token-display {
       background:var(--s3); border:1px solid var(--b1); border-radius:10px;
       padding:9px 14px; margin-top:6px;
@@ -389,7 +372,6 @@
   <div id="bg-canvas"></div>
   <div class="grid-bg"></div>
 
-  <!-- ════ GATE ════ -->
   <div id="gate">
     <div class="gate-card">
       <div class="logo-zone">
@@ -420,8 +402,8 @@
         >
       </div>
       <div class="field-hint-row">
-        <span>Format: XXXX-XXXX-XXXX-XXXX-XXXX-XXXX</span>
-        <span id="tokenCharCount">0/29</span>
+        <span>Format: 8 Karakter (Huruf/Angka)</span>
+        <span id="tokenCharCount">0/8</span>
       </div>
 
       <button id="loginBtn" onclick="doTokenLogin()" class="btn btn-red" disabled>
@@ -440,7 +422,6 @@
     </div>
   </div>
 
-  <!-- ════ APP ════ -->
   <div id="app">
     <header class="topbar">
       <div class="brand">
@@ -455,7 +436,6 @@
       </div>
     </header>
 
-    <!-- PAGE: Dashboard -->
     <div class="page active" id="pageDashboard">
       <div class="welcome-box">
         <h2>Selamat datang 👋</h2>
@@ -490,7 +470,6 @@
       </div>
     </div>
 
-    <!-- PAGE: Kelola Email -->
     <div class="page" id="pageEmail">
       <button class="page-back" onclick="showPage('pageDashboard')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -527,7 +506,6 @@
       </div>
     </div>
 
-    <!-- PAGE: Kirim Email -->
     <div class="page" id="pageSend">
       <button class="page-back" onclick="showPage('pageDashboard')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -583,21 +561,17 @@
   </div>
 
   <script>
-    const API          = '/api';
+    const API = '/api';
     const BOT_USERNAME = 'websitewalzbot';
 
     document.getElementById('botLink').href = `https://t.me/${BOT_USERNAME}`;
 
-    /* ── TOKEN AUTO FORMAT ── */
     function onTokenInput(el) {
       let v = el.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
-      if (v.length > 24) v = v.slice(0,24);
-      // Format: XXXX-XXXX-XXXX-XXXX-XXXX-XXXX
-      const chunks = v.match(/.{1,4}/g) || [];
-      el.value = chunks.join('-');
-      const charCount = document.getElementById('tokenCharCount');
-      charCount.textContent = `${v.length}/24`;
-      const valid = v.length === 24;
+      if (v.length > 8) v = v.slice(0,8);
+      el.value = v;
+      document.getElementById('tokenCharCount').textContent = `${v.length}/8`;
+      const valid = v.length === 8;
       el.className = 'token-input' + (v.length > 0 ? (valid ? ' valid' : '') : '');
       document.getElementById('loginBtn').disabled = !valid;
       if (valid) setStatus('Tekan Masuk untuk verifikasi token', 'checking');
@@ -610,9 +584,8 @@
     }
 
     async function doTokenLogin() {
-      const raw = document.getElementById('tokenInput').value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
-      if (raw.length !== 24) return;
-      const token = raw.match(/.{4}/g).join('-');
+      const token = document.getElementById('tokenInput').value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+      if (token.length !== 8) return;
 
       setStatus('Memverifikasi token...', 'checking');
       document.getElementById('loginBtn').disabled = true;
@@ -623,7 +596,6 @@
 
         if (d.valid) {
           setStatus('Token valid! Membuka akses...', 'ok');
-          // Save to localStorage
           localStorage.setItem('access_token', token);
           localStorage.setItem('token_expires', d.expires_at);
           localStorage.setItem('token_days', d.days);
@@ -649,7 +621,6 @@
       document.getElementById('app').style.display  = 'block';
       showPage('pageDashboard');
 
-      // Update UI
       const sisa = info?.sisa_hari || localStorage.getItem('token_sisa') || '?';
       const expires = info?.expires_at || localStorage.getItem('token_expires');
       document.getElementById('sisaLabel').textContent = `${sisa} hari lagi`;
@@ -677,14 +648,12 @@
       location.reload();
     }
 
-    // Check if already logged in
     const saved = localStorage.getItem('access_token');
     const exp   = localStorage.getItem('token_expires');
     if (saved && exp && Date.now() < Number(exp)) {
       openApp(saved, null);
     }
 
-    /* ── PAGE ROUTER ── */
     function showPage(id) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       const el = document.getElementById(id);
@@ -695,13 +664,11 @@
       if (id === 'pageSend')  renderSendPage();
     }
 
-    /* ── STORAGE HELPERS ── */
     const getAccs   = () => JSON.parse(localStorage.getItem('accounts') || '[]');
     const saveAccs  = a => localStorage.setItem('accounts', JSON.stringify(a));
     const todayKey  = () => new Date().toLocaleDateString('en-CA', { timeZone:'Asia/Jakarta' });
     const sentToday = a => a.sent?.[todayKey()] ?? 0;
 
-    /* ── KELOLA EMAIL ── */
     function renderEmailList() {
       const accs = getAccs();
       const cnt  = document.getElementById('accCount');
@@ -785,7 +752,6 @@
       renderEmailList();
     }
 
-    /* ── KIRIM EMAIL ── */
     let activeLang = 'pt';
     const tpl = {
       pt: n => `Prezada Equipe de Suporte do WhatsApp,\n\nEstou com problemas para registrar meu número. Recebo a mensagem "login indisponível".\n\nEste número é importante para meus estudos.\n\nMeu número: ${n||'[nomor]'}\n\nObrigado.`,
