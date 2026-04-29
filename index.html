@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FIXMERAH WALZ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:       #e11d48;
+      --red-dk:    #be123c;
+      --red-s:     rgba(225,29,72,.14);
+      --red-glow:  rgba(225,29,72,.3);
+      --orange:    #f97316;
+      --amber:     #f59e0b;
+      --bg:        #070709;
+      --s1:        #0d0d10;
+      --s2:        #141417;
+      --s3:        #1a1a1f;
+      --s4:        #212126;
+      --b1:        rgba(255,255,255,.05);
+      --b2:        rgba(255,255,255,.09);
+      --b3:        rgba(255,255,255,.14);
+      --text:      #f0f0f2;
+      --text2:     #9090a0;
+      --muted:     #50505f;
+      --green:     #22c55e;
+      --green-s:   rgba(34,197,94,.13);
+      --blue:      #3b82f6;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+    body {
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg); color:var(--text);
+      min-height:100vh; overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* ─── BACKGROUND ─── */
+    #bg-canvas {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 10%, rgba(225,29,72,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 80% 85%, rgba(249,115,22,.06) 0%, transparent 55%),
+        radial-gradient(ellipse 30% 30% at 50% 50%, rgba(225,29,72,.04) 0%, transparent 50%);
+    }
+    .grid-bg {
+      position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.025;
+      background-image:
+        linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ─── GATE ─── */
+    #gate {
+      position:fixed; inset:0; z-index:20;
+      display:flex; align-items:center; justify-content:center; padding:16px;
+    }
+    .gate-card {
+      position:relative; width:100%; max-width:420px;
+      background:var(--s1); border:1px solid var(--b2); border-radius:28px;
+      padding:44px 36px 36px; text-align:center;
+      box-shadow:
+        0 0 0 1px rgba(225,29,72,.06),
+        0 32px 80px rgba(0,0,0,.7),
+        inset 0 1px 0 rgba(255,255,255,.04);
+      animation:slideUp .55s cubic-bezier(.16,1,.3,1) both;
+    }
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(28px) scale(.96) }
+      to   { opacity:1; transform:none }
+    }
+    .gate-card::after {
+      content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+      width:60%; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(225,29,72,.7),transparent);
+    }
+
+    /* LOGO */
+    .logo-zone { position:relative; width:120px; height:120px; margin:0 auto 28px; }
+    .ring-outer {
+      position:absolute; inset:-20px; border-radius:50%;
+      border:1px dashed rgba(225,29,72,.2);
+      animation:spin 16s linear infinite reverse;
+    }
+    .ring-outer::before, .ring-outer::after {
+      content:''; position:absolute; border-radius:50%; background:var(--red);
+      box-shadow:0 0 10px var(--red-glow);
+    }
+    .ring-outer::before { width:7px; height:7px; top:8px; left:50%; margin-left:-3.5px; }
+    .ring-outer::after  { width:5px; height:5px; bottom:10px; right:14px; background:var(--orange); box-shadow:0 0 8px rgba(249,115,22,.5); }
+    .ring-conic {
+      position:absolute; inset:-11px; border-radius:50%;
+      background:conic-gradient(from 0deg, var(--red) 0%, var(--orange) 20%, transparent 38%, transparent 100%);
+      mask:radial-gradient(farthest-side, transparent calc(100% - 2.5px), white calc(100% - 2.5px));
+      -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 2.5px), white calc(100% - 2.5px));
+      animation:spin 3s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg) } }
+    .logo-glow {
+      position:absolute; inset:-10px; border-radius:50%; z-index:1;
+      background:radial-gradient(circle, rgba(225,29,72,.22) 0%, transparent 65%);
+      animation:breathe 4s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%,100% { transform:scale(1); opacity:.5 }
+      50%      { transform:scale(1.15); opacity:1 }
+    }
+    .logo-wrap {
+      position:absolute; inset:0; z-index:2; border-radius:50%; overflow:hidden;
+      border:3px solid var(--s2);
+      box-shadow:0 0 0 1.5px rgba(225,29,72,.45), 0 0 36px var(--red-s), 0 10px 28px rgba(0,0,0,.6);
+      animation:float 4.5s ease-in-out infinite;
+    }
+    .logo-wrap img { width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+    /* BRAND LOGO kecil di topbar */
+    .brand-logo {
+      width:34px; height:34px; border-radius:50%; overflow:hidden; flex-shrink:0;
+      border:1.5px solid rgba(225,29,72,.4); box-shadow:0 0 12px rgba(225,29,72,.2);
+    }
+    .brand-logo img { width:100%; height:100%; object-fit:cover; }
+
+    .gate-title {
+      font-family:'Syne',sans-serif; font-size:26px; font-weight:900;
+      letter-spacing:-.7px; margin-bottom:6px;
+      background:linear-gradient(140deg, #fff 20%, #fecdd3 55%, var(--red) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .gate-sub { font-size:13px; color:var(--text2); line-height:1.6; margin-bottom:28px; }
+
+    /* TOKEN INPUT FIELD */
+    .token-field-wrap {
+      position:relative; margin-bottom:14px;
+    }
+    .token-input {
+      width:100%; padding:15px 18px;
+      background:var(--s2); border:1.5px solid var(--b3);
+      border-radius:16px; color:var(--text);
+      font-family:'JetBrains Mono', monospace; font-size:14px; letter-spacing:.06em;
+      outline:none; text-align:center; text-transform:uppercase;
+      transition:border-color .2s, box-shadow .2s, background .2s;
+    }
+    .token-input::placeholder { color:var(--muted); font-family:'DM Sans',sans-serif; letter-spacing:0; font-size:13px; }
+    .token-input:focus {
+      border-color:rgba(225,29,72,.5);
+      box-shadow:0 0 0 4px rgba(225,29,72,.09);
+      background:var(--s3);
+    }
+    .token-input.valid   { border-color:rgba(34,197,94,.5); box-shadow:0 0 0 4px rgba(34,197,94,.09); }
+    .token-input.invalid { border-color:rgba(225,29,72,.5);  box-shadow:0 0 0 4px rgba(225,29,72,.09); }
+
+    .field-hint-row {
+      display:flex; align-items:center; justify-content:space-between;
+      font-size:11.5px; color:var(--muted); margin-bottom:18px; padding:0 2px;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display:flex; align-items:center; justify-content:center; gap:9px;
+      width:100%; padding:14px 20px; border:none; border-radius:14px;
+      font-family:'DM Sans',sans-serif; font-weight:600; font-size:14.5px;
+      cursor:pointer; text-decoration:none; margin-top:8px;
+      transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s, opacity .2s;
+    }
+    .btn:active { transform:scale(.97) !important; }
+    .btn:disabled { opacity:.4; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+    .btn-red {
+      background:linear-gradient(135deg, var(--red-dk) 0%, var(--red) 50%, #f43f5e 100%);
+      color:#fff; box-shadow:0 4px 24px rgba(225,29,72,.35), inset 0 1px 0 rgba(255,255,255,.15);
+    }
+    .btn-red:not(:disabled):hover { transform:translateY(-2px) scale(1.01); box-shadow:0 8px 32px rgba(225,29,72,.45); }
+    .btn-ghost { background:var(--s2); color:var(--text2); border:1px solid var(--b3); }
+    .btn-ghost:hover { background:var(--s3); color:var(--text); transform:translateY(-1px); }
+    .btn-green {
+      background:linear-gradient(135deg, #16a34a, var(--green));
+      color:#fff; box-shadow:0 4px 20px rgba(34,197,94,.3);
+    }
+    .btn-green:not(:disabled):hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(34,197,94,.4); }
+
+    /* STATUS BAR */
+    .status-bar {
+      display:flex; align-items:center; gap:10px;
+      background:var(--s2); border:1px solid var(--b1); border-radius:12px;
+      padding:11px 15px; margin-top:16px; font-size:12.5px; color:var(--text2);
+    }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+    .dot.checking { background:var(--amber);  animation:blink .5s infinite; }
+    .dot.ok       { background:var(--green);  animation:blink 2s infinite; }
+    .dot.error    { background:var(--red);    animation:blink .8s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    /* BOT LINK */
+    .bot-link-row {
+      display:flex; align-items:center; justify-content:center; gap:6px;
+      margin-top:14px; font-size:12px; color:var(--muted);
+    }
+    .bot-link-row a { color:var(--text2); text-decoration:none; font-weight:500; }
+    .bot-link-row a:hover { color:var(--red); }
+
+    /* DIVIDER */
+    .divider {
+      display:flex; align-items:center; gap:12px; margin:20px 0 16px;
+      font-size:11px; color:var(--muted); font-weight:500;
+    }
+    .divider::before, .divider::after {
+      content:''; flex:1; height:1px; background:var(--b2);
+    }
+
+    /* ─── APP SHELL ─── */
+    #app { display:none; min-height:100vh; position:relative; z-index:1; }
+
+    .topbar {
+      position:sticky; top:0; z-index:10;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 20px; height:58px;
+      background:rgba(13,13,16,.9); backdrop-filter:blur(20px) saturate(160%);
+      border-bottom:1px solid var(--b1);
+    }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .brand-name {
+      font-family:'Syne',sans-serif; font-size:14.5px; font-weight:800; letter-spacing:-.3px;
+      background:linear-gradient(135deg, #fff 40%, #fda4af);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .topbar-right { display:flex; align-items:center; gap:8px; }
+    .access-chip {
+      display:flex; align-items:center; gap:6px;
+      background:var(--s3); border:1px solid var(--b2);
+      border-radius:100px; padding:4px 12px 4px 7px; font-size:11.5px; color:var(--text2);
+    }
+    .access-chip .u-dot { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 6px rgba(34,197,94,.5); animation:blink 2.5s infinite; }
+    .btn-xs {
+      padding:5px 12px; border-radius:8px; font-family:'DM Sans',sans-serif;
+      font-size:11.5px; font-weight:500; cursor:pointer;
+      background:transparent; border:1px solid var(--b2); color:var(--text2); transition:.15s;
+    }
+    .btn-xs:hover { background:var(--s2); color:var(--text); }
+
+    /* ─── PAGE SYSTEM ─── */
+    .page { display:none; max-width:680px; margin:0 auto; padding:28px 16px 80px; }
+    .page.active { display:block; }
+    .page-back {
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:12.5px; color:var(--text2); cursor:pointer;
+      background:none; border:none; padding:0; margin-bottom:18px; transition:color .15s;
+    }
+    .page-back:hover { color:var(--text); }
+    .page-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; letter-spacing:-.4px; margin-bottom:6px; }
+    .page-sub   { font-size:13px; color:var(--text2); line-height:1.6; margin-bottom:24px; }
+
+    /* Dashboard */
+    .welcome-box {
+      background:linear-gradient(135deg, var(--s1) 0%, rgba(225,29,72,.04) 100%);
+      border:1px solid var(--b2); border-radius:22px;
+      padding:24px 26px; margin-bottom:20px; position:relative; overflow:hidden;
+    }
+    .welcome-box::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg, var(--red), var(--orange), transparent 70%);
+    }
+    .welcome-box h2 { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; letter-spacing:-.3px; margin-bottom:5px; }
+    .welcome-box p  { font-size:13px; color:var(--text2); line-height:1.55; }
+
+    .info-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+    .pill {
+      display:inline-flex; align-items:center; gap:5px;
+      font-size:11.5px; font-weight:600; padding:5px 12px; border-radius:100px;
+    }
+    .pill-green { background:var(--green-s); border:1px solid rgba(34,197,94,.22); color:#4ade80; }
+    .pill-red   { background:var(--red-s);   border:1px solid rgba(225,29,72,.22);  color:#fb7185; }
+    .pill-amber { background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.22); color:#fbbf24; }
+
+    .section-label { font-size:10.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+
+    .feat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media(max-width:480px) { .feat-grid { grid-template-columns:1fr; } }
+    .feat-card {
+      background:var(--s1); border:1px solid var(--b1); border-radius:20px;
+      padding:22px; cursor:pointer; position:relative; overflow:hidden;
+      transition:border-color .25s, box-shadow .25s, transform .2s; user-select:none;
+    }
+    .feat-card:hover  { border-color:rgba(225,29,72,.28); box-shadow:0 12px 40px rgba(0,0,0,.4); transform:translateY(-3px); }
+    .feat-card:active { transform:scale(.98); }
+    .feat-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg, var(--red), var(--orange)); opacity:0; transition:opacity .25s;
+    }
+    .feat-card:hover::before { opacity:1; }
+    .feat-icon {
+      width:48px; height:48px; border-radius:13px; font-size:22px; margin-bottom:16px;
+      background:linear-gradient(135deg, rgba(225,29,72,.1), rgba(249,115,22,.07));
+      border:1px solid rgba(225,29,72,.16);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .feat-title { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:5px; }
+    .feat-desc  { font-size:12px; color:var(--text2); line-height:1.55; }
+    .feat-badge {
+      display:inline-flex; align-items:center; gap:5px; margin-top:12px;
+      background:var(--red-s); border:1px solid rgba(225,29,72,.18);
+      color:#fb7185; font-size:10.5px; font-weight:600; padding:3px 9px; border-radius:100px;
+    }
+
+    /* Panel */
+    .panel { background:var(--s1); border:1px solid var(--b1); border-radius:20px; overflow:hidden; margin-bottom:14px; }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; padding:15px 20px; border-bottom:1px solid var(--b1); }
+    .panel-head-title { font-family:'Syne',sans-serif; font-size:13.5px; font-weight:700; }
+    .panel-body { padding:20px; }
+
+    /* Form */
+    .field { margin-bottom:14px; }
+    .field label { display:block; font-size:12px; font-weight:600; color:var(--text2); margin-bottom:7px; letter-spacing:.01em; }
+    .field input {
+      width:100%; padding:12px 14px;
+      background:var(--s2); border:1.5px solid var(--b2);
+      border-radius:12px; color:var(--text); font-size:13.5px;
+      font-family:'DM Sans',sans-serif; outline:none;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    .field input:focus { border-color:rgba(225,29,72,.5); box-shadow:0 0 0 3px rgba(225,29,72,.09); }
+    .field input::placeholder { color:var(--muted); }
+    .field-hint { font-size:11.5px; color:var(--muted); margin-top:6px; line-height:1.5; }
+
+    .vbadge { display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; font-size:12.5px; font-weight:500; margin-top:12px; border:1px solid transparent; }
+    .vbadge.loading { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.2); color:#fbbf24; }
+    .vbadge.success { background:var(--green-s); border-color:rgba(34,197,94,.22); color:#4ade80; }
+    .vbadge.fail    { background:var(--red-s);   border-color:rgba(225,29,72,.2);  color:#fb7185; }
+
+    .chip { display:inline-flex; align-items:center; font-size:11px; font-weight:600; padding:3px 10px; border-radius:100px; }
+    .chip-gray { background:var(--s3); border:1px solid var(--b2); color:var(--text2); }
+    .chip-red  { background:var(--red-s); border:1px solid rgba(225,29,72,.2); color:#fb7185; }
+
+    /* Email list */
+    .email-list { display:flex; flex-direction:column; gap:10px; }
+    .email-item { display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--s2); border:1px solid var(--b1); border-radius:14px; padding:13px 16px; }
+    .ei-left    { display:flex; align-items:center; gap:11px; min-width:0; flex:1; }
+    .ei-avatar  { width:36px; height:36px; border-radius:10px; flex-shrink:0; background:linear-gradient(135deg,var(--red-dk),var(--red)); color:#fff; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .ei-addr    { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ei-stat    { font-size:11px; color:var(--text2); margin-top:2px; }
+    .del-btn    { background:none; border:1px solid var(--b2); border-radius:8px; color:var(--text2); font-size:11.5px; padding:5px 10px; cursor:pointer; flex-shrink:0; transition:.15s; }
+    .del-btn:hover { background:var(--red-s); border-color:rgba(225,29,72,.3); color:#fb7185; }
+
+    /* Send page */
+    .ae-card { display:flex; align-items:center; gap:12px; background:var(--s2); border:1px solid var(--b2); border-radius:16px; padding:15px; margin-bottom:16px; }
+    .ae-icon  { width:42px; height:42px; border-radius:12px; flex-shrink:0; background:linear-gradient(135deg,var(--red-dk),var(--red)); color:#fff; font-size:16px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .ae-info  { min-width:0; flex:1; }
+    .ae-addr  { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ae-quota { font-size:11px; color:var(--text2); margin-top:2px; }
+    .qbar     { height:3px; background:var(--s3); border-radius:100px; margin-top:8px; overflow:hidden; }
+    .qfill    { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--green),var(--orange)); transition:width .4s; }
+    .qfill.full { background:linear-gradient(90deg,var(--orange),var(--red)); }
+
+    .lang-tabs { display:flex; gap:7px; margin-bottom:14px; flex-wrap:wrap; }
+    .lang-tab { padding:7px 15px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid var(--b2); background:var(--s2); color:var(--text2); transition:.15s; }
+    .lang-tab.active { background:linear-gradient(135deg,var(--red-dk),var(--red)); border-color:transparent; color:#fff; }
+
+    .tpl-box { background:var(--s2); border:1px solid var(--b1); border-radius:12px; padding:14px 16px; font-size:12px; color:var(--text2); line-height:1.7; white-space:pre-wrap; margin-bottom:16px; font-family:'JetBrains Mono',monospace; }
+
+    .send-result { background:var(--s2); border:1px solid var(--b1); border-radius:14px; padding:16px; margin-top:12px; display:none; }
+    .send-result.show { display:block; }
+    .send-ok   { color:#4ade80; font-weight:600; font-size:14px; }
+    .send-fail { color:#fb7185; font-weight:600; font-size:14px; }
+    .send-det  { font-size:12px; color:var(--text2); margin-top:6px; line-height:1.55; }
+
+    .alert-err { display:flex; align-items:flex-start; gap:10px; padding:13px 16px; border-radius:12px; font-size:13px; font-weight:500; margin-bottom:16px; background:var(--red-s); border:1px solid rgba(225,29,72,.2); color:#fb7185; }
+
+    .empty-box { text-align:center; padding:36px 20px; color:var(--muted); font-size:13px; }
+    .empty-box .eico { font-size:34px; margin-bottom:10px; }
+
+    .spin { animation:spin .7s linear infinite; display:inline-block; }
+
+    /* ─── TOKEN DISPLAY on dashboard ─── */
+    .token-display {
+      background:var(--s3); border:1px solid var(--b1); border-radius:10px;
+      padding:9px 14px; margin-top:6px;
+      font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted);
+      letter-spacing:.04em; display:flex; align-items:center; justify-content:space-between; gap:8px;
+    }
+    .token-display .tok-val { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .copy-btn { background:none; border:1px solid var(--b2); border-radius:6px; color:var(--text2); font-size:10px; font-family:'DM Sans',sans-serif; padding:3px 8px; cursor:pointer; flex-shrink:0; transition:.15s; font-weight:500; }
+    .copy-btn:hover { background:var(--s4); color:var(--text); }
+  </style>
+</head>
+<body>
+  <div id="bg-canvas"></div>
+  <div class="grid-bg"></div>
+
+  <!-- ════ GATE ════ -->
+  <div id="gate">
+    <div class="gate-card">
+      <div class="logo-zone">
+        <div class="ring-outer"></div>
+        <div class="ring-conic"></div>
+        <div class="logo-glow"></div>
+        <div class="logo-wrap">
+          <img src="https://i.postimg.cc/c4PrRSH9/fixmerah-walz-logo.jpg"
+               alt="FIXMERAH WALZ"
+               onerror="this.src='https://placehold.co/120x120/e11d48/ffffff?text=W'">
+        </div>
+      </div>
+
+      <h1 class="gate-title">FIXMERAH WALZ</h1>
+      <p class="gate-sub">Masukkan token akses yang kamu dapatkan dari bot Telegram untuk melanjutkan.</p>
+
+      <div class="token-field-wrap">
+        <input
+          id="tokenInput"
+          class="token-input"
+          type="text"
+          placeholder="Masukkan token akses..."
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          oninput="onTokenInput(this)"
+          onkeydown="if(event.key==='Enter') doTokenLogin()"
+        >
+      </div>
+      <div class="field-hint-row">
+        <span>Format: XXXX-XXXX-XXXX-XXXX-XXXX-XXXX</span>
+        <span id="tokenCharCount">0/29</span>
+      </div>
+
+      <button id="loginBtn" onclick="doTokenLogin()" class="btn btn-red" disabled>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Masuk dengan Token
+      </button>
+
+      <div class="status-bar"><span class="dot" id="dot"></span><span id="statusMsg">Masukkan token akses kamu</span></div>
+
+      <div class="divider">atau</div>
+
+      <div class="bot-link-row">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Belum punya token? <a id="botLink" href="#" target="_blank">Hubungi Bot Telegram</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ APP ════ -->
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="https://i.postimg.cc/c4PrRSH9/fixmerah-walz-logo.jpg" alt="Logo" onerror="this.src='https://placehold.co/34x34/e11d48/ffffff?text=W'">
+        </div>
+        <span class="brand-name">FIXMERAH WALZ</span>
+      </div>
+      <div class="topbar-right">
+        <div class="access-chip"><span class="u-dot"></span><span id="sisaLabel">Aktif</span></div>
+        <button class="btn-xs" onclick="logout()">Keluar</button>
+      </div>
+    </header>
+
+    <!-- PAGE: Dashboard -->
+    <div class="page active" id="pageDashboard">
+      <div class="welcome-box">
+        <h2>Selamat datang 👋</h2>
+        <p>Token akses kamu terverifikasi. Pilih fitur di bawah untuk mulai menggunakan layanan.</p>
+        <div class="info-pills">
+          <span class="pill pill-green">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            Akses Aktif
+          </span>
+          <span class="pill pill-amber" id="sisaPill">⏱ Memuat...</span>
+        </div>
+        <div class="token-display">
+          <span class="tok-val" id="tokenDisplayVal">-</span>
+          <button class="copy-btn" onclick="copyToken()">Salin</button>
+        </div>
+      </div>
+
+      <p class="section-label">Fitur Tersedia</p>
+      <div class="feat-grid">
+        <div class="feat-card" onclick="showPage('pageEmail')">
+          <div class="feat-icon">📧</div>
+          <div class="feat-title">Kelola Email</div>
+          <div class="feat-desc">Tambah akun Gmail dengan App Password untuk pengiriman otomatis.</div>
+          <div class="feat-badge">Maks 20 akun</div>
+        </div>
+        <div class="feat-card" onclick="showPage('pageSend')">
+          <div class="feat-icon">🚀</div>
+          <div class="feat-title">Kirim Email</div>
+          <div class="feat-desc">Kirim email ke support WhatsApp dengan template multi-bahasa.</div>
+          <div class="feat-badge">Limit 10/hari WIB</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: Kelola Email -->
+    <div class="page" id="pageEmail">
+      <button class="page-back" onclick="showPage('pageDashboard')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali ke Dashboard
+      </button>
+      <div class="page-title">Kelola Email</div>
+      <div class="page-sub">Tambah akun Gmail dengan App Password. Diverifikasi otomatis sebelum disimpan.</div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-head-title">Tambah Akun Gmail</span>
+          <span id="accCount" class="chip chip-gray">0 / 20</span>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Alamat Gmail</label>
+            <input id="inEmail" type="email" placeholder="contoh@gmail.com" oninput="onEmailInput()">
+          </div>
+          <div class="field">
+            <label>App Password</label>
+            <input id="inPass" type="password" placeholder="xxxx xxxx xxxx xxxx" oninput="onEmailInput()">
+            <div class="field-hint">App Password ≠ password biasa. Buat di <strong>myaccount.google.com → Keamanan → App Passwords</strong>.</div>
+          </div>
+          <div id="vbadge" class="vbadge" style="display:none"></div>
+          <button id="addBtn" onclick="addEmail()" class="btn btn-red" style="margin-top:6px" disabled>Verifikasi & Tambah</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="panel-head-title">Akun Tersimpan</span></div>
+        <div class="panel-body" id="emailListWrap">
+          <div class="empty-box"><div class="eico">📭</div>Belum ada akun email</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: Kirim Email -->
+    <div class="page" id="pageSend">
+      <button class="page-back" onclick="showPage('pageDashboard')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali ke Dashboard
+      </button>
+      <div class="page-title">Kirim Email</div>
+      <div class="page-sub">Kirim pesan ke support@support.whatsapp.com secara otomatis.</div>
+
+      <div id="alertNoEmail" class="alert-err" style="display:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;margin-top:1px"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14H11V11h2zm0-8H11V6h2z"/></svg>
+        <span>Belum ada akun email. Tambah dulu di <strong style="cursor:pointer;text-decoration:underline" onclick="showPage('pageEmail')">Kelola Email</strong>.</span>
+      </div>
+
+      <div id="sendContent">
+        <div class="ae-card">
+          <div class="ae-icon" id="aeIcon">?</div>
+          <div class="ae-info">
+            <div class="ae-addr" id="aeAddr">-</div>
+            <div class="ae-quota" id="aeQuota">-</div>
+            <div class="qbar"><div class="qfill" id="qfill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title">Bahasa Template</span></div>
+          <div class="panel-body">
+            <div class="lang-tabs">
+              <button class="lang-tab active" onclick="setLang('pt',this)">🇧🇷 Portugis</button>
+              <button class="lang-tab" onclick="setLang('en',this)">🇺🇸 Inggris</button>
+              <button class="lang-tab" onclick="setLang('id',this)">🇮🇩 Indonesia</button>
+            </div>
+            <div class="tpl-box" id="tplBox"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title">Nomor WhatsApp Target</span></div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Nomor (format internasional)</label>
+              <input id="inPhone" type="tel" placeholder="+628123456789" oninput="updateTpl()">
+              <div class="field-hint">Contoh: +628123456789. Sertakan kode negara, tanpa spasi.</div>
+            </div>
+            <button id="sendBtn" onclick="doSend()" class="btn btn-green">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Kirim ke WhatsApp Support
+            </button>
+            <div class="send-result" id="sendResult"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API          = '/api';
+    const BOT_USERNAME = 'websitewalzbot';
+
+    document.getElementById('botLink').href = `https://t.me/${BOT_USERNAME}`;
+
+    /* ── TOKEN AUTO FORMAT ── */
+    function onTokenInput(el) {
+      let v = el.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+      if (v.length > 24) v = v.slice(0,24);
+      // Format: XXXX-XXXX-XXXX-XXXX-XXXX-XXXX
+      const chunks = v.match(/.{1,4}/g) || [];
+      el.value = chunks.join('-');
+      const charCount = document.getElementById('tokenCharCount');
+      charCount.textContent = `${v.length}/24`;
+      const valid = v.length === 24;
+      el.className = 'token-input' + (v.length > 0 ? (valid ? ' valid' : '') : '');
+      document.getElementById('loginBtn').disabled = !valid;
+      if (valid) setStatus('Tekan Masuk untuk verifikasi token', 'checking');
+      else setStatus('Masukkan token akses kamu');
+    }
+
+    function setStatus(msg, state='') {
+      document.getElementById('statusMsg').textContent = msg;
+      document.getElementById('dot').className = 'dot ' + state;
+    }
+
+    async function doTokenLogin() {
+      const raw = document.getElementById('tokenInput').value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+      if (raw.length !== 24) return;
+      const token = raw.match(/.{4}/g).join('-');
+
+      setStatus('Memverifikasi token...', 'checking');
+      document.getElementById('loginBtn').disabled = true;
+
+      try {
+        const r = await fetch(`${API}?action=check_token&token=${encodeURIComponent(token)}`);
+        const d = await r.json();
+
+        if (d.valid) {
+          setStatus('Token valid! Membuka akses...', 'ok');
+          // Save to localStorage
+          localStorage.setItem('access_token', token);
+          localStorage.setItem('token_expires', d.expires_at);
+          localStorage.setItem('token_days', d.days);
+          localStorage.setItem('token_sisa', d.sisa_hari);
+          setTimeout(() => openApp(token, d), 600);
+        } else {
+          setStatus(d.error || 'Token tidak valid', 'error');
+          document.getElementById('tokenInput').classList.add('invalid');
+          document.getElementById('loginBtn').disabled = false;
+          setTimeout(() => {
+            document.getElementById('tokenInput').classList.remove('invalid');
+            setStatus('Masukkan token akses kamu');
+          }, 2500);
+        }
+      } catch(e) {
+        setStatus('Gagal konek ke server', 'error');
+        document.getElementById('loginBtn').disabled = false;
+      }
+    }
+
+    function openApp(token, info) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('app').style.display  = 'block';
+      showPage('pageDashboard');
+
+      // Update UI
+      const sisa = info?.sisa_hari || localStorage.getItem('token_sisa') || '?';
+      const expires = info?.expires_at || localStorage.getItem('token_expires');
+      document.getElementById('sisaLabel').textContent = `${sisa} hari lagi`;
+      document.getElementById('sisaPill').textContent  = `⏱ ${sisa} hari lagi`;
+
+      const disp = token || localStorage.getItem('access_token') || '-';
+      document.getElementById('tokenDisplayVal').textContent = disp;
+    }
+
+    function copyToken() {
+      const t = localStorage.getItem('access_token');
+      if (!t) return;
+      navigator.clipboard.writeText(t).then(() => {
+        const b = document.querySelector('.copy-btn');
+        b.textContent = 'Tersalin ✓'; b.style.color='#4ade80';
+        setTimeout(() => { b.textContent='Salin'; b.style.color=''; }, 1500);
+      }).catch(() => {});
+    }
+
+    function logout() {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('token_expires');
+      localStorage.removeItem('token_days');
+      localStorage.removeItem('token_sisa');
+      location.reload();
+    }
+
+    // Check if already logged in
+    const saved = localStorage.getItem('access_token');
+    const exp   = localStorage.getItem('token_expires');
+    if (saved && exp && Date.now() < Number(exp)) {
+      openApp(saved, null);
+    }
+
+    /* ── PAGE ROUTER ── */
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('active');
+      window.scrollTo({ top:0, behavior:'smooth' });
+      if (id === 'pageEmail') renderEmailList();
+      if (id === 'pageSend')  renderSendPage();
+    }
+
+    /* ── STORAGE HELPERS ── */
+    const getAccs   = () => JSON.parse(localStorage.getItem('accounts') || '[]');
+    const saveAccs  = a => localStorage.setItem('accounts', JSON.stringify(a));
+    const todayKey  = () => new Date().toLocaleDateString('en-CA', { timeZone:'Asia/Jakarta' });
+    const sentToday = a => a.sent?.[todayKey()] ?? 0;
+
+    /* ── KELOLA EMAIL ── */
+    function renderEmailList() {
+      const accs = getAccs();
+      const cnt  = document.getElementById('accCount');
+      cnt.textContent = `${accs.length} / 20`;
+      cnt.className   = accs.length >= 20 ? 'chip chip-red' : 'chip chip-gray';
+
+      const wrap = document.getElementById('emailListWrap');
+      if (!accs.length) {
+        wrap.innerHTML = '<div class="empty-box"><div class="eico">📭</div>Belum ada akun email tersimpan</div>';
+        return;
+      }
+      wrap.innerHTML = '<div class="email-list">' + accs.map((a, i) => {
+        const n = sentToday(a), full = n >= 10;
+        return `<div class="email-item">
+          <div class="ei-left">
+            <div class="ei-avatar">${a.email[0].toUpperCase()}</div>
+            <div>
+              <div class="ei-addr">${a.email}</div>
+              <div class="ei-stat">Hari ini: ${n}/10 &nbsp;•&nbsp; <span style="color:${full?'#fb7185':'#4ade80'}">${full?'Penuh':'Aktif'}</span></div>
+            </div>
+          </div>
+          <button class="del-btn" onclick="delAcc(${i})">Hapus</button>
+        </div>`;
+      }).join('') + '</div>';
+    }
+
+    function delAcc(i) {
+      const accs = getAccs(); accs.splice(i,1); saveAccs(accs);
+      renderEmailList(); renderSendPage();
+    }
+
+    let vt = null;
+    function onEmailInput() {
+      const email = document.getElementById('inEmail').value.trim();
+      const pass  = document.getElementById('inPass').value.trim();
+      const badge = document.getElementById('vbadge');
+      clearTimeout(vt);
+      badge.style.display = 'none';
+      document.getElementById('addBtn').disabled = true;
+      if (!email.includes('@') || pass.length < 8) return;
+      badge.style.display = 'flex';
+      badge.className     = 'vbadge loading';
+      badge.innerHTML     = '<span class="spin">⏳</span>&nbsp;Memeriksa kredensial...';
+      vt = setTimeout(() => doVerify(email, pass), 900);
+    }
+
+    async function doVerify(email, pass) {
+      const badge = document.getElementById('vbadge');
+      try {
+        const r = await fetch(`${API}?action=verify`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email, pass })
+        });
+        const d = await r.json();
+        if (d.ok) {
+          badge.className = 'vbadge success';
+          badge.innerHTML = '✅ Kredensial valid — siap ditambahkan';
+          document.getElementById('addBtn').disabled = false;
+        } else {
+          badge.className = 'vbadge fail';
+          badge.innerHTML = '❌ Kredensial salah — cek email & App Password';
+        }
+      } catch {
+        badge.className = 'vbadge fail';
+        badge.innerHTML = '❌ Gagal konek ke server';
+      }
+    }
+
+    function addEmail() {
+      const accs = getAccs();
+      if (accs.length >= 20) return alert('Batas maksimal 20 akun!');
+      const email = document.getElementById('inEmail').value.trim();
+      const pass  = document.getElementById('inPass').value.trim();
+      if (!email || !pass) return;
+      if (accs.find(a => a.email === email)) return alert('Email ini sudah ada!');
+      accs.push({ email, pass, sent:{} }); saveAccs(accs);
+      document.getElementById('inEmail').value = '';
+      document.getElementById('inPass').value  = '';
+      document.getElementById('vbadge').style.display = 'none';
+      document.getElementById('addBtn').disabled = true;
+      renderEmailList();
+    }
+
+    /* ── KIRIM EMAIL ── */
+    let activeLang = 'pt';
+    const tpl = {
+      pt: n => `Prezada Equipe de Suporte do WhatsApp,\n\nEstou com problemas para registrar meu número. Recebo a mensagem "login indisponível".\n\nEste número é importante para meus estudos.\n\nMeu número: ${n||'[nomor]'}\n\nObrigado.`,
+      en: n => `Dear WhatsApp Support,\n\nI am unable to register my number. I keep receiving the "login unavailable" message.\n\nMy number: ${n||'[number]'}\n\nThank you.`,
+      id: n => `Tim Support WhatsApp,\n\nSaya tidak dapat mendaftarkan nomor saya. Muncul pesan "login tidak tersedia".\n\nNomor: ${n||'[nomor]'}\n\nTerima kasih.`
+    };
+
+    function setLang(lang, el) {
+      activeLang = lang;
+      document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active'); updateTpl();
+    }
+    function updateTpl() {
+      const el = document.getElementById('tplBox');
+      if (el) el.textContent = tpl[activeLang](document.getElementById('inPhone')?.value.trim() || '');
+    }
+    const getActive = accs => accs.find(a => sentToday(a) < 10) ?? null;
+
+    function renderSendPage() {
+      const accs = getAccs(), active = getActive(accs);
+      const noEl = document.getElementById('alertNoEmail');
+      const scEl = document.getElementById('sendContent');
+      if (!accs.length) { noEl.style.display='flex'; scEl.style.display='none'; return; }
+      noEl.style.display = 'none'; scEl.style.display = 'block';
+      updateTpl();
+      if (!active) {
+        document.getElementById('aeIcon').textContent  = '!';
+        document.getElementById('aeAddr').textContent  = 'Semua email sudah penuh hari ini';
+        document.getElementById('aeQuota').textContent = 'Reset jam 00:00 WIB';
+        document.getElementById('qfill').style.width   = '100%';
+        document.getElementById('qfill').className     = 'qfill full';
+        document.getElementById('sendBtn').disabled    = true;
+        return;
+      }
+      const n = sentToday(active), pct = n*10;
+      document.getElementById('aeIcon').textContent  = active.email[0].toUpperCase();
+      document.getElementById('aeAddr').textContent  = active.email;
+      document.getElementById('aeQuota').textContent = `Terkirim hari ini: ${n}/10`;
+      document.getElementById('qfill').style.width   = pct + '%';
+      document.getElementById('qfill').className     = pct >= 80 ? 'qfill full' : 'qfill';
+      document.getElementById('sendBtn').disabled    = false;
+    }
+
+    async function doSend() {
+      const phone = document.getElementById('inPhone').value.trim();
+      if (!phone) { alert('Masukkan nomor WhatsApp terlebih dahulu!'); return; }
+      const accs = getAccs(), active = getActive(accs);
+      if (!active) { alert('Semua email sudah penuh hari ini!'); return; }
+
+      const btn = document.getElementById('sendBtn');
+      const res = document.getElementById('sendResult');
+      btn.disabled  = true;
+      btn.innerHTML = '<span class="spin">⏳</span>&nbsp;Mengirim...';
+      res.className = 'send-result';
+
+      try {
+        const r = await fetch(`${API}?action=send`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email:active.email, pass:active.pass, nomor:phone, lang:activeLang })
+        });
+        const d = await r.json();
+        const key = todayKey();
+        if (!active.sent) active.sent = {};
+        active.sent[key] = (active.sent[key]??0) + 1;
+        const idx = accs.findIndex(a=>a.email===active.email);
+        if (idx!==-1) accs[idx]=active; saveAccs(accs); renderSendPage();
+
+        res.className = 'send-result show';
+        if (d.ok) {
+          res.innerHTML = `<div class="send-ok">✅ Email berhasil dikirim!</div><div class="send-det">Dari: ${active.email}<br>Ke: support@support.whatsapp.com<br>Bahasa: ${activeLang.toUpperCase()}</div>`;
+          document.getElementById('inPhone').value = ''; updateTpl();
+        } else {
+          res.innerHTML = `<div class="send-fail">❌ Gagal: ${d.error||'Coba lagi'}</div>`;
+        }
+      } catch(e) {
+        res.className = 'send-result show';
+        res.innerHTML = `<div class="send-fail">❌ Error: ${e.message}</div>`;
+      }
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Kirim ke WhatsApp Support';
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
