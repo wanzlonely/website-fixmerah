@@ -770,8 +770,8 @@
           <div class="field"><label>Nomor WA Sender (dengan kode negara)</label><input id="waSender" type="tel" placeholder="+62812xxxxxxx"></div>
           <button class="btn btn-red" onclick="waPair()" id="waPairBtn">Dapatkan Pairing Code</button>
           <div id="waPairResult" style="margin-top:12px;font-family:'JetBrains Mono';font-size:13px;color:var(--text2)"></div>
-          <div class="field-hint">Server WA Checker harus jalan di Railway/Render. Set URL di bawah.</div>
-          <div class="field-hint" style="color:var(--green);font-size:12px">Mode Vercel Only — sender otomatis terhapus jika terputus</div>
+          <div class="field-hint"></div>
+          <div class="field-hint" style="color:var(--green);font-size:12px"></div>
         </div>
       </div>
 
@@ -781,7 +781,7 @@
           <div class="field"><label>Tempel nomor (satu per baris)</label><textarea id="waNumbers" rows="6" style="width:100%;background:var(--s2);border:1.5px solid var(--b3);border-radius:12px;padding:12px;color:var(--text);font-family:'JetBrains Mono';font-size:12px" placeholder="+628123...
 +628124..."></textarea></div>
           <div style="display:flex;gap:10px;margin:10px 0"><span style="color:var(--muted);font-size:12px">atau upload file .txt/.csv</span></div>
-          <input type="file" id="waFile" accept=".txt,.csv" style="margin-bottom:12px">
+          <input type="file" id="waFile" accept=".txt,.xlsx" style="margin-bottom:12px">
           <button class="btn btn-green" onclick="waCheck()" id="waCheckBtn">Cek Detail Sekarang</button>
           <div id="waCheckResult" class="send-result" style="margin-top:14px"></div>
         </div>
@@ -1070,7 +1070,7 @@ function openApp(token, info) {
         await fetch(`${base}?action=wa_logout_vercel`);
         const r = await fetch(`${base}?action=wa_pair_vercel`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({number:num})});
         const d = await r.json();
-        document.getElementById('waPairResult').innerHTML = d.code ? `Pairing Code: <b style="color:#fff;font-size:22px;letter-spacing:4px">${d.code}</b><br><span style="font-size:11px">Masukkan di WA dalam 2 menit. Session otomatis terhapus jika terputus.</span>` : `Error: ${d.error}`;
+        document.getElementById('waPairResult').innerHTML = d.code ? `Pairing Code: <b style="color:#fff;font-size:22px;letter-spacing:4px">${d.code}</b><br><span style="font-size:11px">Masukkan di WA dalam 2 menit. .</span>` : `Error: ${d.error}`;
         document.getElementById('waStatus').textContent = d.code ? 'paired' : 'Gagal';
         document.getElementById('waStatus').className = 'chip ' + (d.code ? 'chip-green' : 'chip-red');
       }catch(e){ document.getElementById('waPairResult').textContent = 'Gagal konek'; }
