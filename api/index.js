@@ -1,3 +1,5 @@
+export const config = { maxDuration: 60 };
+
 import fs from 'fs';
 import path from 'path';
 
@@ -24,7 +26,7 @@ if(action==='telegram'&&req.method==='POST'){
 const m=req.body.message||req.body.edited_message;if(!m?.text)return res.json({ok:true});
 const cid=m.chat.id;const uid=String(m.from.id);const txt=m.text.trim();
 if(txt.startsWith('/start')){await tgSend(cid,'*FIXMERAH WALZ BOT*\n\n/token [1-30] - buat token');return res.json({ok:true})}
-if(txt.startsWith('/token')){if(OWNER_ID&&uid!==OWNER_ID){await tgSend(cid,'❌ Hanya owner');return res.json({ok:true})}let d=parseInt(txt.split(' ')[1]||'7');if(isNaN(d)||d<1||d>30)d=7;const token=genToken();const exp=Date.now()+d*86400000;let t=cleanExpired(loadTokens());t[token]={created_at:Date.now(),expires_at:exp,days:d,created_by:uid,used_by:null,used_at:null};saveTokens(t);await tgSend(cid,`✅ *Token Baru*\n\n\`${token}\`\n\n⏱ ${d} hari`);return res.json({ok:true})}
+if(txt.startsWith('/token')){if(OWNER_ID&&uid!==OWNER_ID){await tgSend(cid,'âŒ Hanya owner');return res.json({ok:true})}let d=parseInt(txt.split(' ')[1]||'7');if(isNaN(d)||d<1||d>30)d=7;const token=genToken();const exp=Date.now()+d*86400000;let t=cleanExpired(loadTokens());t[token]={created_at:Date.now(),expires_at:exp,days:d,created_by:uid,used_by:null,used_at:null};saveTokens(t);await tgSend(cid,`âœ… *Token Baru*\n\n\`${token}\`\n\nâ± ${d} hari`);return res.json({ok:true})}
 return res.json({ok:true})
 }
 if(action==='init_bot'){const {secret}=req.query;if(secret!==BOT_TOKEN)return res.status(403).json({ok:false});const url=`${req.headers['x-forwarded-proto']||'https'}://${req.headers.host}/api?action=telegram`;const r=await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook?url=${encodeURIComponent(url)}`);return res.json({ok:true,webhook:await r.json()})}
@@ -33,16 +35,19 @@ if(action==='admin_tokens'){const {secret}=req.query;if(secret!==BOT_TOKEN)retur
 if(action==='verify'&&req.method==='POST'){const {email,pass}=req.body;const nodemailer=await import('nodemailer').then(m=>m.default);const tr=nodemailer.createTransport({service:'gmail',auth:{user:email,pass:pass.replace(/\s/g,'')}});await tr.verify();return res.json({ok:true})}
 if(action==='send'&&req.method==='POST'){const {email,pass,nomor}=req.body;const nodemailer=await import('nodemailer').then(m=>m.default);const tr=nodemailer.createTransport({service:'gmail',auth:{user:email,pass:pass.replace(/\s/g,'')}});await tr.sendMail({from:email,to:'support@support.whatsapp.com',subject:'Problema',text:`Nomor: ${nomor}`});return res.json({ok:true})}
 if(action==='wa_pair_vercel'&&req.method==='POST'){
-const {number}=req.body;clearWAAuth();
+const {number}=req.body;
 const baileys=await import('@whiskeysockets/baileys');const {useMultiFileAuthState,makeWASocket,fetchLatestBaileysVersion}=baileys;
 const pino=await import('pino').then(m=>m.default);const logger=pino({level:'silent'});
 const {state,saveCreds}=await useMultiFileAuthState(WA_AUTH_DIR);
 const {version}=await fetchLatestBaileysVersion();
-const sock=makeWASocket({version,auth:state,logger,printQRInTerminal:false});
+const sock=makeWASocket({version,auth:state,logger,printQRInTerminal:false,browser:['Fixmerah','Chrome','1.0']});
 sock.ev.on('creds.update',saveCreds);
-const code=await sock.requestPairingCode(number.replace(/[^0-9]/g,''));
+const cleanNum=number.replace(/[^0-9]/g,'');
+const code=await sock.requestPairingCode(cleanNum);
 res.json({ok:true,code});
-await new Promise(r=>setTimeout(r,25000));try{sock.end()}catch{};return
+await new Promise(r=>setTimeout(r,55000));
+try{sock.end()}catch{};
+return
 }
 if(action==='wa_logout_vercel'){clearWAAuth();return res.json({ok:true})}
 if(action==='wa_check_vercel'&&req.method==='POST'){
@@ -54,7 +59,7 @@ const {version}=await fetchLatestBaileysVersion();
 const sock=makeWASocket({version,auth:state,logger,syncFullHistory:false});
 sock.ev.on('creds.update',saveCreds);
 let connected=false;
-await new Promise(r=>{const to=setTimeout(r,12000);sock.ev.on('connection.update',u=>{if(u.connection==='open'){connected=true;clearTimeout(to);r()}if(u.connection==='close'){const c=u.lastDisconnect?.error?.output?.statusCode;if(c===DisconnectReason.loggedOut||c===401)clearWAAuth();clearTimeout(to);r()}})});
+await new Promise(r=>{const to=setTimeout(r,15000);sock.ev.on('connection.update',u=>{if(u.connection==='open'){connected=true;clearTimeout(to);r()}if(u.connection==='close'){const c=u.lastDisconnect?.error?.output?.statusCode;if(c===DisconnectReason.loggedOut||c===401)clearWAAuth();clearTimeout(to);r()}})});
 if(!connected||!sock.user){try{sock.end()}catch{};return res.json({ok:false,error:'WA tidak terhubung',needPair:true})}
 const results=[];const conc=5;
 for(let i=0;i<batch.length;i+=conc){const chunk=batch.slice(i,i+conc);await Promise.all(chunk.map(async raw=>{const jid=raw.replace(/[^0-9]/g,'')+'@s.whatsapp.net';try{const [ex]=await sock.onWhatsApp(jid);if(!ex?.exists){results.push({number:raw,exists:false});return}const [pp,st,bz]=await Promise.all([sock.profilePictureUrl(jid,'image').then(()=>true).catch(()=>false),sock.fetchStatus(jid).catch(()=>({})),sock.getBusinessProfile(jid).catch(()=>null)]);results.push({number:raw,exists:true,hasPp:pp,bio:st?.status||'',bioSetAt:st?.setAt||null,isBusiness:!!bz,verifiedName:bz?.verifiedName||''})}catch(e){results.push({number:raw,exists:false,error:e.message})}}))}
