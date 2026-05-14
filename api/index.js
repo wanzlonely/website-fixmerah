@@ -70,18 +70,30 @@ export default async function handler(req,res){
         saveTokens(t);
 
         const pesan =
-`✅ <b>TOKEN BARU BERHASIL DIBUAT</b>
+`━━━━━━━━━━━━━━━━━━━━━━━━
+FIXMERAH WALZ - TOKEN BARU
+━━━━━━━━━━━━━━━━━━━━━━━━
 
-🔑 <b>Token:</b>
-<code>${token}</code>
+<blockquote>${token}</blockquote>
 
-⏱️ <b>Durasi:</b> ${d} hari
-📅 <b>Dibuat:</b> ${fmtWIB(now)}
-⌛ <b>Kadaluarsa:</b> ${fmtWIB(exp)}
-👤 <b>Oleh:</b> ${username}
-📊 <b>Status:</b> Belum digunakan
+DETAIL AKTIVASI
+<pre>Kode Token   : ${token}
+Durasi       : ${d} hari
+Dibuat       : ${fmtWIB(now)}
+Kadaluarsa   : ${fmtWIB(exp)}
+Status       : BELUM DIGUNAKAN</pre>
 
-<i>Salin token di atas untuk aktivasi.</i>`;
+INFORMASI PEMBUAT
+<pre>Oleh         : ${username}
+User ID      : ${uid}
+Total Aktif  : ${Object.keys(t).length} token</pre>
+
+PANDUAN
+1. Tap kode di atas untuk menyalin
+2. Kirim ke bot aktivasi
+3. Token otomatis hangus setelah dipakai
+
+Simpan baik-baik. Jangan bagikan token ke orang lain.`;
 
         await tgSend(cid, pesan);
         return res.json({ok:true});
