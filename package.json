@@ -1,8 +1,9 @@
 {
-  "name": "fixmerah-walz-bot",
-  "version": "2.0.0",
+  "name": "website-fixmerah",
+  "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "nodemailer": "^6.9.0"
+    "@whiskeysockets/baileys": "^6.7.8",
+    "nodemailer": "^6.9.13"
   }
 }
