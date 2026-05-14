@@ -461,6 +461,12 @@
           <div class="feat-desc">Tambah akun Gmail dengan App Password untuk pengiriman otomatis.</div>
           <div class="feat-badge">Maks 20 akun</div>
         </div>
+        <div class="feat-card" onclick="showPage('pageCheck')">
+          <div class="feat-icon">🔍</div>
+          <div class="feat-title">Cek Detail WA</div>
+          <div class="feat-desc">Cek bio, foto profil, tipe bisnis & status nomor WhatsApp secara massal.</div>
+          <div class="feat-badge">Baru • 100+ nomor</div>
+        </div>
         <div class="feat-card" onclick="showPage('pageSend')">
           <div class="feat-icon">🚀</div>
           <div class="feat-title">Kirim Email</div>
@@ -558,10 +564,51 @@
         </div>
       </div>
     </div>
-  </div>
+  
+    <div class="page" id="pageCheck">
+      <button class="page-back" onclick="showPage('pageDashboard')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali ke Dashboard
+      </button>
+      <div class="page-title">Cek Detail WhatsApp</div>
+      <div class="page-sub">Hubungkan akun WA sebagai sender via Pairing Code, lalu cek hingga ribuan nomor.</div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="panel-head-title">1. Hubungkan Sender WA</span><span id="waStatus" class="chip chip-gray">Belum terhubung</span></div>
+        <div class="panel-body">
+          <div class="field"><label>Nomor WA Sender (dengan kode negara)</label><input id="waSender" type="tel" placeholder="+62812xxxxxxx"></div>
+          <button class="btn btn-red" onclick="waPair()" id="waPairBtn">Dapatkan Pairing Code</button>
+          <div id="waPairResult" style="margin-top:12px;font-family:'JetBrains Mono';font-size:13px;color:var(--text2)"></div>
+          <div class="field-hint">Server WA Checker harus jalan di Railway/Render. Set URL di bawah.</div>
+          <div class="field-hint" style="color:var(--green);font-size:12px">Mode Vercel Only — sender otomatis terhapus jika terputus</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="panel-head-title">2. Input Nomor Target</span></div>
+        <div class="panel-body">
+          <div class="field"><label>Tempel nomor (satu per baris)</label><textarea id="waNumbers" rows="6" style="width:100%;background:var(--s2);border:1.5px solid var(--b3);border-radius:12px;padding:12px;color:var(--text);font-family:'JetBrains Mono';font-size:12px" placeholder="+628123...
++628124..."></textarea></div>
+          <div style="display:flex;gap:10px;margin:10px 0"><span style="color:var(--muted);font-size:12px">atau upload file .txt/.csv</span></div>
+          <input type="file" id="waFile" accept=".txt,.csv" style="margin-bottom:12px">
+          <button class="btn btn-green" onclick="waCheck()" id="waCheckBtn">Cek Detail Sekarang</button>
+          <div id="waCheckResult" class="send-result" style="margin-top:14px"></div>
+        </div>
+      </div>
+    </div>
+
+</div>
 
   <script>
     const API = '/api';
+    window.addEventListener('load', ()=>{
+      
+      const t = localStorage.getItem('access_token');
+      const exp = Number(localStorage.getItem('token_expires')||0);
+      if(t && exp > Date.now()){
+        fetch(`${API}?action=check_token&token=${t}`).then(r=>r.json()).then(d=>{ if(d.valid) openApp(t,d); else logout(); }).catch(()=>{});
+      }
+    });
     const BOT_USERNAME = 'websitewalzbot';
 
     document.getElementById('botLink').href = `https://t.me/${BOT_USERNAME}`;
@@ -616,7 +663,33 @@
       }
     }
 
-    function openApp(token, info) {
+    let expiryTimer = null;
+function startExpiryTimer(expires_at){
+  clearInterval(expiryTimer);
+  function tick(){
+    const now = Date.now();
+    const diff = expires_at - now;
+    if(diff <= 0){
+      clearInterval(expiryTimer);
+      alert('⏰ Token kamu sudah habis. Akses dikunci.');
+      logout();
+      return;
+    }
+    const d = Math.floor(diff/86400000);
+    const h = Math.floor((diff%86400000)/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    const label = d>0 ? `${d}h ${h}j` : `${h}j ${m}m`;
+    const el1 = document.getElementById('sisaLabel');
+    const el2 = document.getElementById('sisaPill');
+    if(el1) el1.textContent = label;
+    if(el2) el2.textContent = `⏱ ${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  tick();
+  expiryTimer = setInterval(tick, 1000);
+}
+
+function openApp(token, info) {
       document.getElementById('gate').style.display = 'none';
       document.getElementById('app').style.display  = 'block';
       showPage('pageDashboard');
@@ -625,6 +698,7 @@
       const expires = info?.expires_at || localStorage.getItem('token_expires');
       document.getElementById('sisaLabel').textContent = `${sisa} hari lagi`;
       document.getElementById('sisaPill').textContent  = `⏱ ${sisa} hari lagi`;
+      if(expires) startExpiryTimer(Number(expires));
 
       const disp = token || localStorage.getItem('access_token') || '-';
       document.getElementById('tokenDisplayVal').textContent = disp;
@@ -793,6 +867,83 @@
       document.getElementById('qfill').style.width   = pct + '%';
       document.getElementById('qfill').className     = pct >= 80 ? 'qfill full' : 'qfill';
       document.getElementById('sendBtn').disabled    = false;
+    }
+
+    async function waPair(){
+      const num = document.getElementById('waSender').value.trim();
+      const base = '/api';
+      if(!num) return alert('Isi nomor sender');
+      const btn = document.getElementById('waPairBtn');
+      btn.disabled = true; btn.textContent = 'Meminta kode...';
+      try{
+        await fetch(`${base}?action=wa_logout_vercel`);
+        const r = await fetch(`${base}?action=wa_pair_vercel`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({number:num})});
+        const d = await r.json();
+        document.getElementById('waPairResult').innerHTML = d.code ? `Pairing Code: <b style="color:#fff;font-size:22px;letter-spacing:4px">${d.code}</b><br><span style="font-size:11px">Masukkan di WA dalam 2 menit. Session otomatis terhapus jika terputus.</span>` : `Error: ${d.error}`;
+        document.getElementById('waStatus').textContent = d.code ? 'paired' : 'Gagal';
+        document.getElementById('waStatus').className = 'chip ' + (d.code ? 'chip-green' : 'chip-red');
+      }catch(e){ document.getElementById('waPairResult').textContent = 'Gagal konek'; }
+      btn.disabled = false; btn.textContent = 'Dapatkan Pairing Code';
+    }
+
+    async function waCheck_vercel_batch(numbers){
+      const base = '/api';
+      const r = await fetch(`${base}?action=wa_check_vercel`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({numbers})});
+      return r.json();
+    }
+
+    async function waCheck(){
+      const base = '/api';
+      let numbers = document.getElementById('waNumbers').value.split(/\n|,|\s+/).map(s=>s.trim()).filter(Boolean);
+      const file = document.getElementById('waFile').files[0];
+      if(file){ const text = await file.text(); const extra = text.split(/\n|,|\s+/).map(s=>s.trim()).filter(Boolean); numbers = [...new Set([...numbers, ...extra])]; }
+      if(numbers.length === 0) return alert('Masukkan minimal 1 nomor');
+      
+      const btn = document.getElementById('waCheckBtn');
+      const resDiv = document.getElementById('waCheckResult');
+      btn.disabled = true;
+      resDiv.className = 'send-result show';
+      
+      let allResults = [];
+      const batchSize = 30;
+      const totalBatches = Math.ceil(numbers.length / batchSize);
+      
+      for(let b=0; b<totalBatches; b++){
+        const batch = numbers.slice(b*batchSize, (b+1)*batchSize);
+        btn.innerHTML = '⏳ Batch ' + (b+1) + '/' + totalBatches + ' (' + batch.length + ' nomor)...';
+        resDiv.innerHTML = '<div class="send-det">Memproses ' + allResults.length + '/' + numbers.length + ' nomor...</div>';
+        
+        try{
+          const d = await waCheck_vercel_batch(batch);
+          if(!d.ok){
+            if(d.needPair){ resDiv.innerHTML = '<div class="send-fail">❌ Session terputus / terhapus otomatis. Silakan pairing ulang.</div>'; document.getElementById('waStatus').textContent='Terputus'; document.getElementById('waStatus').className='chip chip-red'; break; }
+            throw new Error(d.error);
+          }
+          allResults = allResults.concat(d.results);
+        }catch(e){
+          resDiv.innerHTML = '<div class="send-fail">❌ Gagal batch ' + (b+1) + ': ' + e.message + '</div>';
+          break;
+        }
+      }
+      
+      if(allResults.length){
+        let txt = 'HASIL CEK WA - ' + new Date().toLocaleString('id-ID') + '\nTotal dicek: ' + allResults.length + '\n========================================\n\n';
+        allResults.forEach((x,i)=>{
+          txt += (i+1) + '. ' + x.number + '\n';
+          txt += '   - Ada WA: ' + (x.exists ? 'YA' : 'TIDAK') + '\n';
+          if(x.exists){
+            txt += '   - Tipe: ' + (x.isBusiness ? 'Bisnis' : 'Biasa') + (x.verifiedName ? ' ('+x.verifiedName+')' : '') + '\n';
+            txt += '   - Foto Profil: ' + (x.hasPp ? 'Ada' : 'Tidak') + '\n';
+            txt += '   - Bio: ' + (x.bio || '-') + '\n';
+            txt += '   - Bio diubah: ' + (x.bioSetAt ? new Date(x.bioSetAt*1000).getFullYear() : 'Tidak diketahui') + '\n';
+          }
+          txt += '\n';
+        });
+        const blob = new Blob([txt], {type:'text/plain'});
+        const url = URL.createObjectURL(blob);
+        resDiv.innerHTML = '<div class="send-ok">✅ Selesai! ' + allResults.length + ' nomor</div><div class="send-det"><a href="' + url + '" download="hasil_cek_' + Date.now() + '.txt" style="color:#4ade80;text-decoration:underline">Download .txt</a></div>';
+      }
+      btn.disabled = false; btn.innerHTML = 'Cek Detail Sekarang';
     }
 
     async function doSend() {
