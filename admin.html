@@ -4,342 +4,155 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin — FIXMERAH WALZ</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --red:      #e11d48;
-      --red-soft: rgba(225, 29, 72, 0.15);
-      --orange:   #f97316;
-      --bg:       #08080a;
-      --surface:  #101012;
-      --surface2: #17171a;
-      --border:   rgba(255, 255, 255, 0.06);
-      --border2:  rgba(255, 255, 255, 0.1);
-      --text:     #f4f4f5;
-      --text2:    #a1a1aa;
-      --muted:    #52525b;
-      --green:    #22c55e;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      height: 62px;
-      background: rgba(16, 16, 18, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: 'Syne', sans-serif;
-      font-size: 15px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #fff 40%, #fda4af);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .admin-badge {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--red-soft);
-      border: 1px solid rgba(225,29,72,0.25);
-      color: #fb7185;
-      padding: 3px 10px;
-      border-radius: 100px;
-    }
-
-    .content {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 36px 24px 60px;
-    }
-
-    .page-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      margin-bottom: 6px;
-    }
-
-    .page-sub {
-      font-size: 13.5px;
-      color: var(--text2);
-      margin-bottom: 32px;
-    }
-
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-
-    @media (max-width: 600px) { .stat-row { grid-template-columns: 1fr 1fr; } }
-
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border2);
-      border-radius: 18px;
-      padding: 20px 22px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--red), var(--orange));
-    }
-
-    .stat-label {
-      font-size: 11.5px;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .stat-value {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
-    .stat-sub {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    .panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 24px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .panel-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 14.5px;
-      font-weight: 700;
-    }
-
-    .count-chip {
-      font-size: 12px;
-      font-weight: 600;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      color: var(--text2);
-      padding: 3px 10px;
-      border-radius: 100px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    thead th {
-      text-align: left;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 12px 24px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    tbody td {
-      padding: 13px 24px;
-      font-size: 13.5px;
-      border-bottom: 1px solid var(--border);
-      color: var(--text2);
-    }
-
-    tbody tr:last-child td { border-bottom: none; }
-
-    tbody tr:hover td { background: var(--surface2); }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      font-size: 11.5px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 100px;
-    }
-
-    .chip-red {
-      background: var(--red-soft);
-      border: 1px solid rgba(225,29,72,0.2);
-      color: #fb7185;
-    }
-
-    .chip-green {
-      background: rgba(34,197,94,0.12);
-      border: 1px solid rgba(34,197,94,0.2);
-      color: #4ade80;
-    }
-
-    .empty-row {
-      text-align: center;
-      padding: 32px !important;
-      color: var(--muted) !important;
-      font-size: 13px !important;
-    }
+    :root { --red:#e11d48; --red-soft:rgba(225,29,72,.15); --orange:#f97316; --bg:#08080a; --surface:#101012; --surface2:#17171a; --border:rgba(255,255,255,.06); --border2:rgba(255,255,255,.1); --text:#f4f4f5; --text2:#a1a1aa; --muted:#52525b; --green:#22c55e; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:62px;background:rgba(16,16,18,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+    .brand{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,#fff 40%,#fda4af);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .admin-badge{font-size:11px;font-weight:600;background:var(--red-soft);border:1px solid rgba(225,29,72,.25);color:#fb7185;padding:3px 10px;border-radius:100px}
+    .content{max-width:1200px;margin:0 auto;padding:36px 24px 60px}
+    .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
+    .page-sub{font-size:13.5px;color:var(--text2);margin-bottom:24px}
+    .login-box{max-width:380px;margin:80px auto;background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:32px}
+    .field{margin-bottom:14px}
+    .field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px}
+    .field input{width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:12px;color:var(--text);font-family:'JetBrains Mono',monospace;outline:none}
+    .btn{width:100%;padding:12px;background:linear-gradient(135deg,#be123c,#e11d48);border:none;border-radius:12px;color:#fff;font-weight:600;cursor:pointer}
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+    @media(max-width:800px){.stat-row{grid-template-columns:1fr 1fr}}
+    .stat-card{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:18px 20px;position:relative;overflow:hidden}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--orange))}
+    .stat-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .stat-value{font-family:'Syne',sans-serif;font-size:24px;font-weight:800}
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:20px}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+    .panel-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700}
+    .refresh{font-size:12px;color:var(--text2);cursor:pointer}
+    table{width:100%;border-collapse:collapse}
+    thead th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 18px;border-bottom:1px solid var(--border)}
+    tbody td{padding:12px 18px;font-size:13px;border-bottom:1px solid var(--border);color:var(--text2);font-family:'JetBrains Mono',monospace}
+    tbody tr:hover td{background:var(--surface2)}
+    .token{color:#fff;font-weight:600;letter-spacing:.08em}
+    .live{color:var(--green)} .exp{color:#fb7185}
+    .countdown{font-variant-numeric:tabular-nums}
   </style>
 </head>
 <body>
-
   <header class="topbar">
     <div class="brand">FIXMERAH WALZ</div>
     <span class="admin-badge">Panel Admin</span>
   </header>
 
-  <main class="content">
-    <h1 class="page-title">Dashboard Admin</h1>
-    <p class="page-sub">Data tersimpan di localStorage browser pengguna</p>
+  <div id="login" class="login-box">
+    <h2 style="font-family:'Syne';margin-bottom:8px">Login Admin</h2>
+    <p style="color:var(--text2);font-size:13px;margin-bottom:20px">Masukkan BOT TOKEN untuk akses data token</p>
+    <div class="field"><label>TELEGRAM_BOT_TOKEN</label><input id="sec" type="password" placeholder="123456:ABC..."></div>
+    <button class="btn" onclick="doLogin()">Masuk</button>
+    <p id="err" style="color:#fb7185;font-size:12px;margin-top:10px;display:none"></p>
+  </div>
+
+  <main id="main" class="content" style="display:none">
+    <h1 class="page-title">Dashboard Token</h1>
+    <p class="page-sub">Data real-time dari server Vercel — auto refresh tiap detik</p>
 
     <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-label">Total Akun</div>
-        <div class="stat-value" id="statTotal">0</div>
-        <div class="stat-sub">dari maks 20</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Kirim Hari Ini</div>
-        <div class="stat-value" id="statToday">0</div>
-        <div class="stat-sub">WIB</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Kirim</div>
-        <div class="stat-value" id="statAll">0</div>
-        <div class="stat-sub">semua waktu</div>
-      </div>
+      <div class="stat-card"><div class="stat-label">Total Token</div><div class="stat-value" id="stTotal">0</div></div>
+      <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-value live" id="stActive">0</div></div>
+      <div class="stat-card"><div class="stat-label">Expired Hari Ini</div><div class="stat-value" id="stToday">0</div></div>
+      <div class="stat-card"><div class="stat-label">Terpakai</div><div class="stat-value" id="stUsed">0</div></div>
     </div>
 
     <div class="panel">
       <div class="panel-head">
-        <span class="panel-title">Akun Gmail</span>
-        <span class="count-chip" id="accCount">0 / 20</span>
+        <span class="panel-title">Daftar Token Aktif</span>
+        <span class="refresh" onclick="load()">⟳ Refresh</span>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Hari Ini</th>
-            <th>Total</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="accTable"></tbody>
-      </table>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head">
-        <span class="panel-title">Riwayat Pengiriman</span>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Token</th><th>Dibuat</th><th>Expired</th><th>Sisa Real-time</th><th>Hari</th><th>Status</th><th>Creator</th></tr></thead>
+          <tbody id="tb"></tbody>
+        </table>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Waktu WIB</th>
-            <th>Email</th>
-            <th>Nomor WA</th>
-            <th>Bahasa</th>
-          </tr>
-        </thead>
-        <tbody id="histTable"></tbody>
-      </table>
     </div>
   </main>
 
-  <script>
-    const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
-    const history  = JSON.parse(localStorage.getItem('history')  || '[]');
-    const today    = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
+<script>
+const API = '/api';
+let SECRET = localStorage.getItem('admin_sec') || '';
+let tokens = {};
+let timer = null;
 
-    let totalSentToday = 0;
-    let totalSentAll   = 0;
+function doLogin(){
+  const s = document.getElementById('sec').value.trim();
+  if(!s) return;
+  SECRET = s;
+  localStorage.setItem('admin_sec', s);
+  fetch(`${API}?action=admin_tokens&secret=${encodeURIComponent(s)}`).then(r=>r.json()).then(d=>{
+    if(!d.ok) throw new Error('Token salah');
+    document.getElementById('login').style.display='none';
+    document.getElementById('main').style.display='block';
+    load();
+  }).catch(e=>{ document.getElementById('err').style.display='block'; document.getElementById('err').textContent='Gagal login: '+e.message; });
+}
 
-    const accRows = accounts.map(acc => {
-      const sentToday = acc.sent?.[today] ?? 0;
-      const sentAll   = Object.values(acc.sent ?? {}).reduce((a, b) => a + b, 0);
-      totalSentToday += sentToday;
-      totalSentAll   += sentAll;
+if(SECRET){ document.getElementById('sec').value = SECRET; doLogin(); }
 
-      const full   = sentToday >= 10;
-      const status = full
-        ? '<span class="chip chip-red">Penuh</span>'
-        : '<span class="chip chip-green">Aktif</span>';
+async function load(){
+  const r = await fetch(`${API}?action=admin_tokens&secret=${encodeURIComponent(SECRET)}`);
+  const d = await r.json();
+  if(!d.ok) return;
+  tokens = d.tokens || {};
+  render();
+  if(!timer) timer = setInterval(tick, 1000);
+}
 
-      return `<tr>
-        <td style="color:var(--text)">${acc.email}</td>
-        <td>${sentToday}/10</td>
-        <td>${sentAll}</td>
-        <td>${status}</td>
-      </tr>`;
-    });
+function render(){
+  const now = Date.now();
+  const arr = Object.entries(tokens).map(([k,v])=>({token:k, ...v})).sort((a,b)=>b.expires_at - a.expires_at);
+  let active=0, today=0, used=0;
+  const todayStr = new Date().toDateString();
+  
+  document.getElementById('tb').innerHTML = arr.map(t=>{
+    const exp = t.expires_at;
+    const isActive = exp > now;
+    if(isActive) active++; else if(new Date(exp).toDateString()===todayStr) today++;
+    if(t.used_at) used++;
+    const created = new Date(t.created_at).toLocaleString('id-ID');
+    const expired = new Date(exp).toLocaleString('id-ID');
+    return `<tr data-exp="${exp}">
+      <td class="token">${t.token}</td>
+      <td>${created}</td>
+      <td>${expired}</td>
+      <td class="countdown" id="cd-${t.token}">-</td>
+      <td>${t.days}h</td>
+      <td class="${isActive?'live':'exp'}">${isActive?'AKTIF':'EXPIRED'}</td>
+      <td style="font-size:11px">${t.created_by||'-'}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan=7 style="text-align:center;color:var(--muted);padding:30px">Belum ada token</td></tr>`;
 
-    const histRows = [...history].reverse().map(h => `
-      <tr>
-        <td>${h.time ?? '-'}</td>
-        <td style="color:var(--text)">${h.email ?? '-'}</td>
-        <td>${h.phone ?? '-'}</td>
-        <td>${(h.lang ?? 'pt').toUpperCase()}</td>
-      </tr>
-    `);
+  document.getElementById('stTotal').textContent = arr.length;
+  document.getElementById('stActive').textContent = active;
+  document.getElementById('stToday').textContent = today;
+  document.getElementById('stUsed').textContent = used;
+}
 
-    document.getElementById('statTotal').textContent = accounts.length;
-    document.getElementById('statToday').textContent = totalSentToday;
-    document.getElementById('statAll').textContent   = totalSentAll;
-    document.getElementById('accCount').textContent  = `${accounts.length} / 20`;
-
-    document.getElementById('accTable').innerHTML = accRows.length
-      ? accRows.join('')
-      : '<tr><td colspan="4" class="empty-row">Belum ada akun tersimpan</td></tr>';
-
-    document.getElementById('histTable').innerHTML = histRows.length
-      ? histRows.join('')
-      : '<tr><td colspan="4" class="empty-row">Belum ada riwayat pengiriman</td></tr>';
-  </script>
-
+function tick(){
+  const now = Date.now();
+  document.querySelectorAll('tr[data-exp]').forEach(tr=>{
+    const exp = Number(tr.dataset.exp);
+    const diff = exp - now;
+    const el = tr.querySelector('.countdown');
+    if(diff <= 0){ el.textContent = '00:00:00'; el.style.color='#fb7185'; return; }
+    const d = Math.floor(diff/86400000);
+    const h = Math.floor((diff%86400000)/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    el.textContent = `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    el.style.color = diff < 3600000 ? '#f59e0b' : '#a1a1aa';
+  });
+}
+</script>
 </body>
 </html>
