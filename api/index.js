@@ -20,19 +20,12 @@ function fmtWIB(ts){
   }) + ' WIB';
 }
 
-async function tgSend(id, html, markup=null){
+async function tgSend(id, html){
   if(!BOT_TOKEN) return;
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ chat_id:id, text:html, parse_mode:'HTML', disable_web_page_preview:true, reply_markup: markup })
-  });
-}
-
-async function tgAnswer(cqId, text){
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ callback_query_id:cqId, text, show_alert:false })
+    body: JSON.stringify({ chat_id:id, text:html, parse_mode:'HTML', disable_web_page_preview:true })
   });
 }
 
@@ -46,28 +39,6 @@ export default async function handler(req,res){
 
   try{
     if(action==='telegram' && req.method==='POST'){
-      if(req.body.callback_query){
-        const cq = req.body.callback_query;
-        const data = cq.data || '';
-        const cid = cq.message.chat.id;
-
-        if(data.startsWith('status_')){
-          const token = data.split('_')[1];
-          let t = cleanExpired(loadTokens());
-          const d = t[token];
-          if(d){
-            const used = d.used_history?.length || 0;
-            const last = d.used_at? fmtWIB(d.used_at) : '-';
-            const sisa = Math.max(0, Math.ceil((d.expires_at - Date.now())/86400000));
-            await tgSend(cid, `📊 <b>Status Token</b>\n\n<code>${token}</code>\n\n⏱️ Sisa: ${sisa} hari\n👤 Pertama dipakai: ${d.used_by || 'Belum'}\n🕒 Terakhir: ${last}\n📈 Total cek: ${used}x`);
-            await tgAnswer(cq.id, 'Status dikirim');
-          } else {
-            await tgAnswer(cq.id, 'Token tidak ditemukan');
-          }
-        }
-        return res.json({ok:true});
-      }
-
       const m = req.body.message || req.body.edited_message;
       if(!m?.text) return res.json({ok:true});
 
@@ -77,7 +48,7 @@ export default async function handler(req,res){
       const username = m.from.username? '@'+m.from.username : m.from.first_name;
 
       if(txt.startsWith('/start')){
-        await tgSend(cid, `<b>FIXMERAH WALZ BOT</b>\n\nGunakan:\n/token [1-30] - buat token baru\n\nContoh: /token 7`);
+        await tgSend(cid, `<b>FIXMERAH WALZ BOT</b>\n\nPerintah:\n/token [1-30] - buat token baru\n\nContoh: /token 7`);
         return res.json({ok:true});
       }
 
@@ -88,33 +59,18 @@ export default async function handler(req,res){
         }
 
         let d = parseInt(txt.split(' ')[1] || '7');
-        if(isNaN(d) || d < 1 || d > 30) d = 7;
+        if(isNaN(d) || d<1 || d>30) d=7;
 
         const token = genToken();
         const now = Date.now();
         const exp = now + d*86400000;
 
         let t = cleanExpired(loadTokens());
-        t[token] = {
-          created_at: now,
-          expires_at: exp,
-          days: d,
-          created_by: uid,
-          created_by_name: username,
-          used_by: null,
-          used_at: null,
-          used_history: []
-        };
+        t[token] = { created_at: now, expires_at: exp, days: d, created_by: uid, used_by: null, used_at: null };
         saveTokens(t);
 
-        const keyboard = {
-          inline_keyboard: [[
-            { text: '📋 Salin Token', copy_text: { text: token } },
-            { text: '🔍 Cek Status', callback_data: `status_${token}` }
-          ]]
-        };
-
-        const pesan = `✅ <b>TOKEN BARU BERHASIL DIBUAT</b>
+        const pesan =
+`✅ <b>TOKEN BARU BERHASIL DIBUAT</b>
 
 🔑 <b>Token:</b>
 <code>${token}</code>
@@ -125,56 +81,37 @@ export default async function handler(req,res){
 👤 <b>Oleh:</b> ${username}
 📊 <b>Status:</b> Belum digunakan
 
-<i>Tap tombol Salin Token untuk copy otomatis.</i>`;
+<i>Salin token di atas untuk aktivasi.</i>`;
 
-        await tgSend(cid, pesan, keyboard);
+        await tgSend(cid, pesan);
         return res.json({ok:true});
       }
-
       return res.json({ok:true});
     }
 
     if(action==='init_bot'){
-      const {secret}=req.query;
-      if(secret!==BOT_TOKEN) return res.status(403).json({ok:false});
+      const {secret}=req.query; if(secret!==BOT_TOKEN) return res.status(403).json({ok:false});
       const url = `${req.headers['x-forwarded-proto']||'https'}://${req.headers.host}/api?action=telegram`;
       const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook?url=${encodeURIComponent(url)}`);
       return res.json({ok:true, webhook: await r.json()});
     }
 
     if(action==='check_token'){
-      const {token, by}=req.query;
-      if(!token) return res.json({valid:false});
+      const {token}=req.query; if(!token) return res.json({valid:false});
       const k = token.trim().toUpperCase();
       let t = cleanExpired(loadTokens());
       const d = t[k];
       if(!d) return res.json({valid:false, error:'Token tidak valid atau kadaluarsa'});
 
-      const user = by || 'api';
-      const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '';
-      if(!d.used_history) d.used_history = [];
-      d.used_history.push({ by: user, at: Date.now(), ip });
-      if(!d.used_by){ d.used_by = user; d.used_at = Date.now(); }
-      t[k] = d;
-      saveTokens(t);
+      if(!d.used_by){ t[k].used_by = true; t[k].used_at = Date.now(); saveTokens(t); }
 
       const sisa = Math.max(0, Math.ceil((d.expires_at - Date.now())/86400000));
-      return res.json({
-        valid: true,
-        days: d.days,
-        sisa_hari: sisa,
-        expires_at: d.expires_at,
-        expires_wib: fmtWIB(d.expires_at),
-        first_used_by: d.used_by,
-        total_checks: d.used_history.length
-      });
+      return res.json({ valid:true, days:d.days, sisa_hari:sisa, expires_at:d.expires_at, expires_wib: fmtWIB(d.expires_at) });
     }
 
     if(action==='admin_tokens'){
-      const {secret}=req.query;
-      if(secret!==BOT_TOKEN) return res.status(403).json({ok:false});
-      let t = cleanExpired(loadTokens());
-      saveTokens(t);
+      const {secret}=req.query; if(secret!==BOT_TOKEN) return res.status(403).json({ok:false});
+      let t = cleanExpired(loadTokens()); saveTokens(t);
       return res.json({ok:true, total:Object.keys(t).length, tokens:t});
     }
 
@@ -182,8 +119,7 @@ export default async function handler(req,res){
       const {email,pass}=req.body;
       const nodemailer = await import('nodemailer').then(m=>m.default);
       const tr = nodemailer.createTransport({service:'gmail', auth:{user:email, pass:pass.replace(/\s/g,'')}});
-      await tr.verify();
-      return res.json({ok:true});
+      await tr.verify(); return res.json({ok:true});
     }
 
     if(action==='send' && req.method==='POST'){
