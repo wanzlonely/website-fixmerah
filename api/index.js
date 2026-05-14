@@ -2,20 +2,17 @@ import nodemailer from 'nodemailer';
 import fs from 'fs';
 import path from 'path';
 import pino from 'pino';
-
 const TOKEN_FILE = path.join('/tmp', 'fw_tokens.json');
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
 const OWNER_ID = process.env.OWNER_TELEGRAM_ID;
 const WA_AUTH_DIR = '/tmp/wa_auth';
 const logger = pino({ level: 'silent' });
-
 function loadTokens() { try { if (fs.existsSync(TOKEN_FILE)) return JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf8')); } catch {} return {}; }
 function saveTokens(t) { try { fs.writeFileSync(TOKEN_FILE, JSON.stringify(t, null, 2)); } catch {} }
 function cleanExpired(tokens) { const now = Date.now(); for (const k in tokens) if (tokens[k].expires_at < now) delete tokens[k]; return tokens; }
 function genToken() { const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let t = ''; for (let i = 0; i < 8; i++) t += c[Math.floor(Math.random() * c.length)]; return t; }
 async function tgSend(id, text) { if (!BOT_TOKEN) return; await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: id, text, parse_mode: 'Markdown' }) }); }
 function clearWAAuth() { try { fs.rmSync(WA_AUTH_DIR, { recursive: true, force: true }); } catch {} }
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
