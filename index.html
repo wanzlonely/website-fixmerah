@@ -755,7 +755,7 @@
         </div>
       </div>
     </div>
-  
+
     <div class="page" id="pageCheck">
       <button class="page-back" onclick="showPage('pageDashboard')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -768,12 +768,8 @@
         <div class="panel-head"><span class="panel-head-title">1. Hubungkan Sender WA</span><span id="waStatus" class="chip chip-gray">Belum terhubung</span></div>
         <div class="panel-body">
           <div class="field"><label>Nomor WA Sender (dengan kode negara)</label><input id="waSender" type="tel" placeholder="+62812xxxxxxx"></div>
-          <button class="btn btn-red" onclick="alert('Fitur Cek Bio pindah ke Termux. Download script di GitHub.')" id="waPairBtn" disabled>Dapatkan Pairing Code</button>
-          <div style="background:#141417;border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:20px;text-align:center;margin:16px 0">
-<div style="font-size:15px;font-weight:600;margin-bottom:6px">✅ Cek Bio Sekarang via Termux</div>
-<div style="font-size:13px;color:#9090a0">Lebih cepat, tidak membebani Vercel. Simpan cekbio-termux.js di root.</div>
-<a href="cekbio-termux.js" download style="display:inline-block;margin-top:12px;padding:10px 18px;background:linear-gradient(135deg,#be123c,#e11d48);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:13px">Download Script</a>
-</div><div id="waPairResult" style="display:none" style="margin-top:12px;font-family:'JetBrains Mono';font-size:13px;color:var(--text2)"></div>
+          <button class="btn btn-red" onclick="waPair()" id="waPairBtn">Dapatkan Pairing Code</button>
+          <div id="waPairResult" style="margin-top:12px;font-family:'JetBrains Mono';font-size:13px;color:var(--text2)"></div>
           <div class="field-hint"></div>
           <div class="field-hint" style="color:var(--green);font-size:12px"></div>
         </div>
@@ -786,7 +782,7 @@
 +628124..."></textarea></div>
           <div style="display:flex;gap:10px;margin:10px 0"><span style="color:var(--muted);font-size:12px">atau upload file .txt/.csv</span></div>
           <input type="file" id="waFile" accept=".txt,.xlsx" style="margin-bottom:12px">
-          <button class="btn btn-green" onclick="alert('Fitur Cek Bio pindah ke Termux.')" id="waCheckBtn" disabled>Cek Detail Sekarang</button>
+          <button class="btn btn-green" onclick="waCheck()" id="waCheckBtn">Cek Detail Sekarang</button>
           <div id="waCheckResult" class="send-result" style="margin-top:14px"></div>
         </div>
       </div>
@@ -797,7 +793,7 @@
   <script>
     const API = '/api';
     window.addEventListener('load', ()=>{
-      
+
       const t = localStorage.getItem('access_token');
       const exp = Number(localStorage.getItem('token_expires')||0);
       if(t && exp > Date.now()){
@@ -1093,21 +1089,21 @@ function openApp(token, info) {
       const file = document.getElementById('waFile').files[0];
       if(file){ const text = await file.text(); const extra = text.split(/\n|,|\s+/).map(s=>s.trim()).filter(Boolean); numbers = [...new Set([...numbers, ...extra])]; }
       if(numbers.length === 0) return alert('Masukkan minimal 1 nomor');
-      
+
       const btn = document.getElementById('waCheckBtn');
       const resDiv = document.getElementById('waCheckResult');
       btn.disabled = true;
       resDiv.className = 'send-result show';
-      
+
       let allResults = [];
       const batchSize = 30;
       const totalBatches = Math.ceil(numbers.length / batchSize);
-      
+
       for(let b=0; b<totalBatches; b++){
         const batch = numbers.slice(b*batchSize, (b+1)*batchSize);
         btn.innerHTML = '⏳ Batch ' + (b+1) + '/' + totalBatches + ' (' + batch.length + ' nomor)...';
         resDiv.innerHTML = '<div class="send-det">Memproses ' + allResults.length + '/' + numbers.length + ' nomor...</div>';
-        
+
         try{
           const d = await waCheck_vercel_batch(batch);
           if(!d.ok){
@@ -1120,7 +1116,7 @@ function openApp(token, info) {
           break;
         }
       }
-      
+
       if(allResults.length){
         let txt = 'HASIL CEK WA - ' + new Date().toLocaleString('id-ID') + '\nTotal dicek: ' + allResults.length + '\n========================================\n\n';
         allResults.forEach((x,i)=>{
