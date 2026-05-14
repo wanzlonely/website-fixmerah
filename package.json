@@ -2,9 +2,18 @@
   "name": "website-fixmerah",
   "version": "1.0.0",
   "type": "module",
+  "description": "FIXMERAH WALZ - Token System",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node cekbio-termux.js",
+    "dev": "node cekbio-termux.js"
+  },
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.8",
     "nodemailer": "^6.9.13",
     "pino": "^8.19.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
