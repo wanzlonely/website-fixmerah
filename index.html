@@ -364,4 +364,470 @@
       letter-spacing:.04em; display:flex; align-items:center; justify-content:space-between; gap:8px;
     }
     .token-display .tok-val { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .copy-btn { back
+    .copy-btn { background:none; border:1px solid var(--b2); border-radius:6px; color:var(--text2); font-size:10px; font-family:'DM Sans',sans-serif; padding:3px 8px; cursor:pointer; flex-shrink:0; transition:.15s; font-weight:500; }
+    .copy-btn:hover { background:var(--s4); color:var(--text); }
+  </style>
+</head>
+<body>
+  <div id="bg-canvas"></div>
+  <div class="grid-bg"></div>
+
+  <div id="gate">
+    <div class="gate-card">
+      <div class="logo-zone">
+        <div class="ring-outer"></div>
+        <div class="ring-conic"></div>
+        <div class="logo-glow"></div>
+        <div class="logo-wrap">
+          <img src="https://scontent.xx.fbcdn.net/v/t58.90637-6/462045021_1292163102882226_3435058260792542476_n.jpg/fixmerah_badge_v3_ultra.jpg?_nc_ht=scontent.xx.fbcdn.net&_nc_cat=110&_nc_ohc=nSTTx8646pMQ7kNvwFVhr-5&ccb=14-4&oh=00_Af2N4vWm2_Pu6Ur4BpQ-sd4xJe_zaagV1KWH0Zxg1-k0yQ&oe=69F3F53B&_nc_sid=4ee932"
+               alt="FIXMERAH WALZ"
+               onerror="this.src='https://placehold.co/120x120/e11d48/ffffff?text=W'">
+        </div>
+      </div>
+
+      <h1 class="gate-title">FIXMERAH WALZ</h1>
+      <p class="gate-sub">Masukkan token akses yang kamu dapatkan dari bot Telegram untuk melanjutkan.</p>
+
+      <div class="token-field-wrap">
+        <input
+          id="tokenInput"
+          class="token-input"
+          type="text"
+          placeholder="Masukkan token akses..."
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          oninput="onTokenInput(this)"
+          onkeydown="if(event.key==='Enter') doTokenLogin()"
+        >
+      </div>
+      <div class="field-hint-row">
+        <span>Format: Min. 6 Karakter (Huruf/Angka)</span>
+        <span id="tokenCharCount">0/8</span>
+      </div>
+
+      <button id="loginBtn" onclick="doTokenLogin()" class="btn btn-red" disabled>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Masuk dengan Token
+      </button>
+
+      <div class="status-bar"><span class="dot" id="dot"></span><span id="statusMsg">Masukkan token akses kamu</span></div>
+
+      <div class="divider">atau</div>
+
+      <div class="bot-link-row">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Belum punya token? <a id="botLink" href="#" target="_blank">Hubungi Bot Telegram</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="https://i.postimg.cc/c4PrRSH9/fixmerah-walz-logo.jpg" alt="Logo" onerror="this.src='https://placehold.co/34x34/e11d48/ffffff?text=W'">
+        </div>
+        <span class="brand-name">FIXMERAH WALZ</span>
+      </div>
+      <div class="topbar-right">
+        <div class="access-chip"><span class="u-dot"></span><span id="sisaLabel">Aktif</span></div>
+        <button class="btn-xs" onclick="logout()">Keluar</button>
+      </div>
+    </header>
+
+    <div class="page active" id="pageDashboard">
+      <div class="welcome-box">
+        <h2>Selamat datang 👋</h2>
+        <p>Token akses kamu terverifikasi. Pilih fitur di bawah untuk mulai menggunakan layanan.</p>
+        <div class="info-pills">
+          <span class="pill pill-green">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            Akses Aktif
+          </span>
+          <span class="pill pill-amber" id="sisaPill">⏱ Memuat...</span>
+        </div>
+        <div class="token-display">
+          <span class="tok-val" id="tokenDisplayVal">-</span>
+          <button class="copy-btn" onclick="copyToken()">Salin</button>
+        </div>
+      </div>
+
+      <p class="section-label">Fitur Tersedia</p>
+      <div class="feat-grid">
+        <div class="feat-card" onclick="showPage('pageEmail')">
+          <div class="feat-icon">📧</div>
+          <div class="feat-title">Kelola Email</div>
+          <div class="feat-desc">Tambah akun Gmail dengan App Password untuk pengiriman otomatis.</div>
+          <div class="feat-badge">Maks 20 akun</div>
+        </div>
+
+        <div class="feat-card" onclick="showPage('pageSend')">
+          <div class="feat-icon">🚀</div>
+          <div class="feat-title">Kirim Email</div>
+          <div class="feat-desc">Kirim email ke support WhatsApp dengan template multi-bahasa.</div>
+          <div class="feat-badge">Limit 10/hari WIB</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="pageEmail">
+      <button class="page-back" onclick="showPage('pageDashboard')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali ke Dashboard
+      </button>
+      <div class="page-title">Kelola Email</div>
+      <div class="page-sub">Tambah akun Gmail dengan App Password. Diverifikasi otomatis sebelum disimpan.</div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-head-title">Tambah Akun Gmail</span>
+          <span id="accCount" class="chip chip-gray">0 / 20</span>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Alamat Gmail</label>
+            <input id="inEmail" type="email" placeholder="contoh@gmail.com" oninput="onEmailInput()">
+          </div>
+          <div class="field">
+            <label>App Password</label>
+            <input id="inPass" type="password" placeholder="xxxx xxxx xxxx xxxx" oninput="onEmailInput()">
+            <div class="field-hint">App Password ≠ password biasa. Buat di <strong>myaccount.google.com → Keamanan → App Passwords</strong>.</div>
+          </div>
+          <div id="vbadge" class="vbadge" style="display:none"></div>
+          <button id="addBtn" onclick="addEmail()" class="btn btn-red" style="margin-top:6px" disabled>Verifikasi & Tambah</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="panel-head-title">Akun Tersimpan</span></div>
+        <div class="panel-body" id="emailListWrap">
+          <div class="empty-box"><div class="eico">📭</div>Belum ada akun email</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="pageSend">
+      <button class="page-back" onclick="showPage('pageDashboard')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali ke Dashboard
+      </button>
+      <div class="page-title">Kirim Email</div>
+      <div class="page-sub">Kirim pesan ke support@support.whatsapp.com secara otomatis.</div>
+
+      <div id="alertNoEmail" class="alert-err" style="display:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;margin-top:1px"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14H11V11h2zm0-8H11V6h2z"/></svg>
+        <span>Belum ada akun email. Tambah dulu di <strong style="cursor:pointer;text-decoration:underline" onclick="showPage('pageEmail')">Kelola Email</strong>.</span>
+      </div>
+
+      <div id="sendContent">
+        <div class="ae-card">
+          <div class="ae-icon" id="aeIcon">?</div>
+          <div class="ae-info">
+            <div class="ae-addr" id="aeAddr">-</div>
+            <div class="ae-quota" id="aeQuota">-</div>
+            <div class="qbar"><div class="qfill" id="qfill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title">Bahasa Template</span></div>
+          <div class="panel-body">
+            <div class="lang-tabs">
+              <button class="lang-tab active" onclick="setLang('pt',this)">🇧🇷 Portugis</button>
+              <button class="lang-tab" onclick="setLang('en',this)">🇺🇸 Inggris</button>
+              <button class="lang-tab" onclick="setLang('id',this)">🇮🇩 Indonesia</button>
+            </div>
+            <div class="tpl-box" id="tplBox"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="panel-head-title">Nomor WhatsApp Target</span></div>
+          <div class="panel-body">
+            <div class="field">
+              <label>Nomor (format internasional)</label>
+              <input id="inPhone" type="tel" placeholder="+628123456789" oninput="updateTpl()">
+              <div class="field-hint">Contoh: +628123456789. Sertakan kode negara, tanpa spasi.</div>
+            </div>
+            <button id="sendBtn" onclick="doSend()" class="btn btn-green">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Kirim ke WhatsApp Support
+            </button>
+            <div class="send-result" id="sendResult"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+
+  <script>
+    const API = '/api';
+    window.addEventListener('load', ()=>{
+      const t = localStorage.getItem('access_token');
+      if(t === 'WALZ999') openApp(t, {});
+    });
+    const BOT_USERNAME = 'websitewalzbot';
+
+    document.getElementById('botLink').href = `https://t.me/${BOT_USERNAME}`;
+
+    function onTokenInput(el) {
+      let v = el.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+      if (v.length > 8) v = v.slice(0,8);
+      el.value = v;
+      document.getElementById('tokenCharCount').textContent = `${v.length}/8`;
+      const valid = v.length >= 6;
+      el.className = 'token-input' + (v.length > 0 ? (valid ? ' valid' : '') : '');
+      document.getElementById('loginBtn').disabled = !valid;
+      if (valid) setStatus('Tekan Masuk untuk verifikasi token', 'checking');
+      else setStatus('Masukkan token akses kamu');
+    }
+
+    function setStatus(msg, state='') {
+      document.getElementById('statusMsg').textContent = msg;
+      document.getElementById('dot').className = 'dot ' + state;
+    }
+
+    async function doTokenLogin() {
+      const token = document.getElementById('tokenInput').value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+      if (token.length < 6) return;
+
+      setStatus('Memverifikasi token...', 'checking');
+      document.getElementById('loginBtn').disabled = true;
+
+      try {
+        const r = await fetch(`${API}?action=check_token&token=${encodeURIComponent(token)}`);
+        const d = await r.json();
+
+        if (d.valid) {
+          setStatus('Token valid! Membuka akses...', 'ok');
+          localStorage.setItem('access_token', token);
+          setTimeout(() => openApp(token, d), 600);
+        } else {
+          setStatus(d.error || 'Token tidak valid', 'error');
+          document.getElementById('tokenInput').classList.add('invalid');
+          document.getElementById('loginBtn').disabled = false;
+          setTimeout(() => {
+            document.getElementById('tokenInput').classList.remove('invalid');
+            setStatus('Masukkan token akses kamu');
+          }, 2500);
+        }
+      } catch(e) {
+        setStatus('Gagal konek ke server', 'error');
+        document.getElementById('loginBtn').disabled = false;
+      }
+    }
+
+    function openApp(token, info) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('app').style.display  = 'block';
+      showPage('pageDashboard');
+
+      document.getElementById('sisaLabel').textContent = 'Aktif';
+      document.getElementById('sisaPill').textContent  = '✅ Akses Penuh';
+
+      const disp = token || localStorage.getItem('access_token') || '-';
+      document.getElementById('tokenDisplayVal').textContent = disp;
+    }
+
+    function copyToken() {
+      const t = localStorage.getItem('access_token');
+      if (!t) return;
+      navigator.clipboard.writeText(t).then(() => {
+        const b = document.querySelector('.copy-btn');
+        b.textContent = 'Tersalin ✓'; b.style.color='#4ade80';
+        setTimeout(() => { b.textContent='Salin'; b.style.color=''; }, 1500);
+      }).catch(() => {});
+    }
+
+    function logout() {
+      localStorage.removeItem('access_token');
+      location.reload();
+    }
+
+    const saved = localStorage.getItem('access_token');
+    if (saved === 'WALZ999') openApp(saved, {});
+
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('active');
+      window.scrollTo({ top:0, behavior:'smooth' });
+      if (id === 'pageEmail') renderEmailList();
+      if (id === 'pageSend')  renderSendPage();
+    }
+
+    const getAccs   = () => JSON.parse(localStorage.getItem('accounts') || '[]');
+    const saveAccs  = a => localStorage.setItem('accounts', JSON.stringify(a));
+    const todayKey  = () => new Date().toLocaleDateString('en-CA', { timeZone:'Asia/Jakarta' });
+    const sentToday = a => a.sent?.[todayKey()] ?? 0;
+
+    function renderEmailList() {
+      const accs = getAccs();
+      const cnt  = document.getElementById('accCount');
+      cnt.textContent = `${accs.length} / 20`;
+      cnt.className   = accs.length >= 20 ? 'chip chip-red' : 'chip chip-gray';
+
+      const wrap = document.getElementById('emailListWrap');
+      if (!accs.length) {
+        wrap.innerHTML = '<div class="empty-box"><div class="eico">📭</div>Belum ada akun email tersimpan</div>';
+        return;
+      }
+      wrap.innerHTML = '<div class="email-list">' + accs.map((a, i) => {
+        const n = sentToday(a), full = n >= 10;
+        return `<div class="email-item">
+          <div class="ei-left">
+            <div class="ei-avatar">${a.email[0].toUpperCase()}</div>
+            <div>
+              <div class="ei-addr">${a.email}</div>
+              <div class="ei-stat">Hari ini: ${n}/10 &nbsp;•&nbsp; <span style="color:${full?'#fb7185':'#4ade80'}">${full?'Penuh':'Aktif'}</span></div>
+            </div>
+          </div>
+          <button class="del-btn" onclick="delAcc(${i})">Hapus</button>
+        </div>`;
+      }).join('') + '</div>';
+    }
+
+    function delAcc(i) {
+      const accs = getAccs(); accs.splice(i,1); saveAccs(accs);
+      renderEmailList(); renderSendPage();
+    }
+
+    let vt = null;
+    function onEmailInput() {
+      const email = document.getElementById('inEmail').value.trim();
+      const pass  = document.getElementById('inPass').value.trim();
+      const badge = document.getElementById('vbadge');
+      clearTimeout(vt);
+      badge.style.display = 'none';
+      document.getElementById('addBtn').disabled = true;
+      if (!email.includes('@') || pass.length < 8) return;
+      badge.style.display = 'flex';
+      badge.className     = 'vbadge loading';
+      badge.innerHTML     = '<span class="spin">⏳</span>&nbsp;Memeriksa kredensial...';
+      vt = setTimeout(() => doVerify(email, pass), 900);
+    }
+
+    async function doVerify(email, pass) {
+      const badge = document.getElementById('vbadge');
+      try {
+        const r = await fetch(`${API}?action=verify`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email, pass })
+        });
+        const d = await r.json();
+        if (d.ok) {
+          badge.className = 'vbadge success';
+          badge.innerHTML = '✅ Kredensial valid — siap ditambahkan';
+          document.getElementById('addBtn').disabled = false;
+        } else {
+          badge.className = 'vbadge fail';
+          badge.innerHTML = '❌ Kredensial salah — cek email & App Password';
+        }
+      } catch {
+        badge.className = 'vbadge fail';
+        badge.innerHTML = '❌ Gagal konek ke server';
+      }
+    }
+
+    function addEmail() {
+      const accs = getAccs();
+      if (accs.length >= 20) return alert('Batas maksimal 20 akun!');
+      const email = document.getElementById('inEmail').value.trim();
+      const pass  = document.getElementById('inPass').value.trim();
+      if (!email || !pass) return;
+      if (accs.find(a => a.email === email)) return alert('Email ini sudah ada!');
+      accs.push({ email, pass, sent:{} }); saveAccs(accs);
+      document.getElementById('inEmail').value = '';
+      document.getElementById('inPass').value  = '';
+      document.getElementById('vbadge').style.display = 'none';
+      document.getElementById('addBtn').disabled = true;
+      renderEmailList();
+    }
+
+    let activeLang = 'pt';
+    const tpl = {
+      pt: n => `Prezada Equipe de Suporte do WhatsApp,\n\nEstou com problemas para registrar meu número. Recebo a mensagem "login indisponível".\n\nEste número é importante para meus estudos.\n\nMeu número: ${n||'[nomor]'}\n\nObrigado.`,
+      en: n => `Dear WhatsApp Support,\n\nI am unable to register my number. I keep receiving the "login unavailable" message.\n\nMy number: ${n||'[number]'}\n\nThank you.`,
+      id: n => `Tim Support WhatsApp,\n\nSaya tidak dapat mendaftarkan nomor saya. Muncul pesan "login tidak tersedia".\n\nNomor: ${n||'[nomor]'}\n\nTerima kasih.`
+    };
+
+    function setLang(lang, el) {
+      activeLang = lang;
+      document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active'); updateTpl();
+    }
+    function updateTpl() {
+      const el = document.getElementById('tplBox');
+      if (el) el.textContent = tpl[activeLang](document.getElementById('inPhone')?.value.trim() || '');
+    }
+    const getActive = accs => accs.find(a => sentToday(a) < 10) ?? null;
+
+    function renderSendPage() {
+      const accs = getAccs(), active = getActive(accs);
+      const noEl = document.getElementById('alertNoEmail');
+      const scEl = document.getElementById('sendContent');
+      if (!accs.length) { noEl.style.display='flex'; scEl.style.display='none'; return; }
+      noEl.style.display = 'none'; scEl.style.display = 'block';
+      updateTpl();
+      if (!active) {
+        document.getElementById('aeIcon').textContent  = '!';
+        document.getElementById('aeAddr').textContent  = 'Semua email sudah penuh hari ini';
+        document.getElementById('aeQuota').textContent = 'Reset jam 00:00 WIB';
+        document.getElementById('qfill').style.width   = '100%';
+        document.getElementById('qfill').className     = 'qfill full';
+        document.getElementById('sendBtn').disabled    = true;
+        return;
+      }
+      const n = sentToday(active), pct = n*10;
+      document.getElementById('aeIcon').textContent  = active.email[0].toUpperCase();
+      document.getElementById('aeAddr').textContent  = active.email;
+      document.getElementById('aeQuota').textContent = `Terkirim hari ini: ${n}/10`;
+      document.getElementById('qfill').style.width   = pct + '%';
+      document.getElementById('qfill').className     = pct >= 80 ? 'qfill full' : 'qfill';
+      document.getElementById('sendBtn').disabled    = false;
+    }
+
+    async function doSend() {
+      const phone = document.getElementById('inPhone').value.trim();
+      if (!phone) { alert('Masukkan nomor WhatsApp terlebih dahulu!'); return; }
+      const accs = getAccs(), active = getActive(accs);
+      if (!active) { alert('Semua email sudah penuh hari ini!'); return; }
+
+      const btn = document.getElementById('sendBtn');
+      const res = document.getElementById('sendResult');
+      btn.disabled  = true;
+      btn.innerHTML = '<span class="spin">⏳</span>&nbsp;Mengirim...';
+      res.className = 'send-result';
+
+      try {
+        const r = await fetch(`${API}?action=send`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email:active.email, pass:active.pass, nomor:phone, lang:activeLang })
+        });
+        const d = await r.json();
+        const key = todayKey();
+        if (!active.sent) active.sent = {};
+        active.sent[key] = (active.sent[key]??0) + 1;
+        const idx = accs.findIndex(a=>a.email===active.email);
+        if (idx!==-1) accs[idx]=active; saveAccs(accs); renderSendPage();
+
+        res.className = 'send-result show';
+        if (d.ok) {
+          res.innerHTML = `<div class="send-ok">✅ Email berhasil dikirim!</div><div class="send-det">Dari: ${active.email}<br>Ke: support@support.whatsapp.com<br>Bahasa: ${activeLang.toUpperCase()}</div>`;
+          document.getElementById('inPhone').value = ''; updateTpl();
+        } else {
+          res.innerHTML = `<div class="send-fail">❌ Gagal: ${d.error||'Coba lagi'}</div>`;
+        }
+      } catch(e) {
+        res.className = 'send-result show';
+        res.innerHTML = `<div class="send-fail">❌ Error: ${e.message}</div>`;
+      }
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Kirim ke WhatsApp Support';
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
