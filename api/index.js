@@ -7,9 +7,7 @@ const COUNT_MAP = new Map();
 function getJakartaDateStr(){return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});}
 function getJakartaTimestamp(){return new Date().toLocaleString('id-ID',{timeZone:'Asia/Jakarta',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
-// Sinkron dengan index.html - 7 target resmi
 const WA_TARGETS=[
-'support@whatsapp.com',
 'support@support.whatsapp.com',
 'android@support.whatsapp.com',
 'iphone@support.whatsapp.com',
@@ -50,7 +48,6 @@ function getHumanTouch(lang){
   };
 }
 
-// 5 Bahasa Sempurna - Sinkron dengan TPL_META index.html [pt, en, id, es, fr]
 const TEMPLATES=[
 (nomor,refId,ts,name)=>{
   const h=getHumanTouch('pt');
