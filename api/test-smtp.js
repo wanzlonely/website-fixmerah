@@ -39,7 +39,6 @@ export default async function handler(req, res){
       tls:{rejectUnauthorized:false}
     });
 
-    // REAL VERIFY - bukan gimmick
     await transporter.verify();
 
     return res.json({ok:true,message:'Koneksi SMTP Gmail valid (real check)'});
