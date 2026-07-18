@@ -23,23 +23,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FixMerah · Perfect Auto</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="bg"></div>
 <div id="toast"></div>
-
 <div class="wrap">
   <div class="header">
-    <div class="brand">
-      <div class="brand-icon"><i class="ph-fill ph-paper-plane-tilt"></i></div>
-      <div>
-        <div class="brand-name">Fix<b>Merah</b></div>
-        <div class="brand-sub">PERFECT AUTO · v3.1</div>
-      </div>
-    </div>
+    <div class="brand"><div class="brand-icon"><i class="ph-fill ph-paper-plane-tilt"></i></div><div class="brand-name">Fix<b>Merah</b></div></div>
     <div class="nav">
       <button class="nav-btn on" id="nav-sender" onclick="tab('sender')"><i class="ph-bold ph-paper-plane-right"></i> Sender</button>
       <button class="nav-btn" id="nav-smtp" onclick="tab('smtp')"><i class="ph-bold ph-database"></i> SMTP</button>
@@ -49,238 +42,80 @@
   <div class="view on" id="view-sender">
     <div class="card">
       <div class="card-h">
-        <div class="kicker"><span style="display:inline-flex;align-items:center;gap:6px"><i class="ph-fill ph-sparkle"></i> Perfect Auto · No Click Needed · Anti AI-Bot</span></div>
-        <div class="title">Auto Sender WhatsApp Support</div>
-        <div class="sub">Semua otomatis: nama human realistic, email tujuan rolling ke 7 alamat resmi WhatsApp, template 5 bahasa premium. Cukup isi nomor WA target & kirim — sistem auto rotate.</div>
-        <div class="meta-row" id="statusRow">
-          <span class="pill" id="statusPill"><span class="dot"></span> Memeriksa SMTP...</span>
-          <span class="pill" id="resetPill">Reset 00:00 WIB · --</span>
-          <span class="pill" style="background:#fff"><i class="ph-bold ph-shield-check" style="color:var(--p)"></i> Encrypted Local</span>
+        <div class="kicker">Perfect Auto · Anti AI-Bot</div>
+        <div class="title">Auto Sender Support</div>
+        <div class="sub">Auto rolling nama, tujuan, template 5 bahasa.</div>
+        <div class="meta">
+          <span class="pill" id="statusPill"><span class="dot"></span> Cek SMTP...</span>
+          <span class="pill" id="resetPill">Reset 00:00 WIB</span>
         </div>
-        <div class="progress"><div class="progress-bar" id="usageBar"></div></div>
+        <div class="progress"><div class="bar" id="usageBar"></div></div>
       </div>
       <div class="card-b">
-        <div class="auto-grid">
-          <div class="auto-item live">
-            <div class="auto-lab"><i class="ph-bold ph-user"></i> Nama Pengirim · Auto</div>
-            <div class="auto-val" id="autoName">Memuat...</div>
-            <div class="auto-sub"><span class="dot" style="background:var(--green)"></span> Human-realistic · rolling</div>
-          </div>
-          <div class="auto-item live">
-            <div class="auto-lab"><i class="ph-bold ph-envelope-simple"></i> Tujuan · Auto Rolling</div>
-            <div class="auto-val" id="autoTarget">support@whatsapp.com</div>
-            <div class="auto-sub" id="autoTargetSub">1/7 · General</div>
-          </div>
-          <div class="auto-item live">
-            <div class="auto-lab"><i class="ph-bold ph-translate"></i> Template · Auto Rolling</div>
-            <div class="auto-val" id="autoTpl">Português</div>
-            <div class="auto-sub" id="autoTplSub">1/5 · 🇧🇷 anti AI-bot</div>
-          </div>
+        <div class="grid">
+          <div class="item live"><div class="lab"><i class="ph-bold ph-user"></i> Nama · Auto</div><div class="val" id="autoName">-</div><div class="sub2">Human realistic</div></div>
+          <div class="item live"><div class="lab"><i class="ph-bold ph-envelope"></i> Tujuan · Auto</div><div class="val" id="autoTarget">-</div><div class="sub2" id="autoTargetSub">-</div></div>
+          <div class="item live"><div class="lab"><i class="ph-bold ph-translate"></i> Template · Auto</div><div class="val" id="autoTpl">-</div><div class="sub2" id="autoTplSub">-</div></div>
         </div>
-
         <form id="senderForm" autocomplete="off">
-          <input type="hidden" id="name">
-          <input type="hidden" id="targetEmail">
-          <div class="field">
-            <label class="label"><i class="ph-bold ph-whatsapp-logo"></i> Nomor WhatsApp Target</label>
-            <div class="input-wrap">
-              <input class="input" id="nomorWa" placeholder="Kode Negara + Nomor (cth: 1415xxxxxxx)" inputmode="numeric" required>
-              <span class="input-ico" id="icoWa"></span>
-            </div>
-            <div style="font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:7px;display:flex;gap:6px"><i class="ph ph-info"></i> Wajib pakai kode negara, contoh 62xxxx untuk Indonesia</div>
-          </div>
-          <button class="btn" id="sendBtn" type="submit"><span>Kirim Pesan Rotating</span><i class="ph-bold ph-paper-plane-right"></i></button>
+          <input type="hidden" id="name"><input type="hidden" id="targetEmail">
+          <div class="field"><label class="label">Nomor WhatsApp</label><div class="wrap-input"><input class="input" id="nomorWa" placeholder="62xxxxxxxxxxx" inputmode="numeric" required><span class="input-ico" id="icoWa"></span></div></div>
+          <button class="btn" id="sendBtn" type="submit"><span>Kirim</span><i class="ph-bold ph-paper-plane-right"></i></button>
           <div class="alert" id="alertBox"></div>
         </form>
-        <div class="foot"><span>Auto generate & rolling aktif · Tidak perlu klik manual · Limit 15/hari/akun · 5 Bahasa Premium</span></div>
+        <div class="foot">Limit 15/hari/akun · Rolling otomatis</div>
       </div>
     </div>
   </div>
 
   <div class="view" id="view-smtp">
     <div class="card">
-      <div class="card-h">
-        <div class="kicker">SMTP Pool · Only Gmail Real Check · Secure</div>
-        <div class="title">Manajemen Akun SMTP</div>
-        <div class="sub">Hanya Gmail App Password 16 huruf. Sistem verify real ke smtp.gmail.com via <code style="font-family:var(--mono);background:var(--p-soft);padding:2px 6px;border-radius:6px;border:1px solid rgba(109,40,217,.12)">/api/test-smtp</code>. Maks 20 akun · 15 email/hari · Reset 00:00 WIB.</div>
-      </div>
+      <div class="card-h"><div class="kicker">SMTP Pool</div><div class="title">Manajemen SMTP</div><div class="sub">Gmail App Password 16 huruf · Real check</div></div>
       <div class="card-b">
         <form id="smtpForm" class="smtp-form" autocomplete="off">
-          <div class="input-wrap"><input class="input" id="newEmail" placeholder="nama@gmail.com" required><span class="input-ico" id="icoEmail"></span></div>
-          <div class="input-wrap"><input class="input" id="newPass" placeholder="abcd efgh ijkl mnop (16 huruf)" required><span class="input-ico" id="icoPass"></span></div>
-          <button class="btn-add" id="addBtn" type="submit"><i class="ph-bold ph-plus"></i> Tambah & Verifikasi</button>
+          <div class="wrap-input"><input class="input" id="newEmail" placeholder="nama@gmail.com" required><span class="input-ico" id="icoEmail"></span></div>
+          <div class="wrap-input"><input class="input" id="newPass" placeholder="abcd efgh ijkl mnop" required><span class="input-ico" id="icoPass"></span></div>
+          <button class="btn-add" id="addBtn" type="submit"><i class="ph-bold ph-plus"></i> Tambah</button>
         </form>
-        <div class="hint"><i class="ph-bold ph-info"></i><span>Ambil di myaccount.google.com → Security → 2-Step Verification → App passwords. Sistem akan test koneksi real, bukan sekadar simpan.</span></div>
-        <div class="table-wrap"><table><thead><tr><th>Email</th><th>Pakai</th><th>Status</th><th style="text-align:right">Aksi</th></tr></thead><tbody id="smtpList"></tbody></table></div>
-        <div class="empty" id="emptyState" style="display:none"><i class="ph ph-database"></i><b>Belum ada akun</b><div style="margin-top:6px;color:var(--muted);font-size:12px;font-family:var(--mono)">Tambahkan Gmail App Password di atas untuk mulai</div></div>
+        <div class="hint">myaccount.google.com → Security → App passwords</div>
+        <div class="table"><table><thead><tr><th>Email</th><th>Pakai</th><th>Status</th><th style="text-align:right">Aksi</th></tr></thead><tbody id="smtpList"></tbody></table></div>
+        <div class="empty" id="emptyState" style="display:none">Belum ada akun</div>
       </div>
     </div>
   </div>
-
-  <div class="foot" style="margin-top:28px;border:none">BUILT FOR SCALE · LINEAR GRADE · FIXMERAH 2026 · ANTI AI-BOT v3.1</div>
 </div>
 
 <script>
 const NAMES=["Andi Pratama","Budi Santoso","Rizki Amelia","Siti Rahmawati","Ahmad Fauzi","Dewi Lestari","Fajar Nugroho","Intan Permata","Rian Hidayat","Lestari Wulandari","Bayu Saputra","Maya Anggraini","Dimas Arya","Nadia Putri","Eko Wijaya","Fitri Handayani","Galih Mahendra","Hana Pertiwi","Irfan Maulana","Jihan Safira","Kurniawan Adi","Larasati Ayu","Mahendra Putra","Nabila Zahra","Oka Pradipta","Puspita Sari","Ratih Kusuma","Satria Wibawa","Tania Anindita","Umar Faruq","Vina Melati","Wahyu Ramadhan","Yusuf Ibrahim","Zahra Nabila","Aditya Nugraha","Bella Oktavia","Cahyo Kumoro","Dian Pratiwi","Eka Saputra","Farah Adinda","Gilang Ramadhan","Hesti Purnama","Indra Gunawan","Kevin Sanjaya","Lia Amelia","Maulana Yusuf","Naufal Azhar","Olivia Christie","Putra Wijaya","Rendra Kusuma","Salsa Bila","Teguh Prasetyo","Ulfa Aisyah","Vito Ferdian","Wulan Sari","Yoga Prakoso"];
-const TARGETS=[
-{email:"support@whatsapp.com",label:"General Support"},
-{email:"support@support.whatsapp.com",label:"Legacy Support"},
-{email:"android@support.whatsapp.com",label:"Android"},
-{email:"iphone@support.whatsapp.com",label:"iPhone"},
-{email:"smb@support.whatsapp.com",label:"Business SMB"},
-{email:"business@support.whatsapp.com",label:"Business API"},
-{email:"smb_web@support.whatsapp.com",label:"Business Web"}
-];
+const TARGETS=[{email:"support@whatsapp.com",label:"General"},{email:"support@support.whatsapp.com",label:"Legacy"},{email:"android@support.whatsapp.com",label:"Android"},{email:"iphone@support.whatsapp.com",label:"iPhone"},{email:"smb@support.whatsapp.com",label:"SMB"},{email:"business@support.whatsapp.com",label:"API"},{email:"smb_web@support.whatsapp.com",label:"Web"}];
 const TPL_META=[{lang:"Português",flag:"🇧🇷"},{lang:"English",flag:"🇺🇸"},{lang:"Indonesia",flag:"🇮🇩"},{lang:"Español",flag:"🇪🇸"},{lang:"Français",flag:"🇫🇷"}];
-
 function randName(){return NAMES[Math.floor(Math.random()*NAMES.length)]}
 let curName="";let tIdx=parseInt(localStorage.getItem('tIdx')||'0');let tgIdx=parseInt(localStorage.getItem('targetIdx')||'0');
-if(isNaN(tIdx)) tIdx=0;if(isNaN(tgIdx)||tgIdx>=TARGETS.length) tgIdx=0;
-
-function setName(n){
-  curName=n;
-  document.getElementById('name').value=n;
-  document.getElementById('autoName').textContent=n;
-}
-function setTarget(i){
-  tgIdx=i%TARGETS.length;
-  const t=TARGETS[tgIdx];
-  document.getElementById('targetEmail').value=t.email;
-  document.getElementById('autoTarget').textContent=t.email;
-  document.getElementById('autoTargetSub').textContent=`${tgIdx+1}/${TARGETS.length} · ${t.label}`;
-  localStorage.setItem('targetIdx',String(tgIdx));
-}
-function setTpl(i){
-  tIdx=i%5;
-  document.getElementById('autoTpl').textContent=TPL_META[tIdx].lang;
-  document.getElementById('autoTplSub').textContent=`${tIdx+1}/5 ${TPL_META[tIdx].flag} · anti AI-bot`;
-  localStorage.setItem('tIdx',String(tIdx));
-}
-function autoRollAll(){setName(randName());setTarget(tgIdx);setTpl(tIdx);}
-
+if(isNaN(tIdx))tIdx=0;if(isNaN(tgIdx)||tgIdx>=TARGETS.length)tgIdx=0;
+function setName(n){curName=n;document.getElementById('name').value=n;document.getElementById('autoName').textContent=n;}
+function setTarget(i){tgIdx=i%TARGETS.length;const t=TARGETS[tgIdx];document.getElementById('targetEmail').value=t.email;document.getElementById('autoTarget').textContent=t.email;document.getElementById('autoTargetSub').textContent=`${tgIdx+1}/${TARGETS.length} · ${t.label}`;localStorage.setItem('targetIdx',String(tgIdx));}
+function setTpl(i){tIdx=i%5;document.getElementById('autoTpl').textContent=TPL_META[tIdx].lang;document.getElementById('autoTplSub').textContent=`${tIdx+1}/5 ${TPL_META[tIdx].flag}`;localStorage.setItem('tIdx',String(tIdx));}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function validGmail(v){return /^[^\s@]+@gmail\.com$/i.test(v.trim())}
 function validWa(v){return /^\d{7,15}$/.test(v.replace(/\D/g,''))}
-function toast(msg,type='info'){
-  const c=document.getElementById('toast');const el=document.createElement('div');el.className='toast';
-  el.innerHTML=`<i class="ph-fill ${type==='error'?'ph-warning-circle':type==='ok'?'ph-check-circle':'ph-info'}" style="font-size:18px"></i><span>${esc(msg)}</span>`;
-  c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(8px)';setTimeout(()=>el.remove(),260)},3200);
-}
-function tab(t){
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('nav-'+t).classList.add('on');
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
-  document.getElementById('view-'+t).classList.add('on');
-  if(t==='smtp') render();
-}
-function initStore(){
-  try{
-    const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
-    if(localStorage.getItem('resetDate')!==today){
-      let accs=[];try{accs=JSON.parse(localStorage.getItem('smtp')||'[]')}catch{accs=[]}
-      accs=accs.map(a=>({...a,count:0}));localStorage.setItem('smtp',JSON.stringify(accs));localStorage.setItem('resetDate',today);
-    }
-  }catch{}
-  autoRollAll();render();statusUpdate();countdown();setInterval(countdown,1000);
-}
+function toast(m,type='info'){const c=document.getElementById('toast');const el=document.createElement('div');el.className='toast';el.innerHTML=`<i class="ph-fill ${type==='error'?'ph-warning-circle':type==='ok'?'ph-check-circle':'ph-info'}"></i><span>${esc(m)}</span>`;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(6px)';setTimeout(()=>el.remove(),220)},3000);}
+function tab(t){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));document.getElementById('nav-'+t).classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-'+t).classList.add('on');if(t==='smtp')render();}
+function initStore(){try{const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});if(localStorage.getItem('resetDate')!==today){let accs=[];try{accs=JSON.parse(localStorage.getItem('smtp')||'[]')}catch{}accs=accs.map(a=>({...a,count:0}));localStorage.setItem('smtp',JSON.stringify(accs));localStorage.setItem('resetDate',today);}}catch{}setName(randName());setTarget(tgIdx);setTpl(tIdx);render();statusUpdate();countdown();setInterval(countdown,1000);}
 function getAccs(){try{return JSON.parse(localStorage.getItem('smtp'))||[]}catch{return []}}
 function saveAccs(a){localStorage.setItem('smtp',JSON.stringify(a))}
 function available(){return getAccs().find(a=>a.count<15)||null}
-function statusUpdate(){
-  const av=available();const pill=document.getElementById('statusPill');const bar=document.getElementById('usageBar');const btn=document.getElementById('sendBtn');
-  if(av){pill.className='pill ok';pill.innerHTML=`<span class="dot"></span> SMTP Aktif · ${esc(av.email)} · ${av.count}/15`;btn.disabled=false;bar.style.width=`${(av.count/15)*100}%`;bar.style.background='linear-gradient(90deg,var(--p),var(--p-2))';}
-  else{const all=getAccs();pill.className='pill err';pill.innerHTML=`<span class="dot"></span> ${all.length? 'Limit 15/hari tercapai':'Tambah Gmail di tab SMTP'}`;btn.disabled=true;bar.style.width='100%';bar.style.background='var(--red)';}
-}
-function countdown(){
-  const now=new Date();const jNow=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
-  const reset=new Date(jNow);reset.setHours(24,0,0,0);const diff=reset-jNow;
-  const h=String(Math.floor(diff/3600000)).padStart(2,'0');const m=String(Math.floor(diff%3600000/60000)).padStart(2,'0');const s=String(Math.floor(diff%60000/1000)).padStart(2,'0');
-  const el=document.getElementById('resetPill');if(el) el.textContent=`Reset 00:00 WIB · ${h}j ${m}m ${s}d`;
-}
-function render(){
-  const accs=getAccs();const tbody=document.getElementById('smtpList');const empty=document.getElementById('emptyState');
-  tbody.innerHTML='';if(!accs.length){empty.style.display='block';return}empty.style.display='none';
-  accs.forEach((acc,i)=>{
-    const full=acc.count>=15;const pct=Math.min((acc.count/15)*100,100);
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span class="em">${esc(acc.email)}</span><span class="mono" style="display:block;font-size:10px;color:var(--muted)">•••• AppPass</span></td><td><span class="bar"><span class="bar-i ${full?'full':''}" style="width:${pct}%"></span></span> <span class="mono">${acc.count}/15</span></td><td><span class="badge ${full?'err':'ok'}" id="bdg-${i}">${full?'Limit':'Aktif'}</span></td><td><div class="acts"><button class="icon-btn" id="tst-${i}" onclick="testConn(${i})" title="Uji real"><i class="ph-bold ph-wifi-high"></i></button><button class="icon-btn danger" onclick="delAcc(${i})" title="Hapus"><i class="ph-bold ph-trash"></i></button></div></td>`;
-    tbody.appendChild(tr);
-  });
-}
-async function testConn(i){
-  const accs=getAccs();const acc=accs[i];if(!acc) return;
-  const btn=document.getElementById('tst-'+i);const bdg=document.getElementById('bdg-'+i);const old=btn.innerHTML;
-  btn.innerHTML=`<i class="ph-bold ph-spinner-gap" style="animation:spin .7s linear infinite;display:inline-block"></i>`;btn.disabled=true;if(bdg){bdg.textContent='Testing...'}
-  try{
-    const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:acc.email,smtpPass:acc.pass})});
-    const d=await r.json();
-    if(r.ok&&d.ok){if(bdg){bdg.className='badge ok';bdg.textContent='Valid ✓'}toast(acc.email+' valid','ok');}
-    else{if(bdg){bdg.className='badge err';bdg.textContent='Gagal ✗'}toast(d.error||'Gagal','error');}
-  }catch{toast('Error jaringan','error')}finally{btn.innerHTML=old;btn.disabled=false;setTimeout(()=>{const full=getAccs()[i]?.count>=15;if(bdg){bdg.className='badge '+(full?'err':'ok');bdg.textContent=full?'Limit':'Aktif'}},4000)}
-}
-window.delAcc=i=>{const accs=getAccs();const em=accs[i]?.email||'';accs.splice(i,1);saveAccs(accs);render();statusUpdate();toast('Dihapus: '+em);};
-
+function statusUpdate(){const av=available();const pill=document.getElementById('statusPill');const bar=document.getElementById('usageBar');const btn=document.getElementById('sendBtn');if(av){pill.className='pill ok';pill.innerHTML=`<span class="dot"></span> ${esc(av.email)} · ${av.count}/15`;btn.disabled=false;bar.style.width=`${(av.count/15)*100}%`;}else{const all=getAccs();pill.className='pill err';pill.innerHTML=`<span class="dot"></span> ${all.length?'Limit 15/hari':'Tambah SMTP'}`;btn.disabled=true;bar.style.width='100%';bar.style.background='var(--red)';}}
+function countdown(){const now=new Date();const jNow=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));const reset=new Date(jNow);reset.setHours(24,0,0,0);const diff=reset-jNow;const h=String(Math.floor(diff/3600000)).padStart(2,'0');const m=String(Math.floor(diff%3600000/60000)).padStart(2,'0');const s=String(Math.floor(diff%60000/1000)).padStart(2,'0');const el=document.getElementById('resetPill');if(el)el.textContent=`Reset ${h}:${m}:${s} WIB`;}
+function render(){const accs=getAccs();const tbody=document.getElementById('smtpList');const empty=document.getElementById('emptyState');tbody.innerHTML='';if(!accs.length){empty.style.display='block';return}empty.style.display='none';accs.forEach((acc,i)=>{const full=acc.count>=15;const pct=Math.min((acc.count/15)*100,100);const tr=document.createElement('tr');tr.innerHTML=`<td><span class="em">${esc(acc.email)}</span></td><td><span class="bar-track"><span class="bar-fill ${full?'full':''}" style="width:${pct}%"></span></span> <span class="mono">${acc.count}/15</span></td><td><span class="badge ${full?'err':'ok'}" id="bdg-${i}">${full?'Limit':'Aktif'}</span></td><td><div class="acts"><button class="icon" id="tst-${i}" onclick="testConn(${i})"><i class="ph-bold ph-wifi-high"></i></button><button class="icon" onclick="delAcc(${i})"><i class="ph-bold ph-trash"></i></button></div></td>`;tbody.appendChild(tr);});}
+async function testConn(i){const accs=getAccs();const acc=accs[i];if(!acc)return;const btn=document.getElementById('tst-'+i);const bdg=document.getElementById('bdg-'+i);const old=btn.innerHTML;btn.innerHTML=`<i class="ph-bold ph-spinner-gap" style="animation:spin .7s linear infinite"></i>`;btn.disabled=true;if(bdg)bdg.textContent='...';try{const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:acc.email,smtpPass:acc.pass})});const d=await r.json();if(r.ok&&d.ok){if(bdg){bdg.className='badge ok';bdg.textContent='Valid'}toast(acc.email+' valid','ok');}else{if(bdg){bdg.className='badge err';bdg.textContent='Gagal'}toast(d.error||'Gagal','error');}}catch{toast('Error','error')}finally{btn.innerHTML=old;btn.disabled=false;setTimeout(()=>{const full=getAccs()[i]?.count>=15;if(bdg){bdg.className='badge '+(full?'err':'ok');bdg.textContent=full?'Limit':'Aktif'}},3000)}}
+window.delAcc=i=>{const accs=getAccs();accs.splice(i,1);saveAccs(accs);render();statusUpdate();toast('Dihapus');};
 const waEl=document.getElementById('nomorWa');const icoWa=document.getElementById('icoWa');
-waEl.addEventListener('input',()=>{
-  const v=waEl.value.trim();
-  if(!v){icoWa.className='input-ico';return}
-  const ok=validWa(v);
-  icoWa.className='input-ico show '+(ok?'ok':'err');
-  icoWa.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;
-});
-
-const emailEl=document.getElementById('newEmail');const passEl=document.getElementById('newPass');
-const icoEmail=document.getElementById('icoEmail');const icoPass=document.getElementById('icoPass');
-emailEl.addEventListener('input',()=>{
-  const v=emailEl.value.trim();
-  if(!v){icoEmail.className='input-ico';return}
-  const ok=validGmail(v);
-  icoEmail.className='input-ico show '+(ok?'ok':'err');
-  icoEmail.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;
-});
-passEl.addEventListener('input',()=>{
-  const v=passEl.value.trim();
-  if(!v){icoPass.className='input-ico';return}
-  const ok=v.replace(/\s/g,'').length===16;
-  icoPass.className='input-ico show '+(ok?'ok':'err');
-  icoPass.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;
-});
-
-document.getElementById('smtpForm').addEventListener('submit',async e=>{
-  e.preventDefault();const btn=document.getElementById('addBtn');const accs=getAccs();
-  if(accs.length>=20){toast('Maks 20 akun','error');return}
-  const email=emailEl.value.trim().toLowerCase();const pass=passEl.value.trim().replace(/\s/g,'');
-  if(!validGmail(email)){toast('Hanya gmail.com','error');return}
-  if(pass.length!==16||!/^[a-z]{16}$/i.test(pass)){toast('App password harus 16 huruf','error');return}
-  if(accs.some(a=>a.email.toLowerCase()===email)){toast('Email sudah ada','error');return}
-  btn.innerHTML='<i class="ph-bold ph-spinner-gap" style="animation:spin .7s linear infinite"></i> Verifikasi Real...';btn.disabled=true;
-  try{
-    const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:email,smtpPass:pass})});
-    const d=await r.json();if(!r.ok||!d.ok) throw new Error(d.error||'Gagal');
-    accs.push({email,pass,count:0});saveAccs(accs);e.target.reset();icoEmail.className='input-ico';icoPass.className='input-ico';render();statusUpdate();toast('Gmail valid & ditambah','ok');
-  }catch(err){toast(err.message,'error');}finally{btn.innerHTML='<i class="ph-bold ph-plus"></i> Tambah & Verifikasi';btn.disabled=false}
-});
-
-document.getElementById('senderForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const smtp=available();if(!smtp){toast('Tidak ada SMTP aktif, tambah di tab SMTP','error');return}
-  const nomor=waEl.value.trim().replace(/\D/g,'');
-  const targetEmail=document.getElementById('targetEmail').value;
-  if(!validWa(nomor)){toast('Nomor harus 7-15 digit termasuk kode negara','error');return}
-  const btn=document.getElementById('sendBtn');const alertBox=document.getElementById('alertBox');const old=btn.innerHTML;
-  btn.innerHTML='<span class="dot" style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></span> Mengirim...';btn.disabled=true;alertBox.className='alert';
-  try{
-    const res=await fetch('/api/index',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:curName,nomorWa:nomor,targetEmail,smtpUser:smtp.email,smtpPass:smtp.pass,tIdx, targetIdx:tgIdx})});
-    const data=await res.json();if(!res.ok||!data.ok) throw new Error(data.error||'Gagal');
-    const accs=getAccs();const idx=accs.findIndex(a=>a.email===smtp.email);if(idx>=0){accs[idx].count+=1;saveAccs(accs);}
-    const nextTpl=(tIdx+1)%5;const nextTg=(tgIdx+1)%TARGETS.length;
-    setTpl(nextTpl);setTarget(nextTg);setName(randName());
-    alertBox.className='alert show ok';alertBox.innerHTML=`<i class="ph-fill ph-check-circle"></i><span>Berhasil terkirim ke <b>${esc(data.sentTo||targetEmail)}</b><br>Auto rolling → Nama baru: <b>${esc(curName)}</b>, Tujuan: <b>${esc(TARGETS[nextTg].email)}</b>, Template: <b>${esc(TPL_META[nextTpl].lang)}</b> (${nextTpl+1}/5)<br>Ref: ${esc(data.reference||'')} · ${data.used||''}/15</span>`;
-    render();statusUpdate();toast(`Terkirim! Auto → ${curName} · ${TARGETS[nextTg].email} · ${TPL_META[nextTpl].lang}`,'ok');
-  }catch(err){alertBox.className='alert show err';alertBox.innerHTML=`<i class="ph-fill ph-warning-circle"></i><span>Gagal: ${esc(err.message.slice(0,280))}</span>`;toast(err.message,'error');}
-  finally{btn.innerHTML=old;btn.disabled=false}
-});
-
+waEl.addEventListener('input',()=>{const v=waEl.value.trim();if(!v){icoWa.className='input-ico';return}const ok=validWa(v);icoWa.className='input-ico show '+(ok?'ok':'err');icoWa.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;});
+const emailEl=document.getElementById('newEmail');const passEl=document.getElementById('newPass');const icoEmail=document.getElementById('icoEmail');const icoPass=document.getElementById('icoPass');
+emailEl.addEventListener('input',()=>{const v=emailEl.value.trim();if(!v){icoEmail.className='input-ico';return}const ok=validGmail(v);icoEmail.className='input-ico show '+(ok?'ok':'err');icoEmail.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;});
+passEl.addEventListener('input',()=>{const v=passEl.value.trim();if(!v){icoPass.className='input-ico';return}const ok=v.replace(/\s/g,'').length===16;icoPass.className='input-ico show '+(ok?'ok':'err');icoPass.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;});
+document.getElementById('smtpForm').addEventListener('submit',async e=>{e.preventDefault();const btn=document.getElementById('addBtn');const accs=getAccs();if(accs.length>=20){toast('Maks 20','error');return}const email=emailEl.value.trim().toLowerCase();const pass=passEl.value.trim().replace(/\s/g,'');if(!validGmail(email)){toast('Hanya gmail.com','error');return}if(pass.length!==16||!/^[a-z]{16}$/i.test(pass)){toast('App password 16 huruf','error');return}if(accs.some(a=>a.email.toLowerCase()===email)){toast('Sudah ada','error');return}btn.textContent='Verifikasi...';btn.disabled=true;try{const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:email,smtpPass:pass})});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Gagal');accs.push({email,pass,count:0});saveAccs(accs);e.target.reset();icoEmail.className='input-ico';icoPass.className='input-ico';render();statusUpdate();toast('Ditambah','ok');}catch(err){toast(err.message,'error');}finally{btn.innerHTML='<i class="ph-bold ph-plus"></i> Tambah';btn.disabled=false}});
+document.getElementById('senderForm').addEventListener('submit',async e=>{e.preventDefault();const smtp=available();if(!smtp){toast('Tambah SMTP dulu','error');return}const nomor=waEl.value.trim().replace(/\D/g,'');const targetEmail=document.getElementById('targetEmail').value;if(!validWa(nomor)){toast('Nomor 7-15 digit','error');return}const btn=document.getElementById('sendBtn');const box=document.getElementById('alertBox');const old=btn.innerHTML;btn.innerHTML='<span class="dot" style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></span> Kirim...';btn.disabled=true;box.className='alert';try{const res=await fetch('/api/index',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:curName,nomorWa:nomor,targetEmail,smtpUser:smtp.email,smtpPass:smtp.pass,tIdx,tgIdx})});const data=await res.json();if(!res.ok||!data.ok)throw new Error(data.error||'Gagal');const accs=getAccs();const idx=accs.findIndex(a=>a.email===smtp.email);if(idx>=0){accs[idx].count+=1;saveAccs(accs);}const nextTpl=(tIdx+1)%5;const nextTg=(tgIdx+1)%TARGETS.length;setTpl(nextTpl);setTarget(nextTg);setName(randName());box.className='alert show ok';box.innerHTML=`<i class="ph-fill ph-check-circle"></i><span>Terkirim ke <b>${esc(data.sentTo||targetEmail)}</b><br>Next: ${esc(curName)} · ${esc(TARGETS[nextTg].email)} · ${esc(TPL_META[nextTpl].lang)}<br>Ref: ${esc(data.reference||'')}</span>`;render();statusUpdate();toast('Terkirim','ok');}catch(err){box.className='alert show err';box.innerHTML=`<i class="ph-fill ph-warning-circle"></i><span>${esc(err.message.slice(0,200))}</span>`;toast(err.message,'error');}finally{btn.innerHTML=old;btn.disabled=false}});
 initStore();
 </script>
 </body>
