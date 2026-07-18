@@ -8,7 +8,6 @@ function getJakartaDateStr(){return new Date().toLocaleDateString('en-CA',{timeZ
 function getJakartaTimestamp(){return new Date().toLocaleString('id-ID',{timeZone:'Asia/Jakarta',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
 const WA_TARGETS=[
-'support@whatsapp.com',
 'support@support.whatsapp.com',
 'android@support.whatsapp.com',
 'iphone@support.whatsapp.com',
