@@ -185,7 +185,6 @@ td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical
 <script>
 const NAMES=["Andi Pratama","Budi Santoso","Rizki Amelia","Siti Rahmawati","Ahmad Fauzi","Dewi Lestari","Fajar Nugroho","Intan Permata","Rian Hidayat","Lestari Wulandari","Bayu Saputra","Maya Anggraini","Dimas Arya","Nadia Putri","Eko Wijaya","Fitri Handayani","Galih Mahendra","Hana Pertiwi","Irfan Maulana","Jihan Safira","Kurniawan Adi","Larasati Ayu","Mahendra Putra","Nabila Zahra","Oka Pradipta","Puspita Sari","Ratih Kusuma","Satria Wibawa","Tania Anindita","Umar Faruq","Vina Melati","Wahyu Ramadhan","Yusuf Ibrahim","Zahra Nabila","Aditya Nugraha","Bella Oktavia","Cahyo Kumoro","Dian Pratiwi","Eka Saputra","Farah Adinda","Gilang Ramadhan","Hesti Purnama","Indra Gunawan","Kevin Sanjaya","Lia Amelia","Maulana Yusuf","Naufal Azhar","Olivia Christie","Putra Wijaya","Rendra Kusuma","Salsa Bila","Teguh Prasetyo","Ulfa Aisyah","Vito Ferdian","Wulan Sari","Yoga Prakoso"];
 const TARGETS=[
-{email:"support@whatsapp.com",label:"General Support"},
 {email:"support@support.whatsapp.com",label:"Legacy Support"},
 {email:"android@support.whatsapp.com",label:"Android"},
 {email:"iphone@support.whatsapp.com",label:"iPhone"},
