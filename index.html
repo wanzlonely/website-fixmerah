@@ -3,280 +3,741 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Auto Sender | Multi SMTP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
-                    colors: { primary: '#0ea5e9', primaryDark: '#0284c7', dark: '#0f172a' }
-                }
-            }
-        }
-    </script>
+    <title>FixMerah · Auto Sender</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:       #07080f;
+            --surface:  #0d0f1c;
+            --surface2: #12152a;
+            --border:   #1e2240;
+            --border2:  #252a4a;
+            --primary:  #6366f1;
+            --primary2: #818cf8;
+            --violet:   #a78bfa;
+            --text:     #e4e8f5;
+            --muted:    #5a6285;
+            --muted2:   #8892b0;
+            --success:  #34d399;
+            --danger:   #f87171;
+            --mono:     'JetBrains Mono', monospace;
+        }
+
+        html { background: var(--bg); }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99,102,241,0.12) 0%, transparent 70%),
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 100% 100%, 44px 44px, 44px 44px;
+            background-position: center top, -1px -1px, -1px -1px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body > * { position: relative; z-index: 1; }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(7,8,15,0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: default;
+        }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--violet));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 0 20px rgba(99,102,241,0.35);
+        }
+
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text span { color: var(--primary2); }
+
+        /* Tab switcher */
+        .tab-group {
+            display: flex;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 2px;
+        }
+
+        .tab-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 7px 18px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--muted2);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap-6px;
+        }
+
+        .tab-btn:hover { color: var(--text); background: var(--border); }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 16px rgba(99,102,241,0.4);
+        }
+
+        /* Main */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 100px 24px 60px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 36px 40px 28px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-eyebrow {
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--primary2);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .card-sub {
+            font-size: 13.5px;
+            color: var(--muted2);
+            line-height: 1.5;
+        }
+
+        .card-body { padding: 32px 40px; }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            color: var(--muted2);
+            margin-top: 12px;
+        }
+
+        .status-badge.active {
+            background: rgba(52,211,153,0.08);
+            border-color: rgba(52,211,153,0.25);
+            color: var(--success);
+        }
+
+        .status-badge.error {
+            background: rgba(248,113,113,0.08);
+            border-color: rgba(248,113,113,0.2);
+            color: var(--danger);
+        }
+
+        .status-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status-badge.active .status-dot {
+            box-shadow: 0 0 6px var(--success);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Form */
+        .field { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--muted2);
+            margin-bottom: 8px;
+            letter-spacing: 0.01em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="email"]::placeholder {
+            color: var(--muted);
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px 20px;
+            background: var(--primary);
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 24px rgba(99,102,241,0.3);
+            letter-spacing: -0.01em;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #4f52e8;
+            box-shadow: 0 0 36px rgba(99,102,241,0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-dark {
+            padding: 13px 20px;
+            background: var(--surface2);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-dark:hover {
+            background: var(--border);
+            border-color: var(--primary);
+        }
+
+        /* Alert */
+        .alert {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        .alert.show { display: flex; }
+
+        .alert.success {
+            background: rgba(52,211,153,0.08);
+            border: 1px solid rgba(52,211,153,0.25);
+            color: var(--success);
+        }
+
+        .alert.error {
+            background: rgba(248,113,113,0.08);
+            border: 1px solid rgba(248,113,113,0.2);
+            color: var(--danger);
+        }
+
+        /* SMTP form row */
+        .smtp-add-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        /* SMTP Table */
+        .smtp-table { width: 100%; border-collapse: collapse; }
+
+        .smtp-table th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 0 0 14px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--mono);
+        }
+
+        .smtp-table td { padding: 16px 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
+
+        .smtp-table tr:last-child td { border-bottom: none; }
+
+        .smtp-email {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        /* Progress bar */
+        .progress-wrap { display: flex; align-items: center; gap: 10px; }
+
+        .progress-bar-bg {
+            flex: 1;
+            max-width: 120px;
+            height: 5px;
+            background: var(--border2);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--primary), var(--violet));
+            transition: width 0.4s ease;
+        }
+
+        .progress-bar-fill.full { background: linear-gradient(90deg, #f87171, #fca5a5); }
+
+        .progress-label {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--muted2);
+        }
+
+        .usage-badge {
+            display: inline-flex; align-items: center;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-family: var(--mono);
+            font-size: 11.5px;
+            font-weight: 500;
+        }
+
+        .usage-badge.ok {
+            background: rgba(52,211,153,0.1);
+            color: var(--success);
+            border: 1px solid rgba(52,211,153,0.2);
+        }
+
+        .usage-badge.full {
+            background: rgba(248,113,113,0.1);
+            color: var(--danger);
+            border: 1px solid rgba(248,113,113,0.2);
+        }
+
+        .btn-delete {
+            background: none; border: none; cursor: pointer;
+            color: var(--muted);
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.15s;
+            display: flex; align-items: center;
+        }
+
+        .btn-delete:hover { background: rgba(248,113,113,0.1); color: var(--danger); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state i { font-size: 36px; color: var(--muted); display: block; margin-bottom: 10px; }
+        .empty-state p { font-size: 13.5px; color: var(--muted2); }
+
+        /* Loader */
         .loader {
-            border-top-color: transparent;
-            animation: spinner 1.5s linear infinite;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
         }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .tab-active { border-bottom: 2px solid #0ea5e9; color: #0ea5e9; font-weight: 600; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* View toggling */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* Divider */
+        .divider { height: 1px; background: var(--border); margin: 24px 0; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased selection:bg-primary selection:text-white">
+<body>
 
-    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex-shrink-0 flex items-center cursor-pointer">
-                    <i class="ph-fill ph-planet text-primary text-4xl mr-2"></i>
-                    <span class="font-bold text-2xl tracking-tight text-dark">Fix<span class="text-primary">Merah</span></span>
-                </div>
-                <div class="flex space-x-8 items-center">
-                    <button onclick="switchTab('sender')" id="tab-sender" class="tab-active pb-1 transition-colors">Sender</button>
-                    <button onclick="switchTab('smtp')" id="tab-smtp" class="text-slate-600 pb-1 transition-colors">Data SMTP</button>
+<nav>
+    <div class="nav-inner">
+        <div class="logo">
+            <div class="logo-icon"><i class="ph-fill ph-paper-plane-tilt" style="color:#fff; font-size:17px;"></i></div>
+            <span class="logo-text">Fix<span>Merah</span></span>
+        </div>
+        <div class="tab-group">
+            <button class="tab-btn active" id="tab-sender" onclick="switchTab('sender')">
+                <i class="ph-bold ph-paper-plane-right" style="margin-right:5px;"></i> Sender
+            </button>
+            <button class="tab-btn" id="tab-smtp" onclick="switchTab('smtp')">
+                <i class="ph-bold ph-database" style="margin-right:5px;"></i> Data SMTP
+            </button>
+        </div>
+    </div>
+</nav>
+
+<main>
+
+    <!-- SENDER VIEW -->
+    <div class="view active" id="view-sender">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-eyebrow">// Rotating Engine</div>
+                <div class="card-title">Automated Target Sender</div>
+                <div class="card-sub">Template pesan dirotasi otomatis tiap pengiriman dari 5 bahasa berbeda.</div>
+                <div id="status-info">
+                    <div class="status-badge"><span class="status-dot"></span> Memeriksa SMTP...</div>
                 </div>
             </div>
-        </div>
-    </nav>
 
-    <main class="max-w-4xl mx-auto px-4 pt-32 pb-20">
-        
-        <div id="view-sender" class="block">
-            <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 p-12 border border-slate-100">
-                <h3 class="text-3xl font-bold text-dark mb-2">Automated Target Sender</h3>
-                <p class="text-slate-500 mb-8" id="status-info">Memeriksa ketersediaan SMTP...</p>
-                
-                <form id="senderForm" class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Nama Pengirim</label>
-                        <input type="text" id="name" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
+            <div class="card-body">
+                <form id="senderForm">
+                    <div class="field">
+                        <label>Nama Pengirim</label>
+                        <input type="text" id="name" placeholder="Masukkan nama pengirim" required>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Email Target (Support)</label>
-                        <input type="email" id="targetEmail" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
+                    <div class="field">
+                        <label>Email Target</label>
+                        <input type="email" id="targetEmail" placeholder="support@example.com" required>
                     </div>
-                    
-                    <button type="submit" id="submitBtn" class="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50 flex items-center justify-center gap-2">
+                    <div class="divider"></div>
+                    <button type="submit" class="btn-primary" id="submitBtn">
                         <span>Kirim Pesan Rotating</span>
                         <i class="ph-bold ph-paper-plane-right"></i>
                     </button>
-                    
-                    <div id="alertMsg" class="hidden mt-4 p-4 rounded-xl text-sm font-medium flex items-center gap-3"></div>
+                    <div class="alert" id="alertMsg"></div>
                 </form>
             </div>
         </div>
+    </div>
 
-        <div id="view-smtp" class="hidden">
-            <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 p-12 border border-slate-100">
-                <h3 class="text-3xl font-bold text-dark mb-2">Manajemen SMTP</h3>
-                <p class="text-slate-500 mb-8">Tambahkan hingga 20 akun. Limit 15/hari per akun direst otomatis pukul 00:00 WIB.</p>
-                
-                <form id="smtpForm" class="flex gap-4 mb-10">
-                    <input type="email" id="newSmtpEmail" placeholder="Alamat Email" required class="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none">
-                    <input type="text" id="newSmtpPass" placeholder="App Password" required class="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/50 outline-none">
-                    <button type="submit" class="bg-dark hover:bg-slate-800 text-white px-6 rounded-xl font-medium transition-all">Tambah</button>
+    <!-- SMTP VIEW -->
+    <div class="view" id="view-smtp">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-eyebrow">// SMTP Pool</div>
+                <div class="card-title">Manajemen Akun SMTP</div>
+                <div class="card-sub">Maksimal 20 akun. Limit 15 email/hari per akun — reset otomatis pukul 00:00 WIB.</div>
+            </div>
+
+            <div class="card-body">
+                <form id="smtpForm">
+                    <div class="smtp-add-row">
+                        <input type="email" id="newSmtpEmail" placeholder="Alamat email" required>
+                        <input type="text" id="newSmtpPass" placeholder="App password" required>
+                        <button type="submit" class="btn-dark">
+                            <i class="ph-bold ph-plus" style="margin-right:4px;"></i> Tambah
+                        </button>
+                    </div>
                 </form>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-200 text-slate-500 text-sm">
-                                <th class="pb-3 font-medium">Email Akun</th>
-                                <th class="pb-3 font-medium">Penggunaan</th>
-                                <th class="pb-3 font-medium">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="smtpList" class="text-sm"></tbody>
-                    </table>
+                <table class="smtp-table">
+                    <thead>
+                        <tr>
+                            <th>Email Akun</th>
+                            <th>Penggunaan</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="smtpList"></tbody>
+                </table>
+
+                <div class="empty-state" id="emptyState" style="display:none;">
+                    <i class="ph-bold ph-database"></i>
+                    <p>Belum ada akun SMTP. Tambahkan akun di atas.</p>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <script>
-        const templates = [
-            "Halo tim support, saya mengalami kendala pada akun saya. Mohon bantuan untuk meninjau kembali status akun saya secepatnya karena ini sangat penting bagi pekerjaan saya. Terima kasih.",
-            "Hello support team, I am currently facing an issue with my account access. Please review my account status as soon as possible. Your prompt assistance is highly appreciated.",
-            "Hola equipo de soporte, tengo problemas con mi cuenta. Les ruego que revisen el estado de mi cuenta lo antes posible. Gracias por su valiosa ayuda.",
-            "Bonjour l'équipe d'assistance, je rencontre un problème avec mon compte. Veuillez vérifier l'état de mon compte dans les plus brefs délais. Merci beaucoup.",
-            "Hallo Support-Team, ich habe ein Problem mit meinem Konto. Bitte überprüfen Sie meinen Kontostatus so schnell wie möglich. Vielen Dank im Voraus."
-        ];
+</main>
 
-        function switchTab(tab) {
-            document.getElementById('view-sender').classList.toggle('hidden', tab !== 'sender');
-            document.getElementById('view-sender').classList.toggle('block', tab === 'sender');
-            document.getElementById('view-smtp').classList.toggle('hidden', tab !== 'smtp');
-            document.getElementById('view-smtp').classList.toggle('block', tab === 'smtp');
-            
-            document.getElementById('tab-sender').classList.toggle('tab-active', tab === 'sender');
-            document.getElementById('tab-sender').classList.toggle('text-slate-600', tab !== 'sender');
-            document.getElementById('tab-smtp').classList.toggle('tab-active', tab === 'smtp');
-            document.getElementById('tab-smtp').classList.toggle('text-slate-600', tab !== 'smtp');
-            
-            if(tab === 'sender') updateStatusInfo();
-        }
+<script>
+    const templates = [
+        "Halo tim support, saya mengalami kendala pada akun saya. Mohon bantuan untuk meninjau kembali status akun saya secepatnya karena ini sangat penting bagi pekerjaan saya. Terima kasih.",
+        "Hello support team, I am currently facing an issue with my account access. Please review my account status as soon as possible. Your prompt assistance is highly appreciated.",
+        "Hola equipo de soporte, tengo problemas con mi cuenta. Les ruego que revisen el estado de mi cuenta lo antes posible. Gracias por su valiosa ayuda.",
+        "Bonjour l'équipe d'assistance, je rencontre un problème avec mon compte. Veuillez vérifier l'état de mon compte dans les plus brefs délais. Merci beaucoup.",
+        "Hallo Support-Team, ich habe ein Problem mit meinem Konto. Bitte überprüfen Sie meinen Kontostatus so schnell wie möglich. Vielen Dank im Voraus."
+    ];
 
-        function getWIBDate() {
-            const now = new Date();
-            const wibTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
-            return wibTime.toISOString().split('T')[0];
-        }
+    function switchTab(tab) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('view-' + tab).classList.add('active');
 
-        function initData() {
-            let accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-            let lastReset = localStorage.getItem('lastReset');
-            const todayWIB = getWIBDate();
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
 
-            if (lastReset !== todayWIB) {
-                accounts = accounts.map(acc => ({ ...acc, count: 0 }));
-                localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
-                localStorage.setItem('lastReset', todayWIB);
-                localStorage.setItem('templateIndex', '0');
-            }
-            renderSmtpList();
-            updateStatusInfo();
-        }
+        if (tab === 'sender') updateStatusInfo();
+    }
 
-        function renderSmtpList() {
-            const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-            const tbody = document.getElementById('smtpList');
-            tbody.innerHTML = '';
-            
-            accounts.forEach((acc, index) => {
-                const limitStatus = acc.count >= 15 ? 'text-red-500' : 'text-green-500';
-                const tr = document.createElement('tr');
-                tr.className = 'border-b border-slate-100';
-                tr.innerHTML = `
-                    <td class="py-4 text-dark font-medium">${acc.email}</td>
-                    <td class="py-4 font-semibold ${limitStatus}">${acc.count} / 15</td>
-                    <td class="py-4">
-                        <button onclick="deleteSmtp(${index})" class="text-red-500 hover:text-red-700 p-2"><i class="ph-bold ph-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+    function getWIBDate() {
+        const now = new Date();
+        const wibTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+        return wibTime.toISOString().split('T')[0];
+    }
 
-        document.getElementById('smtpForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-            if (accounts.length >= 20) {
-                alert('Maksimal 20 akun SMTP tercapai.');
-                return;
-            }
-            const email = document.getElementById('newSmtpEmail').value;
-            const pass = document.getElementById('newSmtpPass').value;
-            
-            accounts.push({ email, pass, count: 0 });
+    function initData() {
+        let accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
+        let lastReset = localStorage.getItem('lastReset');
+        const todayWIB = getWIBDate();
+        if (lastReset !== todayWIB) {
+            accounts = accounts.map(acc => ({ ...acc, count: 0 }));
             localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
-            
-            document.getElementById('smtpForm').reset();
-            renderSmtpList();
-            updateStatusInfo();
+            localStorage.setItem('lastReset', todayWIB);
+            localStorage.setItem('templateIndex', '0');
+        }
+        renderSmtpList();
+        updateStatusInfo();
+    }
+
+    function renderSmtpList() {
+        const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
+        const tbody = document.getElementById('smtpList');
+        const empty = document.getElementById('emptyState');
+        tbody.innerHTML = '';
+
+        if (accounts.length === 0) {
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+
+        accounts.forEach((acc, index) => {
+            const isFull = acc.count >= 15;
+            const pct = Math.min((acc.count / 15) * 100, 100);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><span class="smtp-email">${acc.email}</span></td>
+                <td>
+                    <div class="progress-wrap">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill ${isFull ? 'full' : ''}" style="width:${pct}%"></div>
+                        </div>
+                        <span class="progress-label">${acc.count}/15</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="usage-badge ${isFull ? 'full' : 'ok'}">${isFull ? 'Limit' : 'Aktif'}</span>
+                </td>
+                <td style="text-align:right;">
+                    <button class="btn-delete" onclick="deleteSmtp(${index})">
+                        <i class="ph-bold ph-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
+    }
 
-        window.deleteSmtp = function(index) {
+    document.getElementById('smtpForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
+        if (accounts.length >= 20) { alert('Maksimal 20 akun SMTP tercapai.'); return; }
+        const email = document.getElementById('newSmtpEmail').value;
+        const pass = document.getElementById('newSmtpPass').value;
+        accounts.push({ email, pass, count: 0 });
+        localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
+        document.getElementById('smtpForm').reset();
+        renderSmtpList();
+        updateStatusInfo();
+    });
+
+    window.deleteSmtp = function(index) {
+        const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
+        accounts.splice(index, 1);
+        localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
+        renderSmtpList();
+        updateStatusInfo();
+    };
+
+    function getAvailableSmtp() {
+        const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
+        return accounts.find(acc => acc.count < 15) || null;
+    }
+
+    function updateStatusInfo() {
+        const available = getAvailableSmtp();
+        const statusEl = document.getElementById('status-info');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (available) {
+            statusEl.innerHTML = `
+                <div class="status-badge active">
+                    <span class="status-dot"></span>
+                    SMTP Aktif &nbsp;·&nbsp; ${available.email}
+                </div>`;
+            submitBtn.disabled = false;
+        } else {
             const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-            accounts.splice(index, 1);
-            localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
-            renderSmtpList();
-            updateStatusInfo();
+            const msg = accounts.length === 0
+                ? 'Tambahkan akun SMTP untuk mulai mengirim'
+                : 'Semua akun mencapai limit — reset pukul 00:00 WIB';
+            statusEl.innerHTML = `
+                <div class="status-badge error">
+                    <span class="status-dot"></span> ${msg}
+                </div>`;
+            submitBtn.disabled = true;
+        }
+    }
+
+    document.getElementById('senderForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        initData();
+        const smtp = getAvailableSmtp();
+        if (!smtp) return;
+
+        const submitBtn = document.getElementById('submitBtn');
+        const alertMsg = document.getElementById('alertMsg');
+        const originalHTML = submitBtn.innerHTML;
+
+        submitBtn.innerHTML = `<div class="loader"></div><span>Mengirim...</span>`;
+        submitBtn.disabled = true;
+        alertMsg.className = 'alert';
+
+        let tIndex = parseInt(localStorage.getItem('templateIndex')) || 0;
+        const message = templates[tIndex];
+
+        const payload = {
+            name: document.getElementById('name').value,
+            targetEmail: document.getElementById('targetEmail').value,
+            message,
+            smtpUser: smtp.email,
+            smtpPass: smtp.pass
         };
 
-        function getAvailableSmtp() {
-            const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-            return accounts.find(acc => acc.count < 15) || null;
+        try {
+            const response = await fetch('/api/index', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) {
+                let accounts = JSON.parse(localStorage.getItem('smtpAccounts'));
+                const targetAcc = accounts.find(a => a.email === smtp.email);
+                targetAcc.count += 1;
+                localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
+                tIndex = (tIndex + 1) % templates.length;
+                localStorage.setItem('templateIndex', tIndex.toString());
+                alertMsg.className = 'alert show success';
+                alertMsg.innerHTML = `<i class="ph-fill ph-check-circle" style="font-size:18px;flex-shrink:0;"></i> Email berhasil dikirim via rotasi template.`;
+                renderSmtpList();
+                updateStatusInfo();
+            } else { throw new Error('Gagal'); }
+        } catch {
+            alertMsg.className = 'alert show error';
+            alertMsg.innerHTML = `<i class="ph-fill ph-warning-circle" style="font-size:18px;flex-shrink:0;"></i> Transmisi ditolak. Kredensial tidak valid atau limit provider.`;
+        } finally {
+            submitBtn.innerHTML = originalHTML;
+            submitBtn.disabled = false;
         }
+    });
 
-        function updateStatusInfo() {
-            const available = getAvailableSmtp();
-            const statusEl = document.getElementById('status-info');
-            const submitBtn = document.getElementById('submitBtn');
-            
-            if (available) {
-                statusEl.innerHTML = `SMTP Aktif: <span class="font-semibold text-primary">${available.email}</span>`;
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-                if (accounts.length === 0) {
-                    statusEl.innerHTML = `<span class="text-red-500 font-semibold">Silakan tambahkan akun SMTP terlebih dahulu.</span>`;
-                } else {
-                    statusEl.innerHTML = `<span class="text-red-500 font-semibold">Semua akun mencapai limit harian. Tunggu reset besok pukul 00:00 WIB.</span>`;
-                }
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-        document.getElementById('senderForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            initData();
-            
-            const smtp = getAvailableSmtp();
-            if (!smtp) return;
-
-            const submitBtn = document.getElementById('submitBtn');
-            const alertMsg = document.getElementById('alertMsg');
-            const originalBtnText = submitBtn.innerHTML;
-            
-            submitBtn.innerHTML = `<div class="w-5 h-5 border-2 border-white rounded-full loader"></div> <span>Mengirim...</span>`;
-            submitBtn.disabled = true;
-            alertMsg.classList.add('hidden');
-
-            let tIndex = parseInt(localStorage.getItem('templateIndex')) || 0;
-            const message = templates[tIndex];
-
-            const payload = {
-                name: document.getElementById('name').value,
-                targetEmail: document.getElementById('targetEmail').value,
-                message: message,
-                smtpUser: smtp.email,
-                smtpPass: smtp.pass
-            };
-
-            try {
-                const response = await fetch('/api/index', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    let accounts = JSON.parse(localStorage.getItem('smtpAccounts'));
-                    const targetAcc = accounts.find(a => a.email === smtp.email);
-                    targetAcc.count += 1;
-                    localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
-
-                    tIndex = (tIndex + 1) % templates.length;
-                    localStorage.setItem('templateIndex', tIndex.toString());
-
-                    alertMsg.className = 'mt-4 p-4 rounded-xl text-sm font-medium flex items-center gap-3 bg-green-50 text-green-700 border border-green-200';
-                    alertMsg.innerHTML = `<i class="ph-fill ph-check-circle text-xl"></i> Sistem rotasi berhasil mengirim email.`;
-                    
-                    renderSmtpList();
-                    updateStatusInfo();
-                } else {
-                    throw new Error('Gagal');
-                }
-            } catch (error) {
-                alertMsg.className = 'mt-4 p-4 rounded-xl text-sm font-medium flex items-center gap-3 bg-red-50 text-red-700 border border-red-200';
-                alertMsg.innerHTML = `<i class="ph-fill ph-warning-circle text-xl"></i> Transmisi ditolak. Kredensial tidak valid atau limit dari provider.`;
-            } finally {
-                alertMsg.classList.remove('hidden');
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            }
-        });
-
-        initData();
-    </script>
+    initData();
+</script>
 </body>
 </html>
