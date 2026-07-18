@@ -4,738 +4,490 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FixMerah · Auto Sender</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
---bg:#030407;
---glass:rgba(255,255,255,0.032);
---glass-hover:rgba(255,255,255,0.055);
---border:rgba(255,255,255,0.075);
---border-strong:rgba(255,255,255,0.13);
---p:#8b5cf6;
---p2:#a78bfa;
---p3:#c4b5fd;
---text:#f1f5f9;
---sub:#94a3b8;
---muted:#475569;
---success:#10b981;
---danger:#ef4444;
+--bg:#f0f2fa;
+--surface:#fff;
+--surface2:#f7f8fd;
+--border:#e3e6f0;
+--border-s:#cbd0e6;
+--p:#6d28d9;
+--p-h:#5b21b6;
+--p-s:rgba(109,40,217,.07);
+--p-g:rgba(109,40,217,.14);
+--text:#13112a;
+--sub:#5a6385;
+--muted:#9ba3bf;
+--green:#059669;
+--green-s:rgba(5,150,105,.08);
+--green-b:rgba(5,150,105,.22);
+--red:#dc2626;
+--red-s:rgba(220,38,38,.07);
+--red-b:rgba(220,38,38,.2);
+--amber:#b45309;
+--amber-s:rgba(180,83,9,.08);
+--amber-b:rgba(180,83,9,.2);
+--r:13px;
 --mono:'JetBrains Mono',monospace;
 }
 
-html,body{height:100%}
-
-body{
-background:var(--bg);
-color:var(--text);
-font-family:'Inter',sans-serif;
--webkit-font-smoothing:antialiased;
-overflow-x:hidden;
-}
-
-.orb{
-position:fixed;
-border-radius:50%;
-filter:blur(100px);
-pointer-events:none;
-z-index:0;
-opacity:0.18;
-}
-
-.orb-1{
-width:600px;height:600px;
-background:radial-gradient(circle,#7c3aed,transparent 70%);
-top:-200px;left:-100px;
-}
-
-.orb-2{
-width:500px;height:500px;
-background:radial-gradient(circle,#1d4ed8,transparent 70%);
-top:100px;right:-150px;
-}
-
-.orb-3{
-width:400px;height:400px;
-background:radial-gradient(circle,#6d28d9,transparent 70%);
-bottom:0;left:30%;
-opacity:0.1;
-}
-
-body>*:not(.orb){position:relative;z-index:1}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 45% at 50% -5%,rgba(109,40,217,.09) 0%,transparent 65%);pointer-events:none;z-index:0}
+body>*{position:relative;z-index:1}
 
 nav{
-position:fixed;
-top:16px;left:50%;
-transform:translateX(-50%);
-z-index:100;
-width:calc(100% - 48px);
-max-width:860px;
-background:rgba(3,4,7,0.7);
-backdrop-filter:blur(24px);
--webkit-backdrop-filter:blur(24px);
-border:1px solid var(--border);
-border-radius:18px;
-padding:0 20px;
-height:60px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);
+  position:fixed;top:12px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 40px);max-width:820px;z-index:100;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--border);border-radius:16px;
+  height:58px;padding:0 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 20px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
 }
 
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-
-.logo-mark{
-width:32px;height:32px;
-background:linear-gradient(135deg,var(--p),#3b82f6);
-border-radius:9px;
-display:flex;align-items:center;justify-content:center;
-box-shadow:0 0 20px rgba(139,92,246,0.5);
-flex-shrink:0;
+.logo{display:flex;align-items:center;gap:9px}
+.logo-icon{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--p),#4338ca);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 10px rgba(109,40,217,.35);
 }
+.logo-icon i{color:#fff;font-size:14px}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:15.5px;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+.logo-text b{color:var(--p);font-weight:700}
 
-.logo-mark i{color:#fff;font-size:15px}
-
-.logo-name{
-font-family:'Space Grotesk',sans-serif;
-font-size:16px;
-font-weight:700;
-color:var(--text);
-letter-spacing:-0.02em;
+.tabbar{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:3px;gap:2px}
+.tbtn{
+  font-size:13px;font-weight:500;padding:6px 15px;
+  border-radius:8px;border:none;background:transparent;color:var(--sub);
+  cursor:pointer;transition:all .17s;display:flex;align-items:center;gap:5px;
 }
+.tbtn:hover{color:var(--text);background:var(--border)}
+.tbtn.on{background:var(--p);color:#fff;box-shadow:0 2px 10px rgba(109,40,217,.35)}
 
-.logo-name em{
-font-style:normal;
-background:linear-gradient(90deg,var(--p2),#60a5fa);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-background-clip:text;
+main{max-width:820px;margin:0 auto;padding:88px 20px 60px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+
+.card-head{
+  padding:28px 32px 22px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(170deg,var(--p-s) 0%,transparent 100%);
 }
+.eyebrow{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--p);margin-bottom:6px}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;letter-spacing:-.025em;color:var(--text);margin-bottom:3px}
+.card-sub{font-size:13px;color:var(--sub);line-height:1.55}
 
-.tabs{
-display:flex;
-background:rgba(255,255,255,0.04);
-border:1px solid var(--border);
-border-radius:11px;
-padding:3px;
-gap:2px;
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:13px;padding:5px 12px 5px 9px;
+  border-radius:999px;font-family:var(--mono);font-size:11px;
+  border:1px solid transparent;transition:all .25s;
 }
+.pill.idle{background:var(--surface2);border-color:var(--border-s);color:var(--sub)}
+.pill.ok{background:var(--green-s);border-color:var(--green-b);color:var(--green)}
+.pill.err{background:var(--red-s);border-color:var(--red-b);color:var(--red)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.pill.ok .dot{animation:pulse 2s ease-in-out infinite;box-shadow:0 0 5px var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-.tab{
-font-family:'Inter',sans-serif;
-font-size:13px;
-font-weight:500;
-padding:7px 16px;
-border-radius:8px;
-border:none;
-background:transparent;
-color:var(--sub);
-cursor:pointer;
-transition:all 0.18s;
-display:flex;align-items:center;gap:6px;
+.card-body{padding:26px 32px 30px}
+
+.field{margin-bottom:16px}
+.field>label{display:block;font-size:12px;font-weight:500;color:var(--sub);margin-bottom:6px;letter-spacing:.01em}
+.iw{position:relative}
+
+input[type=text],input[type=email],input[type=password]{
+  width:100%;background:var(--surface2);
+  border:1.5px solid var(--border);border-radius:10px;
+  padding:11px 38px 11px 14px;
+  font-family:'Inter',sans-serif;font-size:13.5px;color:var(--text);
+  outline:none;transition:border-color .18s,box-shadow .18s,background .18s;
 }
-
-.tab:hover{color:var(--text)}
-
-.tab.on{
-background:linear-gradient(135deg,var(--p),#6d28d9);
-color:#fff;
-box-shadow:0 2px 12px rgba(139,92,246,0.4);
-}
-
-main{
-max-width:860px;
-margin:0 auto;
-padding:96px 24px 60px;
-}
-
-.card{
-background:var(--glass);
-border:1px solid var(--border);
-border-radius:22px;
-overflow:hidden;
-backdrop-filter:blur(16px);
--webkit-backdrop-filter:blur(16px);
-box-shadow:0 24px 64px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.06);
-}
-
-.card-top{
-padding:32px 36px 24px;
-border-bottom:1px solid var(--border);
-background:linear-gradient(180deg,rgba(139,92,246,0.04) 0%,transparent 100%);
-}
-
-.eyebrow{
-font-family:var(--mono);
-font-size:10.5px;
-font-weight:500;
-letter-spacing:0.12em;
-text-transform:uppercase;
-color:var(--p2);
-margin-bottom:8px;
-opacity:0.8;
-}
-
-.card-title{
-font-family:'Space Grotesk',sans-serif;
-font-size:24px;
-font-weight:700;
-color:var(--text);
-letter-spacing:-0.025em;
-line-height:1.2;
-margin-bottom:5px;
-}
-
-.card-desc{
-font-size:13.5px;
-color:var(--muted);
-line-height:1.6;
-}
-
-.status-pill{
-display:inline-flex;
-align-items:center;
-gap:7px;
-margin-top:14px;
-padding:5px 13px 5px 10px;
-border-radius:999px;
-font-family:var(--mono);
-font-size:11.5px;
-border:1px solid transparent;
-transition:all 0.3s;
-}
-
-.status-pill.idle{
-background:rgba(255,255,255,0.04);
-border-color:var(--border);
-color:var(--sub);
-}
-
-.status-pill.ok{
-background:rgba(16,185,129,0.07);
-border-color:rgba(16,185,129,0.2);
-color:var(--success);
-}
-
-.status-pill.err{
-background:rgba(239,68,68,0.07);
-border-color:rgba(239,68,68,0.18);
-color:var(--danger);
-}
-
-.dot{
-width:6px;height:6px;
-border-radius:50%;
-background:currentColor;
-flex-shrink:0;
-}
-
-.status-pill.ok .dot{
-box-shadow:0 0 8px var(--success);
-animation:blink 2.2s ease-in-out infinite;
-}
-
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.35}}
-
-.card-body{padding:28px 36px 32px}
-
-.field{margin-bottom:18px}
-
-.field label{
-display:block;
-font-size:12px;
-font-weight:500;
-color:var(--muted);
-margin-bottom:7px;
-letter-spacing:0.015em;
-}
-
-input[type=text],
-input[type=email],
-input[type=password]{
-width:100%;
-background:rgba(255,255,255,0.035);
-border:1px solid var(--border);
-border-radius:11px;
-padding:12px 15px;
-font-family:'Inter',sans-serif;
-font-size:14px;
-color:var(--text);
-outline:none;
-transition:border-color 0.18s,box-shadow 0.18s,background 0.18s;
-}
-
 input::placeholder{color:var(--muted)}
+input:hover{border-color:var(--border-s)}
+input:focus{border-color:var(--p);background:#fff;box-shadow:0 0 0 3px var(--p-g)}
 
-input:hover{border-color:var(--border-strong)}
-
-input:focus{
-border-color:var(--p);
-background:rgba(139,92,246,0.05);
-box-shadow:0 0 0 3px rgba(139,92,246,0.12);
+.iicon{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  font-size:15px;opacity:0;transition:opacity .18s;pointer-events:none;
 }
+.iicon.show{opacity:1}
+.iicon.ok{color:var(--green)}
+.iicon.err{color:var(--red)}
 
-.sep{
-height:1px;
-background:var(--border);
-margin:24px 0;
+.sep{height:1px;background:var(--border);margin:22px 0}
+
+.btn-primary{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:12px 20px;
+  background:linear-gradient(135deg,var(--p),#4338ca);
+  color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;letter-spacing:-.01em;
+  border:none;border-radius:11px;cursor:pointer;
+  transition:all .18s;
+  box-shadow:0 4px 18px rgba(109,40,217,.28),inset 0 1px 0 rgba(255,255,255,.18);
 }
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 26px rgba(109,40,217,.38),inset 0 1px 0 rgba(255,255,255,.18)}
+.btn-primary:active:not(:disabled){transform:translateY(0)}
+.btn-primary:disabled{opacity:.38;cursor:not-allowed;box-shadow:none}
 
-.btn-send{
-width:100%;
-display:flex;align-items:center;justify-content:center;gap:8px;
-padding:13px 20px;
-background:linear-gradient(135deg,var(--p) 0%,#6d28d9 100%);
-color:#fff;
-font-family:'Space Grotesk',sans-serif;
-font-size:14.5px;
-font-weight:600;
-letter-spacing:-0.01em;
-border:none;
-border-radius:12px;
-cursor:pointer;
-transition:all 0.2s;
-box-shadow:0 4px 24px rgba(139,92,246,0.35),inset 0 1px 0 rgba(255,255,255,0.15);
-position:relative;
-overflow:hidden;
-}
-
-.btn-send::before{
-content:'';
-position:absolute;
-inset:0;
-background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent);
-opacity:0;
-transition:opacity 0.2s;
-}
-
-.btn-send:hover::before{opacity:1}
-
-.btn-send:hover:not(:disabled){
-transform:translateY(-1px);
-box-shadow:0 8px 32px rgba(139,92,246,0.5),inset 0 1px 0 rgba(255,255,255,0.15);
-}
-
-.btn-send:active:not(:disabled){transform:translateY(0)}
-
-.btn-send:disabled{
-opacity:0.35;
-cursor:not-allowed;
-box-shadow:none;
-transform:none;
-}
-
-.alert{
-display:none;
-align-items:center;
-gap:10px;
-padding:13px 15px;
-border-radius:11px;
-font-size:13px;
-font-weight:500;
-margin-top:14px;
-line-height:1.45;
-}
-
+.alert{display:none;align-items:center;gap:9px;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:500;margin-top:13px;line-height:1.4}
 .alert.show{display:flex}
+.alert i{font-size:16px;flex-shrink:0}
+.alert.ok{background:var(--green-s);border:1px solid var(--green-b);color:var(--green)}
+.alert.err{background:var(--red-s);border:1px solid var(--red-b);color:var(--red)}
 
-.alert i{font-size:17px;flex-shrink:0}
-
-.alert.ok{
-background:rgba(16,185,129,0.07);
-border:1px solid rgba(16,185,129,0.2);
-color:var(--success);
-}
-
-.alert.err{
-background:rgba(239,68,68,0.07);
-border:1px solid rgba(239,68,68,0.18);
-color:var(--danger);
-}
-
-.smtp-row{
-display:grid;
-grid-template-columns:1fr 1fr auto;
-gap:10px;
-margin-bottom:24px;
-}
-
+.smtp-add{display:grid;grid-template-columns:1fr 1fr auto;gap:9px;margin-bottom:22px}
 .btn-add{
-padding:12px 18px;
-background:rgba(255,255,255,0.06);
-border:1px solid var(--border);
-border-radius:11px;
-color:var(--text);
-font-family:'Inter',sans-serif;
-font-size:13px;
-font-weight:500;
-cursor:pointer;
-transition:all 0.18s;
-white-space:nowrap;
-display:flex;align-items:center;gap:5px;
+  padding:11px 16px;
+  background:var(--p);border:none;border-radius:10px;
+  color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .17s;white-space:nowrap;display:flex;align-items:center;gap:4px;
+  box-shadow:0 2px 10px rgba(109,40,217,.28);
 }
+.btn-add:hover{background:var(--p-h)}
 
-.btn-add:hover{
-background:rgba(139,92,246,0.12);
-border-color:rgba(139,92,246,0.35);
-color:var(--p2);
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:0 0 11px;border-bottom:1.5px solid var(--border)}
+td{padding:13px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+
+.em{font-family:var(--mono);font-size:12.5px;color:var(--sub)}
+
+.bar-row{display:flex;align-items:center;gap:9px}
+.bar-bg{width:80px;height:4px;background:var(--border-s);border-radius:99px;overflow:hidden}
+.bar-f{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--p),#a78bfa);transition:width .4s}
+.bar-f.full{background:linear-gradient(90deg,var(--red),#f87171)}
+.bar-lbl{font-family:var(--mono);font-size:11px;color:var(--sub)}
+
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.02em}
+.badge.ok{background:var(--green-s);color:var(--green);border:1px solid var(--green-b)}
+.badge.err{background:var(--red-s);color:var(--red);border:1px solid var(--red-b)}
+.badge.warn{background:var(--amber-s);color:var(--amber);border:1px solid var(--amber-b)}
+
+.acts{display:flex;align-items:center;justify-content:flex-end;gap:5px}
+
+.btn-test{
+  display:flex;align-items:center;gap:4px;
+  padding:5px 11px;background:var(--surface2);
+  border:1px solid var(--border-s);border-radius:8px;
+  color:var(--sub);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
 }
+.btn-test:hover:not(:disabled){border-color:var(--p);color:var(--p);background:var(--p-s)}
+.btn-test:disabled{opacity:.5;cursor:not-allowed}
 
-.tbl{width:100%;border-collapse:collapse}
+.btn-del{background:none;border:none;cursor:pointer;color:var(--muted);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-del:hover{background:var(--red-s);color:var(--red)}
 
-.tbl th{
-text-align:left;
-font-family:var(--mono);
-font-size:10.5px;
-font-weight:500;
-letter-spacing:0.09em;
-text-transform:uppercase;
-color:var(--muted);
-padding:0 0 12px;
-border-bottom:1px solid var(--border);
-}
-
-.tbl td{
-padding:15px 0;
-border-bottom:1px solid rgba(255,255,255,0.04);
-vertical-align:middle;
-}
-
-.tbl tr:last-child td{border-bottom:none}
-
-.tbl-email{
-font-family:var(--mono);
-font-size:12.5px;
-color:var(--sub);
-}
-
-.bar-wrap{display:flex;align-items:center;gap:10px}
-
-.bar-bg{
-width:90px;height:4px;
-background:rgba(255,255,255,0.07);
-border-radius:99px;
-overflow:hidden;
-}
-
-.bar-fill{
-height:100%;
-border-radius:99px;
-background:linear-gradient(90deg,var(--p),var(--p2));
-transition:width 0.4s ease;
-}
-
-.bar-fill.full{background:linear-gradient(90deg,#dc2626,#f87171)}
-
-.bar-label{
-font-family:var(--mono);
-font-size:11.5px;
-color:var(--muted);
-}
-
-.badge{
-display:inline-flex;align-items:center;
-padding:3px 10px;
-border-radius:999px;
-font-family:var(--mono);
-font-size:10.5px;
-font-weight:500;
-letter-spacing:0.02em;
-}
-
-.badge.ok{
-background:rgba(16,185,129,0.08);
-color:var(--success);
-border:1px solid rgba(16,185,129,0.18);
-}
-
-.badge.full{
-background:rgba(239,68,68,0.08);
-color:var(--danger);
-border:1px solid rgba(239,68,68,0.18);
-}
-
-.btn-del{
-background:none;
-border:none;
-cursor:pointer;
-color:var(--muted);
-width:32px;height:32px;
-border-radius:8px;
-display:flex;align-items:center;justify-content:center;
-transition:all 0.15s;
-margin-left:auto;
-}
-
-.btn-del:hover{
-background:rgba(239,68,68,0.1);
-color:var(--danger);
-}
-
-.empty{
-text-align:center;
-padding:40px 0 10px;
-}
-
-.empty i{
-font-size:32px;
-color:var(--muted);
-display:block;
-margin-bottom:8px;
-opacity:0.5;
-}
-
-.empty p{
-font-size:13px;
-color:var(--muted);
-}
+.empty{text-align:center;padding:36px 0 8px}
+.empty i{font-size:28px;color:var(--muted);display:block;margin-bottom:7px;opacity:.4}
+.empty p{font-size:13px;color:var(--muted)}
 
 .view{display:none}
 .view.on{display:block}
 
-.loader{
-width:16px;height:16px;
-border:2px solid rgba(255,255,255,0.25);
-border-top-color:#fff;
-border-radius:50%;
-animation:spin 0.7s linear infinite;
-flex-shrink:0;
-}
-
-@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;flex-shrink:0}
+.spin-s{width:11px;height:11px;border:1.5px solid var(--border-s);border-top-color:var(--p);border-radius:50%;animation:rot .7s linear infinite;flex-shrink:0}
+@keyframes rot{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
-
 <nav>
-    <div class="logo">
-        <div class="logo-mark"><i class="ph-fill ph-paper-plane-tilt"></i></div>
-        <span class="logo-name">Fix<em>Merah</em></span>
-    </div>
-    <div class="tabs">
-        <button class="tab on" id="tab-sender" onclick="switchTab('sender')">
-            <i class="ph-bold ph-paper-plane-right"></i> Sender
-        </button>
-        <button class="tab" id="tab-smtp" onclick="switchTab('smtp')">
-            <i class="ph-bold ph-database"></i> SMTP
-        </button>
-    </div>
+  <div class="logo">
+    <div class="logo-icon"><i class="ph-fill ph-paper-plane-tilt"></i></div>
+    <span class="logo-text">Fix<b>Merah</b></span>
+  </div>
+  <div class="tabbar">
+    <button class="tbtn on" id="tab-sender" onclick="switchTab('sender')"><i class="ph-bold ph-paper-plane-right"></i> Sender</button>
+    <button class="tbtn" id="tab-smtp" onclick="switchTab('smtp')"><i class="ph-bold ph-database"></i> SMTP</button>
+  </div>
 </nav>
 
 <main>
 
-    <div class="view on" id="view-sender">
-        <div class="card">
-            <div class="card-top">
-                <div class="eyebrow">Rotating Engine</div>
-                <div class="card-title">Automated Target Sender</div>
-                <div class="card-desc">Template dirotasi otomatis dari 5 bahasa berbeda setiap pengiriman.</div>
-                <div id="status-info">
-                    <div class="status-pill idle"><span class="dot"></span>Memeriksa SMTP...</div>
-                </div>
-            </div>
-            <div class="card-body">
-                <form id="senderForm">
-                    <div class="field">
-                        <label>Nama Pengirim</label>
-                        <input type="text" id="name" placeholder="Masukkan nama pengirim" required>
-                    </div>
-                    <div class="field">
-                        <label>Email Target</label>
-                        <input type="email" id="targetEmail" placeholder="support@domain.com" required>
-                    </div>
-                    <div class="sep"></div>
-                    <button type="submit" class="btn-send" id="submitBtn">
-                        <span>Kirim Pesan Rotating</span>
-                        <i class="ph-bold ph-paper-plane-right"></i>
-                    </button>
-                    <div class="alert" id="alertMsg"></div>
-                </form>
-            </div>
-        </div>
+  <div class="view on" id="view-sender">
+    <div class="card">
+      <div class="card-head">
+        <div class="eyebrow">Rotating Engine</div>
+        <div class="card-title">Automated Target Sender</div>
+        <div class="card-sub">Template 5 bahasa dirotasi otomatis. Nomor target disisipkan langsung ke dalam pesan.</div>
+        <div id="status-info"><div class="pill idle"><span class="dot"></span>Memeriksa SMTP...</div></div>
+      </div>
+      <div class="card-body">
+        <form id="senderForm">
+          <div class="field">
+            <label>Nama Pengirim</label>
+            <div class="iw"><input type="text" id="name" placeholder="Masukkan nama pengirim" required></div>
+          </div>
+          <div class="field">
+            <label>Nomor WhatsApp Target</label>
+            <div class="iw"><input type="text" id="nomorWa" placeholder="+62812xxxxxxxx" required></div>
+          </div>
+          <div class="field">
+            <label>Email Tujuan</label>
+            <div class="iw"><input type="email" id="targetEmail" placeholder="support@whatsapp.com" required></div>
+          </div>
+          <div class="sep"></div>
+          <button type="submit" class="btn-primary" id="submitBtn">
+            <span>Kirim Pesan Rotating</span>
+            <i class="ph-bold ph-paper-plane-right"></i>
+          </button>
+          <div class="alert" id="alertMsg"></div>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <div class="view" id="view-smtp">
-        <div class="card">
-            <div class="card-top">
-                <div class="eyebrow">SMTP Pool</div>
-                <div class="card-title">Manajemen Akun SMTP</div>
-                <div class="card-desc">Maksimal 20 akun &middot; Limit 15 email/hari &middot; Reset otomatis pukul 00:00 WIB</div>
+  <div class="view" id="view-smtp">
+    <div class="card">
+      <div class="card-head">
+        <div class="eyebrow">SMTP Pool</div>
+        <div class="card-title">Manajemen Akun SMTP</div>
+        <div class="card-sub">Maksimal 20 akun &middot; Limit 15/hari &middot; Reset 00:00 WIB &middot; Uji koneksi real-time per akun</div>
+      </div>
+      <div class="card-body">
+        <form id="smtpForm">
+          <div class="smtp-add">
+            <div class="iw">
+              <input type="email" id="newEmail" placeholder="Alamat email" required>
+              <span class="iicon" id="iconEmail"></span>
             </div>
-            <div class="card-body">
-                <form id="smtpForm">
-                    <div class="smtp-row">
-                        <input type="email" id="newSmtpEmail" placeholder="Alamat email" required>
-                        <input type="text" id="newSmtpPass" placeholder="App password" required>
-                        <button type="submit" class="btn-add"><i class="ph-bold ph-plus"></i> Tambah</button>
-                    </div>
-                </form>
-                <table class="tbl">
-                    <thead>
-                        <tr>
-                            <th>Email Akun</th>
-                            <th>Penggunaan</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="smtpList"></tbody>
-                </table>
-                <div class="empty" id="emptyState" style="display:none">
-                    <i class="ph-bold ph-tray"></i>
-                    <p>Belum ada akun SMTP. Tambahkan di atas.</p>
-                </div>
+            <div class="iw">
+              <input type="text" id="newPass" placeholder="App password" required>
+              <span class="iicon" id="iconPass"></span>
             </div>
+            <button type="submit" class="btn-add"><i class="ph-bold ph-plus"></i> Tambah</button>
+          </div>
+        </form>
+        <table>
+          <thead>
+            <tr>
+              <th>Email Akun</th>
+              <th>Penggunaan</th>
+              <th>Status</th>
+              <th style="text-align:right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="smtpList"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none">
+          <i class="ph-bold ph-tray"></i>
+          <p>Belum ada akun. Tambahkan di atas.</p>
         </div>
+      </div>
     </div>
+  </div>
 
 </main>
 
 <script>
-const templates = [
-    "Halo tim support, saya mengalami kendala pada akun saya. Mohon bantuan untuk meninjau kembali status akun saya secepatnya karena ini sangat penting bagi pekerjaan saya. Terima kasih.",
-    "Hello support team, I am currently facing an issue with my account access. Please review my account status as soon as possible. Your prompt assistance is highly appreciated.",
-    "Hola equipo de soporte, tengo problemas con mi cuenta. Les ruego que revisen el estado de mi cuenta lo antes posible. Gracias por su valiosa ayuda.",
-    "Bonjour l'équipe d'assistance, je rencontre un problème avec mon compte. Veuillez vérifier l'état de mon compte dans les plus brefs délais. Merci beaucoup.",
-    "Hallo Support-Team, ich habe ein Problem mit meinem Konto. Bitte überprüfen Sie meinen Kontostatus so schnell wie möglich. Vielen Dank im Voraus."
+const TEMPLATES = [
+  n=>`Prezada Equipe de Suporte do WhatsApp,\n\nEstou com problemas para registrar meu número. Sempre que tento, recebo a mensagem "login indisponível". Este número é muito importante porque o utilizo para fins educacionais e de comunicação como estudante. Espero sinceramente que a equipe do WhatsApp possa ajudar a resolver este problema o mais rápido possível para que eu possa usá-lo novamente no WhatsApp.\n\nMeu número é ${n}\n\nAgradeço a atenção e o apoio de todos.`,
+  n=>`Dear WhatsApp Support Team,\n\nI am having trouble registering my number. Every time I try, I receive the message "login unavailable". This number is very important to me as I use it for educational and communication purposes as a student. I sincerely hope that the WhatsApp team can help resolve this issue as soon as possible so I can use it on WhatsApp again.\n\nMy number is ${n}\n\nThank you for your attention and support.`,
+  n=>`Kepada Tim Dukungan WhatsApp,\n\nSaya mengalami masalah saat mendaftarkan nomor saya. Setiap kali mencoba, selalu muncul pesan "login tidak tersedia". Nomor ini sangat penting bagi saya karena digunakan untuk keperluan edukasi dan komunikasi sebagai pelajar. Saya berharap tim WhatsApp dapat membantu menyelesaikan masalah ini sesegera mungkin agar saya dapat menggunakannya kembali.\n\nNomor saya adalah ${n}\n\nTerima kasih atas perhatian dan bantuannya.`,
+  n=>`Estimado Equipo de Soporte de WhatsApp,\n\nTengo problemas para registrar mi número. Cada vez que lo intento, aparece el mensaje "inicio de sesión no disponible". Este número es muy importante para mí ya que lo uso con fines educativos y de comunicación como estudiante. Espero que el equipo de WhatsApp pueda resolver este problema lo antes posible para que pueda volver a usarlo.\n\nMi número es ${n}\n\nAgradezco su atención y apoyo.`,
+  n=>`Chère Équipe d'Assistance WhatsApp,\n\nJ'ai des difficultés à enregistrer mon numéro. À chaque tentative, je reçois le message "connexion indisponible". Ce numéro est très important pour moi car je l'utilise à des fins éducatives et de communication en tant qu'étudiant. J'espère sincèrement que l'équipe WhatsApp pourra résoudre ce problème au plus vite afin que je puisse l'utiliser à nouveau.\n\nMon numéro est ${n}\n\nJe vous remercie de votre attention et de votre soutien.`
 ];
 
-function switchTab(tab) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
-    document.getElementById('view-' + tab).classList.add('on');
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
-    document.getElementById('tab-' + tab).classList.add('on');
-    if (tab === 'sender') updateStatusInfo();
+function switchTab(t){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('view-'+t).classList.add('on');
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+t).classList.add('on');
+  if(t==='sender') updateStatus();
 }
 
-function getWIBDate() {
-    return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' })).toISOString().split('T')[0];
+function wibDate(){
+  return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'})).toISOString().split('T')[0];
 }
 
-function initData() {
-    let accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-    const todayWIB = getWIBDate();
-    if (localStorage.getItem('lastReset') !== todayWIB) {
-        accounts = accounts.map(acc => ({ ...acc, count: 0 }));
-        localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
-        localStorage.setItem('lastReset', todayWIB);
-        localStorage.setItem('templateIndex', '0');
-    }
-    renderSmtpList();
-    updateStatusInfo();
+function initData(){
+  let accs=JSON.parse(localStorage.getItem('smtp'))||[];
+  const today=wibDate();
+  if(localStorage.getItem('resetDate')!==today){
+    accs=accs.map(a=>({...a,count:0}));
+    localStorage.setItem('smtp',JSON.stringify(accs));
+    localStorage.setItem('resetDate',today);
+    localStorage.setItem('tIdx','0');
+  }
+  renderList();
+  updateStatus();
 }
 
-function renderSmtpList() {
-    const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-    const tbody = document.getElementById('smtpList');
-    const empty = document.getElementById('emptyState');
-    tbody.innerHTML = '';
-    if (!accounts.length) { empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-    accounts.forEach((acc, i) => {
-        const full = acc.count >= 15;
-        const pct = Math.min((acc.count / 15) * 100, 100);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><span class="tbl-email">${acc.email}</span></td>
-            <td>
-                <div class="bar-wrap">
-                    <div class="bar-bg"><div class="bar-fill ${full ? 'full' : ''}" style="width:${pct}%"></div></div>
-                    <span class="bar-label">${acc.count}/15</span>
-                </div>
-            </td>
-            <td><span class="badge ${full ? 'full' : 'ok'}">${full ? 'Limit' : 'Aktif'}</span></td>
-            <td><button class="btn-del" onclick="deleteSmtp(${i})"><i class="ph-bold ph-trash"></i></button></td>
-        `;
-        tbody.appendChild(tr);
+function getAccs(){ return JSON.parse(localStorage.getItem('smtp'))||[]; }
+function saveAccs(a){ localStorage.setItem('smtp',JSON.stringify(a)); }
+function getAvailable(){ return getAccs().find(a=>a.count<15)||null; }
+
+function updateStatus(){
+  const avail=getAvailable();
+  const el=document.getElementById('status-info');
+  const btn=document.getElementById('submitBtn');
+  if(avail){
+    el.innerHTML=`<div class="pill ok"><span class="dot"></span>SMTP Aktif &nbsp;&middot;&nbsp; ${avail.email}</div>`;
+    btn.disabled=false;
+  } else {
+    const accs=getAccs();
+    const msg=!accs.length?'Tambahkan akun SMTP terlebih dahulu':'Semua akun mencapai limit — reset pukul 00:00 WIB';
+    el.innerHTML=`<div class="pill err"><span class="dot"></span>${msg}</div>`;
+    btn.disabled=true;
+  }
+}
+
+function renderList(){
+  const accs=getAccs();
+  const tbody=document.getElementById('smtpList');
+  const empty=document.getElementById('emptyState');
+  tbody.innerHTML='';
+  if(!accs.length){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  accs.forEach((acc,i)=>{
+    const full=acc.count>=15;
+    const pct=Math.min((acc.count/15)*100,100);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><span class="em">${acc.email}</span></td>
+      <td><div class="bar-row"><div class="bar-bg"><div class="bar-f ${full?'full':''}" style="width:${pct}%"></div></div><span class="bar-lbl">${acc.count}/15</span></div></td>
+      <td><span class="badge ${full?'err':'ok'}" id="bdg-${i}">${full?'Limit':'Aktif'}</span></td>
+      <td><div class="acts">
+        <button class="btn-test" id="tst-${i}" onclick="testConn(${i})"><i class="ph-bold ph-wifi-high"></i> Uji</button>
+        <button class="btn-del" onclick="delAcc(${i})"><i class="ph-bold ph-trash"></i></button>
+      </div></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function testConn(i){
+  const accs=getAccs();
+  const acc=accs[i];
+  const btn=document.getElementById('tst-'+i);
+  const bdg=document.getElementById('bdg-'+i);
+  btn.innerHTML=`<div class="spin-s"></div> Menguji...`;
+  btn.disabled=true;
+  bdg.className='badge warn';
+  bdg.textContent='Testing...';
+  try{
+    const res=await fetch('/api/test-smtp',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({smtpUser:acc.email,smtpPass:acc.pass})
     });
+    if(res.ok){
+      bdg.className='badge ok';
+      bdg.textContent='Valid ✓';
+    } else {
+      bdg.className='badge err';
+      bdg.textContent='Gagal ✗';
+    }
+  } catch {
+    bdg.className='badge err';
+    bdg.textContent='Error';
+  } finally {
+    btn.innerHTML=`<i class="ph-bold ph-wifi-high"></i> Uji`;
+    btn.disabled=false;
+    setTimeout(()=>{
+      const full=acc.count>=15;
+      bdg.className='badge '+(full?'err':'ok');
+      bdg.textContent=full?'Limit':'Aktif';
+    },5000);
+  }
 }
 
-document.getElementById('smtpForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-    if (accounts.length >= 20) { alert('Maksimal 20 akun SMTP tercapai.'); return; }
-    accounts.push({ email: document.getElementById('newSmtpEmail').value, pass: document.getElementById('newSmtpPass').value, count: 0 });
-    localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
-    document.getElementById('smtpForm').reset();
-    renderSmtpList();
-    updateStatusInfo();
+function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+const newEmail=document.getElementById('newEmail');
+const newPass=document.getElementById('newPass');
+const iconEmail=document.getElementById('iconEmail');
+const iconPass=document.getElementById('iconPass');
+
+newEmail.addEventListener('input',()=>{
+  const v=newEmail.value.trim();
+  if(!v){ iconEmail.className='iicon'; return; }
+  iconEmail.className='iicon show '+(validEmail(v)?'ok':'err');
+  iconEmail.innerHTML=validEmail(v)?'<i class="ph-bold ph-check"></i>':'<i class="ph-bold ph-x"></i>';
 });
 
-window.deleteSmtp = i => {
-    const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-    accounts.splice(i, 1);
-    localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
-    renderSmtpList();
-    updateStatusInfo();
+newPass.addEventListener('input',()=>{
+  const v=newPass.value.trim();
+  if(!v){ iconPass.className='iicon'; return; }
+  const ok=v.replace(/\s/g,'').length>=8;
+  iconPass.className='iicon show '+(ok?'ok':'err');
+  iconPass.innerHTML=ok?'<i class="ph-bold ph-check"></i>':'<i class="ph-bold ph-x"></i>';
+});
+
+document.getElementById('smtpForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const accs=getAccs();
+  if(accs.length>=20){ alert('Maksimal 20 akun SMTP.'); return; }
+  const email=newEmail.value.trim();
+  const pass=newPass.value.trim();
+  if(!validEmail(email)||pass.length<8) return;
+  accs.push({email,pass,count:0});
+  saveAccs(accs);
+  document.getElementById('smtpForm').reset();
+  iconEmail.className='iicon';
+  iconPass.className='iicon';
+  renderList();
+  updateStatus();
+});
+
+window.delAcc=i=>{
+  const accs=getAccs();
+  accs.splice(i,1);
+  saveAccs(accs);
+  renderList();
+  updateStatus();
 };
 
-function getAvailableSmtp() {
-    return (JSON.parse(localStorage.getItem('smtpAccounts')) || []).find(a => a.count < 15) || null;
-}
-
-function updateStatusInfo() {
-    const available = getAvailableSmtp();
-    const el = document.getElementById('status-info');
-    const btn = document.getElementById('submitBtn');
-    if (available) {
-        el.innerHTML = `<div class="status-pill ok"><span class="dot"></span>SMTP Aktif &nbsp;&middot;&nbsp; ${available.email}</div>`;
-        btn.disabled = false;
-    } else {
-        const accounts = JSON.parse(localStorage.getItem('smtpAccounts')) || [];
-        const msg = accounts.length === 0 ? 'Tambahkan akun SMTP untuk mulai' : 'Semua akun mencapai limit — reset 00:00 WIB';
-        el.innerHTML = `<div class="status-pill err"><span class="dot"></span>${msg}</div>`;
-        btn.disabled = true;
-    }
-}
-
-document.getElementById('senderForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    initData();
-    const smtp = getAvailableSmtp();
-    if (!smtp) return;
-    const btn = document.getElementById('submitBtn');
-    const alert = document.getElementById('alertMsg');
-    const orig = btn.innerHTML;
-    btn.innerHTML = `<div class="loader"></div><span>Mengirim...</span>`;
-    btn.disabled = true;
-    alert.className = 'alert';
-    let tIdx = parseInt(localStorage.getItem('templateIndex')) || 0;
-    try {
-        const res = await fetch('/api/index', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: document.getElementById('name').value,
-                targetEmail: document.getElementById('targetEmail').value,
-                message: templates[tIdx],
-                smtpUser: smtp.email,
-                smtpPass: smtp.pass
-            })
-        });
-        if (!res.ok) throw new Error();
-        let accounts = JSON.parse(localStorage.getItem('smtpAccounts'));
-        accounts.find(a => a.email === smtp.email).count += 1;
-        localStorage.setItem('smtpAccounts', JSON.stringify(accounts));
-        localStorage.setItem('templateIndex', String((tIdx + 1) % templates.length));
-        alert.className = 'alert show ok';
-        alert.innerHTML = `<i class="ph-fill ph-check-circle"></i> Email berhasil dikirim via rotasi template.`;
-        renderSmtpList();
-        updateStatusInfo();
-    } catch {
-        alert.className = 'alert show err';
-        alert.innerHTML = `<i class="ph-fill ph-warning-circle"></i> Transmisi ditolak. Kredensial tidak valid atau limit provider.`;
-    } finally {
-        btn.innerHTML = orig;
-        btn.disabled = false;
-    }
+document.getElementById('senderForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  initData();
+  const smtp=getAvailable();
+  if(!smtp) return;
+  const btn=document.getElementById('submitBtn');
+  const alertEl=document.getElementById('alertMsg');
+  const orig=btn.innerHTML;
+  btn.innerHTML=`<div class="spin"></div><span>Mengirim...</span>`;
+  btn.disabled=true;
+  alertEl.className='alert';
+  const nomor=document.getElementById('nomorWa').value.trim();
+  let tIdx=parseInt(localStorage.getItem('tIdx'))||0;
+  try{
+    const res=await fetch('/api/index',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name:document.getElementById('name').value,
+        targetEmail:document.getElementById('targetEmail').value,
+        message:TEMPLATES[tIdx](nomor),
+        smtpUser:smtp.email,
+        smtpPass:smtp.pass
+      })
+    });
+    if(!res.ok) throw new Error();
+    const accs=getAccs();
+    accs.find(a=>a.email===smtp.email).count+=1;
+    saveAccs(accs);
+    localStorage.setItem('tIdx',String((tIdx+1)%TEMPLATES.length));
+    alertEl.className='alert show ok';
+    alertEl.innerHTML=`<i class="ph-fill ph-check-circle"></i> Email berhasil dikirim. Template ke-${tIdx+1} dari 5 bahasa digunakan.`;
+    renderList();
+    updateStatus();
+  } catch {
+    alertEl.className='alert show err';
+    alertEl.innerHTML=`<i class="ph-fill ph-warning-circle"></i> Pengiriman gagal. Periksa kredensial SMTP atau limit provider.`;
+  } finally {
+    btn.innerHTML=orig;
+    btn.disabled=false;
+  }
 });
 
 initData();
