@@ -190,7 +190,7 @@ export default async function handler(req,res){
 
     let target=String(targetEmailRaw).trim().toLowerCase();
     if(WA_TARGETS.includes(target)){
-    } else if(target.endsWith('@support.whatsapp.com') || target==='support@whatsapp.com'){
+    } else if(target.endsWith('@support.whatsapp.com')){
     } else {
       return res.status(400).json({ok:false,error:'Email tujuan harus email support WhatsApp resmi'});
     }
