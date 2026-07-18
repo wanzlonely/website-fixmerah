@@ -1,223 +1,334 @@
-export const config = { maxDuration: 60 };
-import nodemailer from 'nodemailer';
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script>
+<script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FixMerah · Perfect Auto</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#f6f7fb;--surface:#fff;--surface-2:#f8f8ff;--line:#ececf2;--line-strong:#dddde8;
+--p:#6d28d9;--p-2:#7c3aed;--p-soft:#f3efff;
+--text:#16151f;--sub:#6b6e85;--muted:#9a9cb3;
+--green:#0f9b6a;--green-bg:#eefaf4;--green-line:#c8ebdb;
+--red:#e11d48;--red-bg:#fff0f2;--red-line:#f8c2cb;
+--r:18px;--mono:'JetBrains Mono',monospace;
+}
+html{font-size:15px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0}
+.bg::before{content:'';position:absolute;inset:0;background:radial-gradient(600px 400px at 20% -10%, rgba(109,40,217,.08), transparent 70%), radial-gradient(600px 500px at 90% 0%, rgba(124,58,237,.07), transparent 70%)}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 80px;position:relative;z-index:1}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--p),var(--p-2));display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 6px 16px rgba(109,40,217,.24)}
+.brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.02em}
+.brand-name b{color:var(--p)}
+.nav{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.nav-btn{border:none;background:transparent;padding:7px 14px;border-radius:9px;font-size:13px;font-weight:500;color:var(--sub);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+.nav-btn.on{background:var(--text);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 12px 32px rgba(0,0,0,.05), 0 1px 0 rgba(255,255,255,.8) inset;overflow:hidden;animation:in .5s cubic-bezier(.16,1,.3,1)}
+@keyframes in{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.card-h{padding:26px 26px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg, var(--p-soft), transparent 80%)}
+.kicker{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--p);font-weight:600;margin-bottom:8px}
+.title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1.15;margin-bottom:6px}
+.sub{font-size:13px;color:var(--sub);line-height:1.6}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pill{font-family:var(--mono);font-size:11px;font-weight:500;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--sub);display:inline-flex;align-items:center;gap:6px;max-width:100%;word-break:break-all}
+.pill.ok{background:var(--green-bg);border-color:var(--green-line);color:var(--green)}
+.pill.err{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+.dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.pill.ok .dot{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.card-b{padding:22px 26px 26px}
+.auto-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px}
+@media(min-width:560px){.auto-grid{grid-template-columns:1fr 1fr 1fr}}
+.auto-item{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 13px;position:relative;overflow:hidden}
+.auto-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--p),var(--p-2));opacity:.6}
+.auto-lab{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.auto-val{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:-.01em;word-break:break-all;line-height:1.3}
+.auto-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
+.auto-item.live{border-color:rgba(109,40,217,.18);background:linear-gradient(180deg,#fbfaff,var(--surface-2))}
+.auto-item.live .auto-val{color:var(--text)}
+.field{margin-bottom:14px}
+.label{font-size:12.5px;font-weight:600;margin-bottom:7px;display:block}
+.input-wrap{position:relative}
+.input{width:100%;height:46px;background:var(--surface);border:1.5px solid var(--line);border-radius:11px;padding:0 40px 0 14px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:all .18s}
+.input::placeholder{color:var(--muted)}
+.input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(109,40,217,.12)}
+.input-ico{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:16px;opacity:0;transition:.18s;pointer-events:none}
+.input-ico.show{opacity:1}
+.input-ico.ok{color:var(--green)}
+.input-ico.err{color:var(--red)}
+.progress{height:4px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:10px}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--p),var(--p-2));transition:width .5s;width:0%}
+.btn{width:100%;height:48px;border:none;border-radius:12px;background:var(--text);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all .18s;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.16)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-primary{background:linear-gradient(135deg,var(--p),var(--p-2));box-shadow:0 6px 18px rgba(109,40,217,.28)}
+.btn-primary:hover{box-shadow:0 10px 26px rgba(109,40,217,.36)}
+.alert{display:none;padding:12px 13px;border-radius:11px;font-size:12.5px;line-height:1.5;margin-top:14px;word-break:break-word}
+.alert.show{display:flex;gap:8px;animation:in .3s ease}
+.alert.ok{background:var(--green-bg);border:1px solid var(--green-line);color:var(--green)}
+.alert.err{background:var(--red-bg);border:1px solid var(--red-line);color:var(--red)}
+.smtp-form{display:grid;gap:8px;margin-bottom:10px}
+@media(min-width:560px){.smtp-form{grid-template-columns:1.2fr 1fr auto}}
+.smtp-form .input{height:44px}
+.btn-add{height:44px;padding:0 16px;border:none;border-radius:11px;background:var(--p);color:#fff;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;white-space:nowrap}
+@media(max-width:559px){.btn-add{width:100%}}
+.hint{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+.table-wrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:540px}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+.em{font-family:var(--mono);font-size:12px;color:var(--sub);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.bar{width:64px;height:4px;background:var(--line);border-radius:99px;overflow:hidden;display:inline-block;vertical-align:middle}
+.bar-i{height:100%;background:var(--p);transition:width .4s}
+.bar-i.full{background:var(--red)}
+.mono{font-family:var(--mono);font-size:11px;color:var(--sub)}
+.badge{font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+.badge.ok{background:var(--green-bg);border-color:var(--green-line);color:var(--green)}
+.badge.err{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+.acts{display:flex;justify-content:flex-end;gap:5px}
+.icon-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:.15s}
+.icon-btn:hover{border-color:var(--p);color:var(--p)}
+.empty{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+.view{display:none}
+.view.on{display:block}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:8px;width:calc(100% - 24px);max-width:380px;pointer-events:none}
+.toast{background:#18161f;color:#fff;padding:11px 13px;border-radius:11px;font-size:12.5px;display:flex;gap:8px;align-items:center;box-shadow:0 10px 24px rgba(0,0,0,.18);animation:in .3s cubic-bezier(.16,1,.3,1);pointer-events:auto;word-break:break-word}
+.foot{margin-top:18px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div id="toast"></div>
 
-const RATE = new Map();
-const COUNT_MAP = new Map();
+<div class="wrap">
+  <div class="header">
+    <div class="brand"><div class="brand-icon"><i class="ph-fill ph-paper-plane-tilt"></i></div><div class="brand-name">Fix<b>Merah</b></div></div>
+    <div class="nav">
+      <button class="nav-btn on" id="nav-sender" onclick="tab('sender')"><i class="ph-bold ph-paper-plane-right"></i> Sender</button>
+      <button class="nav-btn" id="nav-smtp" onclick="tab('smtp')"><i class="ph-bold ph-database"></i> SMTP</button>
+    </div>
+  </div>
 
-function getJakartaDateStr(){return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});}
-function getJakartaTimestamp(){return new Date().toLocaleString('id-ID',{timeZone:'Asia/Jakarta',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+  <div class="view on" id="view-sender">
+    <div class="card">
+      <div class="card-h">
+        <div class="kicker">Perfect Auto · No Click Needed</div>
+        <div class="title">Auto Sender WhatsApp Support</div>
+        <div class="sub">Semua otomatis: nama human, email tujuan rolling, template 5 bahasa rolling anti AI-bot. Tidak perlu klik shuffle lagi. Cukup isi nomor WA target & kirim.</div>
+        <div class="meta-row" id="statusRow"><span class="pill" id="statusPill"><span class="dot"></span> Memeriksa SMTP...</span><span class="pill" id="resetPill">Reset 00:00 WIB</span></div>
+        <div class="progress"><div class="progress-bar" id="usageBar"></div></div>
+      </div>
+      <div class="card-b">
+        <div class="auto-grid">
+          <div class="auto-item live"><div class="auto-lab"><i class="ph-bold ph-user"></i> Nama Pengirim · Auto</div><div class="auto-val" id="autoName">Memuat...</div><div class="auto-sub">Human-realistic · tidak di tabel</div></div>
+          <div class="auto-item live"><div class="auto-lab"><i class="ph-bold ph-envelope"></i> Tujuan · Auto Rolling</div><div class="auto-val" id="autoTarget">support@whatsapp.com</div><div class="auto-sub" id="autoTargetSub">1/7 · General</div></div>
+          <div class="auto-item live"><div class="auto-lab"><i class="ph-bold ph-translate"></i> Template · Auto Rolling</div><div class="auto-val" id="autoTpl">Indonesia</div><div class="auto-sub" id="autoTplSub">1/5 · anti AI-bot</div></div>
+        </div>
 
-const WA_TARGETS=[
-'support@support.whatsapp.com',
-'android@support.whatsapp.com',
-'iphone@support.whatsapp.com',
-'smb@support.whatsapp.com',
-'business@support.whatsapp.com',
-'smb_web@support.whatsapp.com'
+        <form id="senderForm" autocomplete="off">
+          <input type="hidden" id="name">
+          <input type="hidden" id="targetEmail">
+          <div class="field"><label class="label">Nomor WhatsApp Target</label><div class="input-wrap"><input class="input" id="nomorWa" placeholder="Kode Negara + Nomor (cth: 1415xxxxxxx)" inputmode="numeric" required><i class="input-ico ph-bold ph-check" id="icoWa"></i></div></div>
+          <button class="btn btn-primary" id="sendBtn" type="submit"><span>Kirim Pesan Rotating</span><i class="ph-bold ph-paper-plane-right"></i></button>
+          <div class="alert" id="alertBox"></div>
+        </form>
+        <div class="foot">Auto generate & rolling aktif · Tidak perlu klik manual · Limit 15/hari/akun</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-smtp">
+    <div class="card">
+      <div class="card-h"><div class="kicker">SMTP Pool · Only Gmail Real Check</div><div class="title">Manajemen Akun SMTP</div><div class="sub">Hanya Gmail. App password 16 huruf dicek real ke smtp.gmail.com. Maks 20 akun · 15/hari · Reset 00:00 WIB. Nama tidak disimpan.</div></div>
+      <div class="card-b">
+        <form id="smtpForm" class="smtp-form" autocomplete="off">
+          <div class="input-wrap"><input class="input" id="newEmail" placeholder="nama@gmail.com" required><i class="input-ico ph-bold ph-check" id="icoEmail"></i></div>
+          <div class="input-wrap"><input class="input" id="newPass" placeholder="abcd efgh ijkl mnop" required><i class="input-ico ph-bold ph-check" id="icoPass"></i></div>
+          <button class="btn-add" id="addBtn" type="submit"><i class="ph-bold ph-plus"></i> Tambah</button>
+        </form>
+        <div class="hint">Ambil di myaccount.google.com → Security → 2-Step → App passwords. Sistem verify real.</div>
+        <div class="table-wrap"><table><thead><tr><th>Email</th><th>Pakai</th><th>Status</th><th style="text-align:right">Aksi</th></tr></thead><tbody id="smtpList"></tbody></table></div>
+        <div class="empty" id="emptyState" style="display:none">Belum ada akun. Tambahkan Gmail di atas.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NAMES=["Andi Pratama","Budi Santoso","Rizki Amelia","Siti Rahmawati","Ahmad Fauzi","Dewi Lestari","Fajar Nugroho","Intan Permata","Rian Hidayat","Lestari Wulandari","Bayu Saputra","Maya Anggraini","Dimas Arya","Nadia Putri","Eko Wijaya","Fitri Handayani","Galih Mahendra","Hana Pertiwi","Irfan Maulana","Jihan Safira","Kurniawan Adi","Larasati Ayu","Mahendra Putra","Nabila Zahra","Oka Pradipta","Puspita Sari","Ratih Kusuma","Satria Wibawa","Tania Anindita","Umar Faruq","Vina Melati","Wahyu Ramadhan","Yusuf Ibrahim","Zahra Nabila","Aditya Nugraha","Bella Oktavia","Cahyo Kumoro","Dian Pratiwi","Eka Saputra","Farah Adinda","Gilang Ramadhan","Hesti Purnama","Indra Gunawan","Kevin Sanjaya","Lia Amelia","Maulana Yusuf","Naufal Azhar","Olivia Christie","Putra Wijaya","Rendra Kusuma","Salsa Bila","Teguh Prasetyo","Ulfa Aisyah","Vito Ferdian","Wulan Sari","Yoga Prakoso"];
+const TARGETS=[
+{email:"support@whatsapp.com",label:"General Support"},
+{email:"support@support.whatsapp.com",label:"Legacy Support"},
+{email:"android@support.whatsapp.com",label:"Android"},
+{email:"iphone@support.whatsapp.com",label:"iPhone"},
+{email:"smb@support.whatsapp.com",label:"Business SMB"},
+{email:"business@support.whatsapp.com",label:"Business API"},
+{email:"smb_web@support.whatsapp.com",label:"Business Web"}
 ];
+const TPL_META=[{lang:"Português",flag:"🇧🇷"},{lang:"English",flag:"🇺🇸"},{lang:"Indonesia",flag:"🇮🇩"},{lang:"Español",flag:"🇪🇸"},{lang:"Français",flag:"🇫🇷"}];
 
-function randomPick(arr){return arr[Math.floor(Math.random()*arr.length)];}
-function humanizeVariations(){
-  const greetings=[
-    "Mohon bantuannya segera.",
-    "Saya sangat mengandalkan nomor ini untuk kerja.",
-    "Terima kasih banyak atas bantuannya.",
-    "Saya tunggu balasan secepatnya.",
-    "Nomor ini dipakai untuk keluarga dan pekerjaan.",
-    "Saya sudah coba beberapa kali tapi tetap gagal.",
-    ""
-  ];
-  const devices=["Android 13 - Samsung A52","iPhone 14 - iOS 17.4","Android 12 - Xiaomi Redmi","iPhone 13 - iOS 16.7"];
-  const urg=["","Mohon diprioritaskan.","Urgent - butuh untuk ujian.","Sudah 2 hari tidak bisa login."];
-  return {extra: randomPick(greetings), device: randomPick(devices), urgent: randomPick(urg)};
+function randName(){return NAMES[Math.floor(Math.random()*NAMES.length)]}
+let curName="";let tIdx=parseInt(localStorage.getItem('tIdx')||'0');let tgIdx=parseInt(localStorage.getItem('targetIdx')||'0');
+if(isNaN(tIdx)) tIdx=0;if(isNaN(tgIdx)||tgIdx>=TARGETS.length) tgIdx=0;
+
+function setName(n){
+  curName=n;
+  document.getElementById('name').value=n;
+  document.getElementById('autoName').textContent=n;
+}
+function setTarget(i){
+  tgIdx=i%TARGETS.length;
+  const t=TARGETS[tgIdx];
+  document.getElementById('targetEmail').value=t.email;
+  document.getElementById('autoTarget').textContent=t.email;
+  document.getElementById('autoTargetSub').textContent=`${tgIdx+1}/${TARGETS.length} · ${t.label}`;
+  localStorage.setItem('targetIdx',String(tgIdx));
+}
+function setTpl(i){
+  tIdx=i%5;
+  document.getElementById('autoTpl').textContent=TPL_META[tIdx].lang;
+  document.getElementById('autoTplSub').textContent=`${tIdx+1}/5 ${TPL_META[tIdx].flag} · anti AI-bot`;
+  localStorage.setItem('tIdx',String(tIdx));
+}
+function autoRollAll(){
+  setName(randName());
+  setTarget(tgIdx);
+  setTpl(tIdx);
 }
 
-const TEMPLATES=[
-(nomor,refId,ts,name)=>{
-  const h=humanizeVariations();
-  return `Prezada Equipe de Suporte do WhatsApp,
-
-Estou com problemas para registrar meu número. Sempre que tento, recebo a mensagem "login indisponível". ${h.urgent}
-
-Este número é muito importante porque o utilizo para fins educacionais e de comunicação como estudante. ${h.extra}
-
-Meu número é ${nomor}
-Nome: ${name}
-Dispositivo: ${h.device}
-Reference ID: ${refId}
-Data: ${ts}
-
-Agradeço a atenção e o apoio de todos.`;
-},
-(nomor,refId,ts,name)=>{
-  const h=humanizeVariations();
-  return `Dear WhatsApp Support Team,
-
-I am having trouble registering my number. Every time I try, I receive the message "login unavailable". ${h.urgent}
-
-This number is very important to me as I use it for educational and communication purposes as a student. ${h.extra}
-
-My number is ${nomor}
-Name: ${name}
-Device: ${h.device}
-Reference ID: ${refId}
-Time: ${ts}
-
-Thank you for your attention and support.`;
-},
-(nomor,refId,ts,name)=>{
-  const h=humanizeVariations();
-  return `Kepada Tim Dukungan WhatsApp yang terhormat,
-
-Saya mengalami masalah saat mendaftarkan nomor saya ${nomor}. Setiap kali mencoba, selalu muncul pesan "login tidak tersedia". ${h.urgent}
-
-Nomor ini sangat penting bagi saya karena digunakan untuk keperluan edukasi dan komunikasi sebagai pelajar. ${h.extra}
-Perangkat: ${h.device}
-
-Nama Pelapor: ${name}
-Nomor: ${nomor}
-ID Laporan: ${refId}
-Waktu WIB: ${ts}
-
-Terima kasih atas perhatian dan bantuannya.`;
-},
-(nomor,refId,ts,name)=>{
-  const h=humanizeVariations();
-  return `Estimado Equipo de Soporte de WhatsApp,
-
-Tengo problemas para registrar mi número ${nomor}. Cada vez que lo intento, aparece el mensaje "inicio de sesión no disponible". ${h.urgent}
-
-Este número es muy importante para mí ya que lo uso con fines educativos y de comunicación como estudiante. ${h.extra}
-
-Nombre: ${name}
-Dispositivo: ${h.device}
-Número: ${nomor}
-Referencia: ${refId}
-Fecha: ${ts}
-
-Agradezco su atención y apoyo.`;
-},
-(nomor,refId,ts,name)=>{
-  const h=humanizeVariations();
-  return `Chère Équipe d'Assistance WhatsApp,
-
-J'ai des difficultés à enregistrer mon numéro ${nomor}. À chaque tentative, je reçois le message "connexion indisponible". ${h.urgent}
-
-Ce numéro est très important pour moi car je l'utilise à des fins éducatives et de communication en tant qu'étudiant. ${h.extra}
-
-Nom: ${name}
-Appareil: ${h.device}
-Numéro: ${nomor}
-Référence: ${refId}
-Date: ${ts}
-
-Je vous remercie de votre attention et de votre soutien.`;
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function validGmail(v){return /^[^\s@]+@gmail\.com$/i.test(v.trim())}
+function validWa(v){return /^\d{7,15}$/.test(v.replace(/\D/g,''))}
+function toast(msg,type='info'){
+  const c=document.getElementById('toast');const el=document.createElement('div');el.className='toast';
+  el.innerHTML=`<i class="ph-fill ${type==='error'?'ph-warning-circle':type==='ok'?'ph-check-circle':'ph-info'}"></i><span>${esc(msg)}</span>`;
+  c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(6px)';setTimeout(()=>el.remove(),250)},2800);
 }
-];
-
-const SUBJECTS=[
-(n,ref)=>`Problema de Login - ${n.slice(-4)} [${ref}]`,
-(n,ref)=>`Help Request - Login Unavailable ${ref} - ${randomPick(['Urgent','Help','Support'])}`,
-(n,ref)=>`Laporan Kendala Registrasi ${ref} - ${randomPick(['Mohon Bantu','Urgent','Bantuan'])}`,
-(n,ref)=>`Solicitud de Soporte - ${n.slice(-4)} [${ref}]`,
-(n,ref)=>`Demande d'assistance WhatsApp ${ref}`
-];
-
-export default async function handler(req,res){
-  res.setHeader('Access-Control-Allow-Origin','*');
-  res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers','Content-Type');
-  if(req.method==='OPTIONS') return res.status(200).end();
+function tab(t){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('nav-'+t).classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('view-'+t).classList.add('on');
+  if(t==='smtp') render();
+}
+function initStore(){
   try{
-    const ip=(req.headers['x-forwarded-for']?.split(',')[0])||req.socket.remoteAddress||'unknown';
-    const now=Date.now();
-    if(!RATE.has(ip)) RATE.set(ip,[]);
-    let reqs=RATE.get(ip).filter(t=>now-t<600000);
-    if(reqs.length>=6) return res.status(429).json({ok:false,error:'Terlalu banyak request, tunggu 2 menit'});
-    reqs.push(now);RATE.set(ip,reqs);
-
-    const body=req.body||{};
-    // Support both old and new field names to fix bug screenshot
-    const nomorWa = body.nomorWa || body.nomor || body.phone || body.targetNumber;
-    const targetEmailRaw = body.targetEmail || body.tujuan || body.to;
-    const smtpUserRaw = body.smtpUser || body.email;
-    const smtpPassRaw = body.smtpPass || body.pass;
-    const name = body.name || body.nama;
-    let tIdx = body.tIdx;
-    let targetIdx = body.targetIdx;
-
-    if(!nomorWa || !targetEmailRaw || !smtpUserRaw || !smtpPassRaw){
-      return res.status(400).json({ok:false,error:'Data nomor, tujuan, email, password wajib',debug:{hasNomor:!!nomorWa,hasTujuan:!!targetEmailRaw,hasEmail:!!smtpUserRaw,hasPass:!!smtpPassRaw}});
+    const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
+    if(localStorage.getItem('resetDate')!==today){
+      let accs=[];try{accs=JSON.parse(localStorage.getItem('smtp')||'[]')}catch{accs=[]}
+      accs=accs.map(a=>({...a,count:0}));localStorage.setItem('smtp',JSON.stringify(accs));localStorage.setItem('resetDate',today);
     }
-
-    const cleanNomor=String(nomorWa).replace(/\D/g,'');
-    if(!/^62\d{9,13}$/.test(cleanNomor)) return res.status(400).json({ok:false,error:'Nomor harus format 62 + 9-13 digit'});
-
-    const email=String(smtpUserRaw).trim().toLowerCase();
-    const pass=String(smtpPassRaw).replace(/\s/g,'');
-    if(!/^[^\s@]+@gmail\.com$/i.test(email)) return res.status(400).json({ok:false,error:'Hanya gmail.com yang didukung'});
-    if(pass.length!==16 || !/^[a-z]{16}$/i.test(pass)) return res.status(400).json({ok:false,error:'App password harus 16 huruf a-z'});
-
-    let target=String(targetEmailRaw).trim().toLowerCase();
-    // Auto rolling if targetIdx provided but client wants auto
-    if(WA_TARGETS.includes(target)){
-      // ok
-    } else if(target.endsWith('@support.whatsapp.com') || target==='support@whatsapp.com'){
-      // ok custom but still whatsapp domain
-    } else {
-      return res.status(400).json({ok:false,error:'Email tujuan harus email support WhatsApp resmi'});
-    }
-
-    const dateStr=getJakartaDateStr();
-    const key=`${email}|${dateStr}`;
-    const used=COUNT_MAP.get(key)||0;
-    if(used>=15) return res.status(429).json({ok:false,error:`Limit 15/hari tercapai untuk ${email}. Reset 00:00 WIB`});
-
-    let idx=parseInt(tIdx);
-    if(isNaN(idx)||idx<0||idx>4) idx=used%5;
-
-    const refId=`WA-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`;
-    const ts=getJakartaTimestamp();
-    const senderName=(name&&String(name).trim())?String(name).trim():'Pelapor';
-
-    const bodyText=TEMPLATES[idx](cleanNomor,refId,ts,senderName);
-    const subject=SUBJECTS[idx](cleanNomor,refId);
-
-    const transporter=nodemailer.createTransport({service:'gmail',auth:{user:email,pass},tls:{rejectUnauthorized:false}});
-    await transporter.verify();
-    await transporter.sendMail({
-      from: `"${senderName}" <${email}>`,
-      to: target,
-      subject,
-      text: bodyText,
-      headers:{'X-Reference-Id':refId,'X-Mailer':'FixMerah v3 Anti-Bot'}
-    });
-
-    COUNT_MAP.set(key,used+1);
-
-    // Return next target for auto rolling
-    let nextTargetIdx = parseInt(targetIdx);
-    if(isNaN(nextTargetIdx)) nextTargetIdx = WA_TARGETS.indexOf(target);
-    if(nextTargetIdx<0) nextTargetIdx=0;
-    nextTargetIdx=(nextTargetIdx+1)%WA_TARGETS.length;
-
-    return res.json({
-      ok:true,
-      reference:refId,
-      template:idx+1,
-      sentTo:target,
-      nextTarget:WA_TARGETS[nextTargetIdx],
-      nextTargetIdx,
-      used:used+1,
-      limit:15,
-      reset:'00:00 WIB',
-      message:'Terkirim'
-    });
-
-  }catch(err){
-    console.error('send error',err);
-    const m=err.message||'';
-    if(m.includes('Invalid login')||m.includes('535')) return res.status(401).json({ok:false,error:'SMTP login gagal - cek app password & 2FA'});
-    return res.status(500).json({ok:false,error:'Gagal kirim: '+m.slice(0,250)});
-  }
+  }catch{}
+  autoRollAll();render();statusUpdate();countdown();setInterval(countdown,1000);
 }
+function getAccs(){try{return JSON.parse(localStorage.getItem('smtp'))||[]}catch{return []}}
+function saveAccs(a){localStorage.setItem('smtp',JSON.stringify(a))}
+function available(){return getAccs().find(a=>a.count<15)||null}
+function statusUpdate(){
+  const av=available();const pill=document.getElementById('statusPill');const bar=document.getElementById('usageBar');const btn=document.getElementById('sendBtn');
+  if(av){pill.className='pill ok';pill.innerHTML=`<span class="dot"></span> SMTP Aktif · ${esc(av.email)} · ${av.count}/15`;btn.disabled=false;bar.style.width=`${(av.count/15)*100}%`;}
+  else{const all=getAccs();pill.className='pill err';pill.innerHTML=`<span class="dot"></span> ${all.length? 'Limit 15/hari tercapai':'Tambah Gmail di tab SMTP'}`;btn.disabled=true;bar.style.width='100%';bar.style.background='var(--red)';}
+}
+function countdown(){
+  const now=new Date();const j=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));const tom=new Date(j);tom.setDate(tom.getDate()+1);tom.setHours(0,0,0,0);
+  const diff=tom-j;const h=Math.floor(diff/3600000);const m=Math.floor((diff%3600000)/60000);const s=Math.floor((diff%60000)/1000);
+  const el=document.getElementById('resetPill');if(el) el.textContent=`Reset 00:00 WIB · ${h}j ${m}m ${s}d`;
+}
+function render(){
+  const accs=getAccs();const tbody=document.getElementById('smtpList');const empty=document.getElementById('emptyState');
+  tbody.innerHTML='';if(!accs.length){empty.style.display='block';return}empty.style.display='none';
+  accs.forEach((acc,i)=>{
+    const full=acc.count>=15;const pct=Math.min((acc.count/15)*100,100);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="em">${esc(acc.email)}</span></td><td><span class="bar"><span class="bar-i ${full?'full':''}" style="width:${pct}%"></span></span> <span class="mono">${acc.count}/15</span></td><td><span class="badge ${full?'err':'ok'}" id="bdg-${i}">${full?'Limit':'Aktif'}</span></td><td><div class="acts"><button class="icon-btn" id="tst-${i}" onclick="testConn(${i})" title="Uji real"><i class="ph-bold ph-wifi-high"></i></button><button class="icon-btn" onclick="delAcc(${i})" title="Hapus"><i class="ph-bold ph-trash"></i></button></div></td>`;
+    tbody.appendChild(tr);
+  });
+}
+async function testConn(i){
+  const accs=getAccs();const acc=accs[i];if(!acc) return;
+  const btn=document.getElementById('tst-'+i);const bdg=document.getElementById('bdg-'+i);const old=btn.innerHTML;
+  btn.innerHTML=`<i class="ph-bold ph-spinner-gap" style="animation:spin .7s linear infinite;display:inline-block"></i>`;btn.disabled=true;if(bdg){bdg.textContent='Testing...'}
+  try{
+    const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:acc.email,smtpPass:acc.pass})});
+    const d=await r.json();
+    if(r.ok&&d.ok){if(bdg){bdg.className='badge ok';bdg.textContent='Valid ✓'}toast(acc.email+' valid','ok');}
+    else{if(bdg){bdg.className='badge err';bdg.textContent='Gagal ✗'}toast(d.error||'Gagal','error');}
+  }catch{toast('Error jaringan','error')}finally{btn.innerHTML=old;btn.disabled=false;setTimeout(()=>{const full=getAccs()[i]?.count>=15;if(bdg){bdg.className='badge '+(full?'err':'ok');bdg.textContent=full?'Limit':'Aktif'}},4000)}
+}
+window.delAcc=i=>{const accs=getAccs();const em=accs[i]?.email||'';accs.splice(i,1);saveAccs(accs);render();statusUpdate();toast('Dihapus: '+em);};
+
+const waEl=document.getElementById('nomorWa');const icoWa=document.getElementById('icoWa');
+waEl.addEventListener('input',()=>{const v=waEl.value.trim();if(!v){icoWa.className='input-ico';return}const ok=validWa(v);icoWa.className='input-ico show '+(ok?'ok':'err');icoWa.className=icoWa.className.replace('ph-check','').replace('ph-x','')+' '+(ok?'ph-check':'ph-x');icoWa.classList.add('show',ok?'ok':'err');icoWa.innerHTML='';const i=document.createElement('i');i.className='ph-bold '+(ok?'ph-check':'ph-x');icoWa.appendChild(i);});
+
+const emailEl=document.getElementById('newEmail');const passEl=document.getElementById('newPass');
+const icoEmail=document.getElementById('icoEmail');const icoPass=document.getElementById('icoPass');
+emailEl.addEventListener('input',()=>{const v=emailEl.value.trim();if(!v){icoEmail.className='input-ico';return}const ok=validGmail(v);icoEmail.className='input-ico show '+(ok?'ok':'err');icoEmail.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;});
+passEl.addEventListener('input',()=>{const v=passEl.value.trim();if(!v){icoPass.className='input-ico';return}const ok=v.replace(/\s/g,'').length===16;icoPass.className='input-ico show '+(ok?'ok':'err');icoPass.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;});
+
+document.getElementById('smtpForm').addEventListener('submit',async e=>{
+  e.preventDefault();const btn=document.getElementById('addBtn');const accs=getAccs();
+  if(accs.length>=20){toast('Maks 20 akun','error');return}
+  const email=emailEl.value.trim().toLowerCase();const pass=emailEl?passEl.value.trim().replace(/\s/g,''):'';
+  if(!validGmail(email)){toast('Hanya gmail.com','error');return}
+  if(pass.length!==16||!/^[a-z]{16}$/i.test(pass)){toast('App password harus 16 huruf','error');return}
+  if(accs.some(a=>a.email.toLowerCase()===email)){toast('Email sudah ada','error');return}
+  btn.textContent='Verifikasi Real...';btn.disabled=true;
+  try{
+    const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:email,smtpPass:pass})});
+    const d=await r.json();if(!r.ok||!d.ok) throw new Error(d.error||'Gagal');
+    accs.push({email,pass,count:0});saveAccs(accs);e.target.reset();icoEmail.className='input-ico';icoPass.className='input-ico';render();statusUpdate();toast('Gmail valid & ditambah','ok');
+  }catch(err){toast(err.message,'error');}finally{btn.innerHTML='<i class="ph-bold ph-plus"></i> Tambah';btn.disabled=false}
+});
+
+document.getElementById('senderForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const smtp=available();if(!smtp){toast('Tidak ada SMTP','error');return}
+  const nomor=waEl.value.trim().replace(/\D/g,'');
+  const targetEmail=document.getElementById('targetEmail').value;
+  if(!validWa(nomor)){toast('Nomor harus terdiri dari 7-15 digit angka (termasuk kode negara)','error');return}
+  const btn=document.getElementById('sendBtn');const alertBox=document.getElementById('alertBox');const old=btn.innerHTML;
+  btn.innerHTML='<span class="dot" style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></span> Mengirim...';btn.disabled=true;alertBox.className='alert';
+  try{
+    const res=await fetch('/api/index',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:curName,nomorWa:nomor,targetEmail,smtpUser:smtp.email,smtpPass:smtp.pass,tIdx, targetIdx:tgIdx})});
+    const data=await res.json();if(!res.ok||!data.ok) throw new Error(data.error||'Gagal');
+    const accs=getAccs();const idx=accs.findIndex(a=>a.email===smtp.email);if(idx>=0){accs[idx].count+=1;saveAccs(accs);}
+    const nextTpl=(tIdx+1)%5;const nextTg=(tgIdx+1)%TARGETS.length;
+    setTpl(nextTpl);setTarget(nextTg);setName(randName());
+    alertBox.className='alert show ok';alertBox.innerHTML=`<i class="ph-fill ph-check-circle"></i><span>Berhasil terkirim ke <b>${esc(data.sentTo||targetEmail)}</b><br>Auto rolling → Nama baru: <b>${esc(curName)}</b>, Tujuan: <b>${esc(TARGETS[nextTg].email)}</b>, Template: <b>${TPL_META[nextTpl].lang}</b> (${nextTpl+1}/5)<br>Ref: ${esc(data.reference||'')} · ${data.used||''}/15</span>`;
+    render();statusUpdate();toast(`Terkirim! Auto → ${curName} · ${TARGETS[nextTg].email} · ${TPL_META[nextTpl].lang}`,'ok');
+  }catch(err){alertBox.className='alert show err';alertBox.innerHTML=`<i class="ph-fill ph-warning-circle"></i><span>Gagal: ${esc(err.message.slice(0,260))}</span>`;toast(err.message,'error');}
+  finally{btn.innerHTML=old;btn.disabled=false}
+});
+
+initStore();
+</script>
+</body>
+</html>
