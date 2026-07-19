@@ -1,41 +1,758 @@
 <!DOCTYPE html>
 <html lang="id">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FixMerah · Perfect Auto</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
-<link rel="stylesheet" href="style.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#07090F;
+  --surface:#0C1018;
+  --card:#101624;
+  --card2:#0D1320;
+  --border:#1A2540;
+  --border2:#253360;
+  --accent:#4F7EFF;
+  --accent-dim:rgba(79,126,255,.1);
+  --accent-glow:rgba(79,126,255,.2);
+  --violet:#7B5EF6;
+  --green:#1ED472;
+  --green-dim:rgba(30,212,114,.1);
+  --red:#FF4560;
+  --red-dim:rgba(255,69,96,.1);
+  --t1:#E6EEFF;
+  --t2:#7A8FB0;
+  --t3:#3E506E;
+  --font:'Inter',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --display:'Space Grotesk',sans-serif;
+  --r:14px;
+  --r2:9px;
+  --r3:6px;
+}
+
+html{height:100%;}
+
+body{
+  min-height:100%;
+  background:var(--bg);
+  color:var(--t1);
+  font-family:var(--font);
+  font-size:14px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+.bg-fx{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.bg-fx::before{
+  content:'';
+  position:absolute;
+  top:-30%;
+  left:50%;
+  transform:translateX(-50%);
+  width:800px;
+  height:800px;
+  background:radial-gradient(ellipse at center,rgba(79,126,255,.07) 0%,transparent 65%);
+  border-radius:50%;
+  animation:orb 10s ease-in-out infinite;
+}
+
+.bg-fx::after{
+  content:'';
+  position:absolute;
+  bottom:-20%;
+  right:-15%;
+  width:500px;
+  height:500px;
+  background:radial-gradient(ellipse at center,rgba(123,94,246,.04) 0%,transparent 65%);
+  border-radius:50%;
+}
+
+@keyframes orb{
+  0%,100%{transform:translateX(-50%) scale(1);opacity:.7;}
+  50%{transform:translateX(-50%) scale(1.12);opacity:1;}
+}
+
+.grid-lines{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(79,126,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(79,126,255,.025) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 0%,transparent 100%);
+}
+
+#toast{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  pointer-events:none;
+}
+
+.t-item{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:10px 14px;
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:var(--r2);
+  font-size:13px;
+  font-weight:500;
+  color:var(--t1);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  animation:tIn .2s cubic-bezier(.34,1.4,.64,1);
+  transition:opacity .22s,transform .22s;
+  max-width:280px;
+}
+
+.t-item i{font-size:16px;flex-shrink:0;}
+.t-item.ok i{color:var(--green);}
+.t-item.err i{color:var(--red);}
+.t-item.info i{color:var(--accent);}
+
+@keyframes tIn{
+  from{opacity:0;transform:translateX(14px);}
+  to{opacity:1;transform:translateX(0);}
+}
+
+.wrap{
+  position:relative;
+  z-index:1;
+  max-width:520px;
+  margin:0 auto;
+  padding:20px 16px 48px;
+}
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 14px;
+  background:rgba(12,16,24,.8);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  backdrop-filter:blur(16px);
+  margin-bottom:16px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.brand-icon{
+  width:36px;
+  height:36px;
+  background:linear-gradient(135deg,var(--accent),var(--violet));
+  border-radius:9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+  flex-shrink:0;
+  box-shadow:0 0 18px rgba(79,126,255,.35);
+}
+
+.brand-name{
+  font-family:var(--display);
+  font-size:17px;
+  font-weight:700;
+  letter-spacing:-.3px;
+  color:var(--t1);
+}
+
+.brand-name b{
+  background:linear-gradient(90deg,var(--accent),var(--violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.nav{
+  display:flex;
+  gap:3px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:3px;
+}
+
+.nb{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 13px;
+  border-radius:var(--r3);
+  border:none;
+  background:transparent;
+  color:var(--t3);
+  font-family:var(--font);
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:color .15s,background .15s,box-shadow .15s;
+  white-space:nowrap;
+}
+
+.nb:hover{color:var(--t2);}
+
+.nb.on{
+  background:var(--card);
+  color:var(--t1);
+  box-shadow:0 1px 10px rgba(0,0,0,.4);
+}
+
+.nb i{font-size:14px;}
+
+.view{display:none;}
+.view.on{display:block;animation:fadeUp .22s ease;}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(6px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;
+}
+
+.card-h{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+
+.card-h::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent-glow),transparent);
+  opacity:.7;
+}
+
+.kicker{
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:7px;
+}
+
+.ctitle{
+  font-family:var(--display);
+  font-size:21px;
+  font-weight:700;
+  color:var(--t1);
+  letter-spacing:-.4px;
+  margin-bottom:4px;
+}
+
+.csub{
+  font-size:13px;
+  color:var(--t2);
+}
+
+.meta{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:13px;
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:11.5px;
+  font-family:var(--mono);
+  font-weight:500;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  color:var(--t2);
+  transition:all .2s;
+}
+
+.pill.ok{
+  background:var(--green-dim);
+  border-color:rgba(30,212,114,.22);
+  color:var(--green);
+}
+
+.pill.err{
+  background:var(--red-dim);
+  border-color:rgba(255,69,96,.22);
+  color:var(--red);
+}
+
+.dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+  flex-shrink:0;
+}
+
+.pill.ok .dot{animation:blink 2.2s ease-in-out infinite;}
+
+@keyframes blink{
+  0%,100%{opacity:1;}
+  50%{opacity:.25;}
+}
+
+.prog-wrap{
+  height:2px;
+  background:var(--border);
+  border-radius:2px;
+  overflow:hidden;
+  margin-top:11px;
+}
+
+.prog-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--violet));
+  border-radius:2px;
+  transition:width .45s cubic-bezier(.4,0,.2,1);
+  width:0%;
+}
+
+.prog-bar.full{background:linear-gradient(90deg,var(--red),#FF7B7B);}
+
+.card-b{padding:18px 20px 20px;}
+
+.lgrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.litem{
+  padding:10px 11px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  min-width:0;
+  overflow:hidden;
+  position:relative;
+}
+
+.litem::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:var(--r2);
+  background:linear-gradient(135deg,rgba(79,126,255,.04),transparent);
+  pointer-events:none;
+}
+
+.litem-label{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:var(--t3);
+  margin-bottom:6px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.litem-label i{font-size:11px;color:var(--accent);}
+
+.litem-val{
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--t1);
+  font-family:var(--mono);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  transition:opacity .15s;
+}
+
+.litem-sub{
+  font-size:10px;
+  color:var(--t3);
+  font-family:var(--mono);
+  margin-top:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.litem-val.rolling{
+  animation:roll .18s ease;
+}
+
+@keyframes roll{
+  from{opacity:0;transform:translateY(-4px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.field{margin-bottom:14px;}
+
+.flabel{
+  display:block;
+  font-size:12px;
+  font-weight:600;
+  color:var(--t2);
+  margin-bottom:6px;
+  letter-spacing:.02em;
+}
+
+.iw{position:relative;}
+
+.input{
+  width:100%;
+  padding:11px 42px 11px 14px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  color:var(--t1);
+  font-family:var(--font);
+  font-size:14px;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+
+.input::placeholder{color:var(--t3);}
+
+.input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-dim);
+}
+
+.iico{
+  position:absolute;
+  right:13px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:14px;
+  opacity:0;
+  transition:opacity .15s;
+  pointer-events:none;
+}
+
+.iico.show{opacity:1;}
+.iico.ok{color:var(--green);}
+.iico.err{color:var(--red);}
+
+.btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:13px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--violet) 100%);
+  border:none;
+  border-radius:var(--r2);
+  color:#fff;
+  font-family:var(--font);
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .12s,box-shadow .15s,opacity .15s;
+  box-shadow:0 4px 22px rgba(79,126,255,.32);
+  margin-bottom:12px;
+  position:relative;
+  overflow:hidden;
+}
+
+.btn::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,0) 60%);
+  pointer-events:none;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 30px rgba(79,126,255,.44);
+}
+
+.btn:active{transform:translateY(0);box-shadow:0 2px 14px rgba(79,126,255,.25);}
+
+.btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+.btn i{font-size:16px;}
+
+.alert{
+  display:none;
+  padding:12px 14px;
+  border-radius:var(--r2);
+  border:1px solid transparent;
+  font-size:13px;
+  line-height:1.55;
+}
+
+.alert.show{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  animation:fadeUp .18s ease;
+}
+
+.alert.ok{background:var(--green-dim);border-color:rgba(30,212,114,.18);}
+.alert.err{background:var(--red-dim);border-color:rgba(255,69,96,.18);}
+
+.alert i{
+  font-size:17px;
+  flex-shrink:0;
+  margin-top:1px;
+}
+
+.alert.ok i{color:var(--green);}
+.alert.err i{color:var(--red);}
+
+.foot{
+  text-align:center;
+  font-size:11px;
+  color:var(--t3);
+  font-family:var(--mono);
+  margin-top:14px;
+}
+
+.srow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.btn-add{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  width:100%;
+  padding:11px;
+  background:var(--accent-dim);
+  border:1px solid rgba(79,126,255,.25);
+  border-radius:var(--r2);
+  color:var(--accent);
+  font-family:var(--font);
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .15s,border-color .15s,box-shadow .15s;
+  margin-bottom:10px;
+}
+
+.btn-add:hover{
+  background:rgba(79,126,255,.16);
+  border-color:rgba(79,126,255,.4);
+  box-shadow:0 2px 14px rgba(79,126,255,.2);
+}
+
+.btn-add:disabled{opacity:.4;cursor:not-allowed;}
+
+.hint{
+  font-size:11px;
+  color:var(--t3);
+  font-family:var(--mono);
+  margin-bottom:14px;
+}
+
+.tbl-wrap{
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  overflow:hidden;
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+thead th{
+  padding:9px 12px;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:var(--t3);
+  background:rgba(255,255,255,.02);
+  border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+
+tbody tr{
+  border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(255,255,255,.02);}
+
+tbody td{
+  padding:10px 12px;
+  vertical-align:middle;
+}
+
+.em{
+  font-family:var(--mono);
+  font-size:11.5px;
+  color:var(--t1);
+  display:block;
+  max-width:140px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.bt{
+  display:inline-block;
+  width:44px;
+  height:4px;
+  background:var(--border);
+  border-radius:2px;
+  overflow:hidden;
+  vertical-align:middle;
+}
+
+.bf{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--violet));
+  border-radius:2px;
+  transition:width .35s ease;
+}
+
+.bf.full{background:linear-gradient(90deg,var(--red),#FF8585);}
+
+.mono{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--t2);
+  margin-left:5px;
+  vertical-align:middle;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:2px 8px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+  font-family:var(--mono);
+}
+
+.badge.ok{background:var(--green-dim);color:var(--green);}
+.badge.err{background:var(--red-dim);color:var(--red);}
+
+.acts{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  justify-content:flex-end;
+}
+
+.icon{
+  width:30px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--border);
+  border-radius:var(--r3);
+  background:transparent;
+  color:var(--t2);
+  cursor:pointer;
+  font-size:14px;
+  transition:all .14s;
+  flex-shrink:0;
+}
+
+.icon:hover{
+  border-color:var(--border2);
+  background:rgba(255,255,255,.04);
+  color:var(--t1);
+}
+
+.icon.del:hover{
+  border-color:rgba(255,69,96,.3);
+  background:var(--red-dim);
+  color:var(--red);
+}
+
+.icon:disabled{opacity:.35;cursor:not-allowed;}
+
+.empty{
+  text-align:center;
+  padding:28px 16px;
+  color:var(--t3);
+  font-size:13px;
+}
+
+.empty i{
+  font-size:30px;
+  margin-bottom:8px;
+  display:block;
+  opacity:.4;
+}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{animation:spin .65s linear infinite;}
+
+@media(max-width:380px){
+  .srow{grid-template-columns:1fr;}
+  .lgrid{grid-template-columns:1fr 1fr;}
+}
+</style>
 </head>
 <body>
-<div class="bg"></div>
+<div class="bg-fx"></div>
+<div class="grid-lines"></div>
 <div id="toast"></div>
+
 <div class="wrap">
   <div class="header">
-    <div class="brand"><div class="brand-icon"><i class="ph-fill ph-paper-plane-tilt"></i></div><div class="brand-name">Fix<b>Merah</b></div></div>
+    <div class="brand">
+      <div class="brand-icon"><i class="ph-fill ph-paper-plane-tilt"></i></div>
+      <div class="brand-name">Fix<b>Merah</b></div>
+    </div>
     <div class="nav">
-      <button class="nav-btn on" id="nav-sender" onclick="tab('sender')"><i class="ph-bold ph-paper-plane-right"></i> Sender</button>
-      <button class="nav-btn" id="nav-smtp" onclick="tab('smtp')"><i class="ph-bold ph-database"></i> SMTP</button>
+      <button class="nb on" id="nav-sender" onclick="tab('sender')"><i class="ph-bold ph-paper-plane-right"></i> Sender</button>
+      <button class="nb" id="nav-smtp" onclick="tab('smtp')"><i class="ph-bold ph-database"></i> SMTP</button>
     </div>
   </div>
 
@@ -43,24 +760,46 @@
     <div class="card">
       <div class="card-h">
         <div class="kicker">Perfect Auto · Anti AI-Bot</div>
-        <div class="title">Auto Sender Support</div>
-        <div class="sub">Auto rolling nama, tujuan, template 5 bahasa.</div>
+        <div class="ctitle">Auto Sender Support</div>
+        <div class="csub">Auto rolling nama, tujuan, template 5 bahasa.</div>
         <div class="meta">
           <span class="pill" id="statusPill"><span class="dot"></span> Cek SMTP...</span>
           <span class="pill" id="resetPill">Reset 00:00 WIB</span>
         </div>
-        <div class="progress"><div class="bar" id="usageBar"></div></div>
+        <div class="prog-wrap"><div class="prog-bar" id="usageBar"></div></div>
       </div>
       <div class="card-b">
-        <div class="grid">
-          <div class="item live"><div class="lab"><i class="ph-bold ph-user"></i> Nama · Auto</div><div class="val" id="autoName">-</div><div class="sub2">Human realistic</div></div>
-          <div class="item live"><div class="lab"><i class="ph-bold ph-envelope"></i> Tujuan · Auto</div><div class="val" id="autoTarget">-</div><div class="sub2" id="autoTargetSub">-</div></div>
-          <div class="item live"><div class="lab"><i class="ph-bold ph-translate"></i> Template · Auto</div><div class="val" id="autoTpl">-</div><div class="sub2" id="autoTplSub">-</div></div>
+        <div class="lgrid">
+          <div class="litem">
+            <div class="litem-label"><i class="ph-bold ph-user"></i> Nama</div>
+            <div class="litem-val" id="autoName">-</div>
+            <div class="litem-sub">Auto roll</div>
+          </div>
+          <div class="litem">
+            <div class="litem-label"><i class="ph-bold ph-envelope"></i> Tujuan</div>
+            <div class="litem-val" id="autoTarget">-</div>
+            <div class="litem-sub" id="autoTargetSub">-</div>
+          </div>
+          <div class="litem">
+            <div class="litem-label"><i class="ph-bold ph-translate"></i> Template</div>
+            <div class="litem-val" id="autoTpl">-</div>
+            <div class="litem-sub" id="autoTplSub">-</div>
+          </div>
         </div>
         <form id="senderForm" autocomplete="off">
-          <input type="hidden" id="name"><input type="hidden" id="targetEmail">
-          <div class="field"><label class="label">Nomor WhatsApp</label><div class="wrap-input"><input class="input" id="nomorWa" placeholder="62xxxxxxxxxxx" inputmode="numeric" required><span class="input-ico" id="icoWa"></span></div></div>
-          <button class="btn" id="sendBtn" type="submit"><span>Kirim</span><i class="ph-bold ph-paper-plane-right"></i></button>
+          <input type="hidden" id="name">
+          <input type="hidden" id="targetEmail">
+          <div class="field">
+            <label class="flabel">Nomor WhatsApp</label>
+            <div class="iw">
+              <input class="input" id="nomorWa" placeholder="62xxxxxxxxxxx" inputmode="numeric" required>
+              <span class="iico" id="icoWa"></span>
+            </div>
+          </div>
+          <button class="btn" id="sendBtn" type="submit">
+            <span>Kirim</span>
+            <i class="ph-bold ph-paper-plane-right"></i>
+          </button>
           <div class="alert" id="alertBox"></div>
         </form>
         <div class="foot">Limit 15/hari/akun · Rolling otomatis</div>
@@ -70,16 +809,43 @@
 
   <div class="view" id="view-smtp">
     <div class="card">
-      <div class="card-h"><div class="kicker">SMTP Pool</div><div class="title">Manajemen SMTP</div><div class="sub">Gmail App Password 16 huruf · Real check</div></div>
+      <div class="card-h">
+        <div class="kicker">SMTP Pool</div>
+        <div class="ctitle">Manajemen SMTP</div>
+        <div class="csub">Gmail App Password 16 huruf · Real check</div>
+      </div>
       <div class="card-b">
-        <form id="smtpForm" class="smtp-form" autocomplete="off">
-          <div class="wrap-input"><input class="input" id="newEmail" placeholder="nama@gmail.com" required><span class="input-ico" id="icoEmail"></span></div>
-          <div class="wrap-input"><input class="input" id="newPass" placeholder="abcd efgh ijkl mnop" required><span class="input-ico" id="icoPass"></span></div>
-          <button class="btn-add" id="addBtn" type="submit"><i class="ph-bold ph-plus"></i> Tambah</button>
-        </form>
+        <div class="srow">
+          <div class="iw">
+            <input class="input" id="newEmail" placeholder="nama@gmail.com">
+            <span class="iico" id="icoEmail"></span>
+          </div>
+          <div class="iw">
+            <input class="input" id="newPass" placeholder="abcd efgh ijkl mnop">
+            <span class="iico" id="icoPass"></span>
+          </div>
+        </div>
+        <button class="btn-add" id="addBtn" type="button">
+          <i class="ph-bold ph-plus"></i> Tambah Akun
+        </button>
         <div class="hint">myaccount.google.com → Security → App passwords</div>
-        <div class="table"><table><thead><tr><th>Email</th><th>Pakai</th><th>Status</th><th style="text-align:right">Aksi</th></tr></thead><tbody id="smtpList"></tbody></table></div>
-        <div class="empty" id="emptyState" style="display:none">Belum ada akun</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Pakai</th>
+                <th>Status</th>
+                <th style="text-align:right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="smtpList"></tbody>
+          </table>
+          <div class="empty" id="emptyState" style="display:none">
+            <i class="ph-thin ph-database"></i>
+            Belum ada akun SMTP
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -87,35 +853,312 @@
 
 <script>
 const NAMES=["Andi Pratama","Budi Santoso","Rizki Amelia","Siti Rahmawati","Ahmad Fauzi","Dewi Lestari","Fajar Nugroho","Intan Permata","Rian Hidayat","Lestari Wulandari","Bayu Saputra","Maya Anggraini","Dimas Arya","Nadia Putri","Eko Wijaya","Fitri Handayani","Galih Mahendra","Hana Pertiwi","Irfan Maulana","Jihan Safira","Kurniawan Adi","Larasati Ayu","Mahendra Putra","Nabila Zahra","Oka Pradipta","Puspita Sari","Ratih Kusuma","Satria Wibawa","Tania Anindita","Umar Faruq","Vina Melati","Wahyu Ramadhan","Yusuf Ibrahim","Zahra Nabila","Aditya Nugraha","Bella Oktavia","Cahyo Kumoro","Dian Pratiwi","Eka Saputra","Farah Adinda","Gilang Ramadhan","Hesti Purnama","Indra Gunawan","Kevin Sanjaya","Lia Amelia","Maulana Yusuf","Naufal Azhar","Olivia Christie","Putra Wijaya","Rendra Kusuma","Salsa Bila","Teguh Prasetyo","Ulfa Aisyah","Vito Ferdian","Wulan Sari","Yoga Prakoso"];
-const TARGETS=[{email:"support@whatsapp.com",label:"General"},{email:"support@support.whatsapp.com",label:"Legacy"},{email:"android@support.whatsapp.com",label:"Android"},{email:"iphone@support.whatsapp.com",label:"iPhone"},{email:"smb@support.whatsapp.com",label:"SMB"},{email:"business@support.whatsapp.com",label:"API"},{email:"smb_web@support.whatsapp.com",label:"Web"}];
-const TPL_META=[{lang:"Português",flag:"🇧🇷"},{lang:"English",flag:"🇺🇸"},{lang:"Indonesia",flag:"🇮🇩"},{lang:"Español",flag:"🇪🇸"},{lang:"Français",flag:"🇫🇷"}];
-function randName(){return NAMES[Math.floor(Math.random()*NAMES.length)]}
-let curName="";let tIdx=parseInt(localStorage.getItem('tIdx')||'0');let tgIdx=parseInt(localStorage.getItem('targetIdx')||'0');
-if(isNaN(tIdx))tIdx=0;if(isNaN(tgIdx)||tgIdx>=TARGETS.length)tgIdx=0;
-function setName(n){curName=n;document.getElementById('name').value=n;document.getElementById('autoName').textContent=n;}
-function setTarget(i){tgIdx=i%TARGETS.length;const t=TARGETS[tgIdx];document.getElementById('targetEmail').value=t.email;document.getElementById('autoTarget').textContent=t.email;document.getElementById('autoTargetSub').textContent=`${tgIdx+1}/${TARGETS.length} · ${t.label}`;localStorage.setItem('targetIdx',String(tgIdx));}
-function setTpl(i){tIdx=i%5;document.getElementById('autoTpl').textContent=TPL_META[tIdx].lang;document.getElementById('autoTplSub').textContent=`${tIdx+1}/5 ${TPL_META[tIdx].flag}`;localStorage.setItem('tIdx',String(tIdx));}
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function validGmail(v){return /^[^\s@]+@gmail\.com$/i.test(v.trim())}
-function validWa(v){return /^\d{7,15}$/.test(v.replace(/\D/g,''))}
-function toast(m,type='info'){const c=document.getElementById('toast');const el=document.createElement('div');el.className='toast';el.innerHTML=`<i class="ph-fill ${type==='error'?'ph-warning-circle':type==='ok'?'ph-check-circle':'ph-info'}"></i><span>${esc(m)}</span>`;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(6px)';setTimeout(()=>el.remove(),220)},3000);}
-function tab(t){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));document.getElementById('nav-'+t).classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-'+t).classList.add('on');if(t==='smtp')render();}
-function initStore(){try{const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});if(localStorage.getItem('resetDate')!==today){let accs=[];try{accs=JSON.parse(localStorage.getItem('smtp')||'[]')}catch{}accs=accs.map(a=>({...a,count:0}));localStorage.setItem('smtp',JSON.stringify(accs));localStorage.setItem('resetDate',today);}}catch{}setName(randName());setTarget(tgIdx);setTpl(tIdx);render();statusUpdate();countdown();setInterval(countdown,1000);}
-function getAccs(){try{return JSON.parse(localStorage.getItem('smtp'))||[]}catch{return []}}
-function saveAccs(a){localStorage.setItem('smtp',JSON.stringify(a))}
-function available(){return getAccs().find(a=>a.count<15)||null}
-function statusUpdate(){const av=available();const pill=document.getElementById('statusPill');const bar=document.getElementById('usageBar');const btn=document.getElementById('sendBtn');if(av){pill.className='pill ok';pill.innerHTML=`<span class="dot"></span> ${esc(av.email)} · ${av.count}/15`;btn.disabled=false;bar.style.width=`${(av.count/15)*100}%`;}else{const all=getAccs();pill.className='pill err';pill.innerHTML=`<span class="dot"></span> ${all.length?'Limit 15/hari':'Tambah SMTP'}`;btn.disabled=true;bar.style.width='100%';bar.style.background='var(--red)';}}
-function countdown(){const now=new Date();const jNow=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));const reset=new Date(jNow);reset.setHours(24,0,0,0);const diff=reset-jNow;const h=String(Math.floor(diff/3600000)).padStart(2,'0');const m=String(Math.floor(diff%3600000/60000)).padStart(2,'0');const s=String(Math.floor(diff%60000/1000)).padStart(2,'0');const el=document.getElementById('resetPill');if(el)el.textContent=`Reset ${h}:${m}:${s} WIB`;}
-function render(){const accs=getAccs();const tbody=document.getElementById('smtpList');const empty=document.getElementById('emptyState');tbody.innerHTML='';if(!accs.length){empty.style.display='block';return}empty.style.display='none';accs.forEach((acc,i)=>{const full=acc.count>=15;const pct=Math.min((acc.count/15)*100,100);const tr=document.createElement('tr');tr.innerHTML=`<td><span class="em">${esc(acc.email)}</span></td><td><span class="bar-track"><span class="bar-fill ${full?'full':''}" style="width:${pct}%"></span></span> <span class="mono">${acc.count}/15</span></td><td><span class="badge ${full?'err':'ok'}" id="bdg-${i}">${full?'Limit':'Aktif'}</span></td><td><div class="acts"><button class="icon" id="tst-${i}" onclick="testConn(${i})"><i class="ph-bold ph-wifi-high"></i></button><button class="icon" onclick="delAcc(${i})"><i class="ph-bold ph-trash"></i></button></div></td>`;tbody.appendChild(tr);});}
-async function testConn(i){const accs=getAccs();const acc=accs[i];if(!acc)return;const btn=document.getElementById('tst-'+i);const bdg=document.getElementById('bdg-'+i);const old=btn.innerHTML;btn.innerHTML=`<i class="ph-bold ph-spinner-gap" style="animation:spin .7s linear infinite"></i>`;btn.disabled=true;if(bdg)bdg.textContent='...';try{const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:acc.email,smtpPass:acc.pass})});const d=await r.json();if(r.ok&&d.ok){if(bdg){bdg.className='badge ok';bdg.textContent='Valid'}toast(acc.email+' valid','ok');}else{if(bdg){bdg.className='badge err';bdg.textContent='Gagal'}toast(d.error||'Gagal','error');}}catch{toast('Error','error')}finally{btn.innerHTML=old;btn.disabled=false;setTimeout(()=>{const full=getAccs()[i]?.count>=15;if(bdg){bdg.className='badge '+(full?'err':'ok');bdg.textContent=full?'Limit':'Aktif'}},3000)}}
-window.delAcc=i=>{const accs=getAccs();accs.splice(i,1);saveAccs(accs);render();statusUpdate();toast('Dihapus');};
-const waEl=document.getElementById('nomorWa');const icoWa=document.getElementById('icoWa');
-waEl.addEventListener('input',()=>{const v=waEl.value.trim();if(!v){icoWa.className='input-ico';return}const ok=validWa(v);icoWa.className='input-ico show '+(ok?'ok':'err');icoWa.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;});
-const emailEl=document.getElementById('newEmail');const passEl=document.getElementById('newPass');const icoEmail=document.getElementById('icoEmail');const icoPass=document.getElementById('icoPass');
-emailEl.addEventListener('input',()=>{const v=emailEl.value.trim();if(!v){icoEmail.className='input-ico';return}const ok=validGmail(v);icoEmail.className='input-ico show '+(ok?'ok':'err');icoEmail.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;});
-passEl.addEventListener('input',()=>{const v=passEl.value.trim();if(!v){icoPass.className='input-ico';return}const ok=v.replace(/\s/g,'').length===16;icoPass.className='input-ico show '+(ok?'ok':'err');icoPass.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;});
-document.getElementById('smtpForm').addEventListener('submit',async e=>{e.preventDefault();const btn=document.getElementById('addBtn');const accs=getAccs();if(accs.length>=20){toast('Maks 20','error');return}const email=emailEl.value.trim().toLowerCase();const pass=passEl.value.trim().replace(/\s/g,'');if(!validGmail(email)){toast('Hanya gmail.com','error');return}if(pass.length!==16||!/^[a-z]{16}$/i.test(pass)){toast('App password 16 huruf','error');return}if(accs.some(a=>a.email.toLowerCase()===email)){toast('Sudah ada','error');return}btn.textContent='Verifikasi...';btn.disabled=true;try{const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:email,smtpPass:pass})});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Gagal');accs.push({email,pass,count:0});saveAccs(accs);e.target.reset();icoEmail.className='input-ico';icoPass.className='input-ico';render();statusUpdate();toast('Ditambah','ok');}catch(err){toast(err.message,'error');}finally{btn.innerHTML='<i class="ph-bold ph-plus"></i> Tambah';btn.disabled=false}});
-document.getElementById('senderForm').addEventListener('submit',async e=>{e.preventDefault();const smtp=available();if(!smtp){toast('Tambah SMTP dulu','error');return}const nomor=waEl.value.trim().replace(/\D/g,'');const targetEmail=document.getElementById('targetEmail').value;if(!validWa(nomor)){toast('Nomor 7-15 digit','error');return}const btn=document.getElementById('sendBtn');const box=document.getElementById('alertBox');const old=btn.innerHTML;btn.innerHTML='<span class="dot" style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></span> Kirim...';btn.disabled=true;box.className='alert';try{const res=await fetch('/api/index',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:curName,nomorWa:nomor,targetEmail,smtpUser:smtp.email,smtpPass:smtp.pass,tIdx,tgIdx})});const data=await res.json();if(!res.ok||!data.ok)throw new Error(data.error||'Gagal');const accs=getAccs();const idx=accs.findIndex(a=>a.email===smtp.email);if(idx>=0){accs[idx].count+=1;saveAccs(accs);}const nextTpl=(tIdx+1)%5;const nextTg=(tgIdx+1)%TARGETS.length;setTpl(nextTpl);setTarget(nextTg);setName(randName());box.className='alert show ok';box.innerHTML=`<i class="ph-fill ph-check-circle"></i><span>Terkirim ke <b>${esc(data.sentTo||targetEmail)}</b><br>Next: ${esc(curName)} · ${esc(TARGETS[nextTg].email)} · ${esc(TPL_META[nextTpl].lang)}<br>Ref: ${esc(data.reference||'')}</span>`;render();statusUpdate();toast('Terkirim','ok');}catch(err){box.className='alert show err';box.innerHTML=`<i class="ph-fill ph-warning-circle"></i><span>${esc(err.message.slice(0,200))}</span>`;toast(err.message,'error');}finally{btn.innerHTML=old;btn.disabled=false}});
+
+const TARGETS=[
+  {email:"support@support.whatsapp.com",label:"Legacy"},
+  {email:"android@support.whatsapp.com",label:"Android"},
+  {email:"iphone@support.whatsapp.com",label:"iPhone"},
+  {email:"smb@support.whatsapp.com",label:"SMB"},
+  {email:"business@support.whatsapp.com",label:"API"},
+  {email:"smb_web@support.whatsapp.com",label:"Web"}
+];
+
+const TPL_META=[
+  {lang:"Português",flag:"🇧🇷"},
+  {lang:"English",flag:"🇺🇸"},
+  {lang:"Indonesia",flag:"🇮🇩"},
+  {lang:"Español",flag:"🇪🇸"},
+  {lang:"Français",flag:"🇫🇷"}
+];
+
+function randName(){return NAMES[Math.floor(Math.random()*NAMES.length)];}
+
+let curName="";
+let tIdx=parseInt(localStorage.getItem('tIdx')||'0');
+let tgIdx=parseInt(localStorage.getItem('targetIdx')||'0');
+if(isNaN(tIdx)||tIdx<0||tIdx>4)tIdx=0;
+if(isNaN(tgIdx)||tgIdx<0||tgIdx>=TARGETS.length)tgIdx=0;
+
+function animVal(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.remove('rolling');
+  void el.offsetWidth;
+  el.classList.add('rolling');
+}
+
+function setName(n){
+  curName=n;
+  document.getElementById('name').value=n;
+  document.getElementById('autoName').textContent=n;
+  animVal('autoName');
+}
+
+function setTarget(i){
+  tgIdx=((i%TARGETS.length)+TARGETS.length)%TARGETS.length;
+  const t=TARGETS[tgIdx];
+  document.getElementById('targetEmail').value=t.email;
+  document.getElementById('autoTarget').textContent=t.email;
+  document.getElementById('autoTargetSub').textContent=`${tgIdx+1}/${TARGETS.length} · ${t.label}`;
+  localStorage.setItem('targetIdx',String(tgIdx));
+  animVal('autoTarget');
+}
+
+function setTpl(i){
+  tIdx=((i%5)+5)%5;
+  document.getElementById('autoTpl').textContent=TPL_META[tIdx].lang;
+  document.getElementById('autoTplSub').textContent=`${tIdx+1}/5 ${TPL_META[tIdx].flag}`;
+  localStorage.setItem('tIdx',String(tIdx));
+  animVal('autoTpl');
+}
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function validGmail(v){return /^[^\s@]+@gmail\.com$/i.test(v.trim());}
+function validWa(v){return /^\d{7,15}$/.test(v.replace(/\D/g,''));}
+
+function toast(m,type='info'){
+  const c=document.getElementById('toast');
+  const el=document.createElement('div');
+  el.className='t-item '+(type==='error'?'err':type==='ok'?'ok':'info');
+  el.innerHTML=`<i class="ph-fill ${type==='error'?'ph-warning-circle':type==='ok'?'ph-check-circle':'ph-info'}"></i><span>${esc(m)}</span>`;
+  c.appendChild(el);
+  setTimeout(()=>{
+    el.style.opacity='0';
+    el.style.transform='translateX(10px)';
+    setTimeout(()=>el.remove(),240);
+  },3000);
+}
+
+function tab(t){
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('nav-'+t).classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('view-'+t).classList.add('on');
+  if(t==='smtp')render();
+}
+
+function initStore(){
+  try{
+    const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
+    if(localStorage.getItem('resetDate')!==today){
+      let accs=[];
+      try{accs=JSON.parse(localStorage.getItem('smtp')||'[]');}catch{}
+      accs=accs.map(a=>({...a,count:0}));
+      localStorage.setItem('smtp',JSON.stringify(accs));
+      localStorage.setItem('resetDate',today);
+    }
+  }catch{}
+  setName(randName());
+  setTarget(tgIdx);
+  setTpl(tIdx);
+  render();
+  statusUpdate();
+  countdown();
+  setInterval(countdown,1000);
+}
+
+function getAccs(){try{return JSON.parse(localStorage.getItem('smtp'))||[];}catch{return [];}}
+function saveAccs(a){localStorage.setItem('smtp',JSON.stringify(a));}
+function available(){return getAccs().find(a=>a.count<15)||null;}
+
+function statusUpdate(){
+  const av=available();
+  const pill=document.getElementById('statusPill');
+  const bar=document.getElementById('usageBar');
+  const btn=document.getElementById('sendBtn');
+  if(av){
+    pill.className='pill ok';
+    pill.innerHTML=`<span class="dot"></span>${esc(av.email)} · ${av.count}/15`;
+    btn.disabled=false;
+    bar.classList.remove('full');
+    bar.style.width=`${(av.count/15)*100}%`;
+  }else{
+    const all=getAccs();
+    pill.className='pill err';
+    pill.innerHTML=`<span class="dot"></span>${all.length?'Limit 15/hari':'Tambah SMTP dulu'}`;
+    btn.disabled=true;
+    bar.classList.add('full');
+    bar.style.width='100%';
+  }
+}
+
+function countdown(){
+  const jNow=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));
+  const reset=new Date(jNow);
+  reset.setHours(24,0,0,0);
+  const diff=reset-jNow;
+  const h=String(Math.floor(diff/3600000)).padStart(2,'0');
+  const m=String(Math.floor(diff%3600000/60000)).padStart(2,'0');
+  const s=String(Math.floor(diff%60000/1000)).padStart(2,'0');
+  const el=document.getElementById('resetPill');
+  if(el)el.textContent=`Reset ${h}:${m}:${s} WIB`;
+}
+
+function render(){
+  const accs=getAccs();
+  const tbody=document.getElementById('smtpList');
+  const empty=document.getElementById('emptyState');
+  tbody.innerHTML='';
+  if(!accs.length){empty.style.display='block';return;}
+  empty.style.display='none';
+  accs.forEach((acc,i)=>{
+    const full=acc.count>=15;
+    const pct=Math.min((acc.count/15)*100,100);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="em">${esc(acc.email)}</span></td><td><span class="bt"><span class="bf${full?' full':''}" style="width:${pct}%"></span></span><span class="mono">${acc.count}/15</span></td><td><span class="badge ${full?'err':'ok'}" id="bdg-${i}">${full?'Limit':'Aktif'}</span></td><td><div class="acts"><button class="icon" id="tst-${i}" onclick="testConn(${i})" title="Test SMTP"><i class="ph-bold ph-wifi-high"></i></button><button class="icon del" onclick="delAcc(${i})" title="Hapus"><i class="ph-bold ph-trash"></i></button></div></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function testConn(i){
+  const accs=getAccs();
+  const acc=accs[i];
+  if(!acc)return;
+  const btn=document.getElementById('tst-'+i);
+  const bdg=document.getElementById('bdg-'+i);
+  const old=btn.innerHTML;
+  btn.innerHTML=`<i class="ph-bold ph-spinner-gap spin"></i>`;
+  btn.disabled=true;
+  if(bdg)bdg.textContent='...';
+  try{
+    const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:acc.email,smtpPass:acc.pass})});
+    const d=await r.json();
+    if(r.ok&&d.ok){
+      if(bdg){bdg.className='badge ok';bdg.textContent='Valid';}
+      toast(acc.email+' valid','ok');
+    }else{
+      if(bdg){bdg.className='badge err';bdg.textContent='Gagal';}
+      toast(d.error||'Gagal','error');
+    }
+  }catch{
+    toast('Error koneksi','error');
+  }finally{
+    btn.innerHTML=old;
+    btn.disabled=false;
+    setTimeout(()=>{
+      const full=getAccs()[i]?.count>=15;
+      if(bdg){bdg.className='badge '+(full?'err':'ok');bdg.textContent=full?'Limit':'Aktif';}
+    },3000);
+  }
+}
+
+window.delAcc=i=>{
+  const accs=getAccs();
+  accs.splice(i,1);
+  saveAccs(accs);
+  render();
+  statusUpdate();
+  toast('Akun dihapus');
+};
+
+const waEl=document.getElementById('nomorWa');
+const icoWa=document.getElementById('icoWa');
+waEl.addEventListener('input',()=>{
+  const v=waEl.value.trim();
+  if(!v){icoWa.className='iico';return;}
+  const ok=validWa(v);
+  icoWa.className='iico show '+(ok?'ok':'err');
+  icoWa.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;
+});
+
+const emailEl=document.getElementById('newEmail');
+const passEl=document.getElementById('newPass');
+const icoEmail=document.getElementById('icoEmail');
+const icoPass=document.getElementById('icoPass');
+
+emailEl.addEventListener('input',()=>{
+  const v=emailEl.value.trim();
+  if(!v){icoEmail.className='iico';return;}
+  const ok=validGmail(v);
+  icoEmail.className='iico show '+(ok?'ok':'err');
+  icoEmail.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;
+});
+
+passEl.addEventListener('input',()=>{
+  const v=passEl.value.trim();
+  if(!v){icoPass.className='iico';return;}
+  const ok=v.replace(/\s/g,'').length===16;
+  icoPass.className='iico show '+(ok?'ok':'err');
+  icoPass.innerHTML=`<i class="ph-bold ${ok?'ph-check':'ph-x'}"></i>`;
+});
+
+document.getElementById('addBtn').addEventListener('click',async()=>{
+  const btn=document.getElementById('addBtn');
+  const accs=getAccs();
+  if(accs.length>=20){toast('Maks 20 akun','error');return;}
+  const email=emailEl.value.trim().toLowerCase();
+  const pass=passEl.value.trim().replace(/\s/g,'');
+  if(!validGmail(email)){toast('Hanya gmail.com','error');return;}
+  if(pass.length!==16||!/^[a-z]{16}$/i.test(pass)){toast('App password 16 huruf a-z','error');return;}
+  if(accs.some(a=>a.email.toLowerCase()===email)){toast('Email sudah ada','error');return;}
+  const oldHtml=btn.innerHTML;
+  btn.innerHTML='<i class="ph-bold ph-spinner-gap spin"></i> Verifikasi...';
+  btn.disabled=true;
+  try{
+    const r=await fetch('/api/test-smtp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({smtpUser:email,smtpPass:pass})});
+    const d=await r.json();
+    if(!r.ok||!d.ok)throw new Error(d.error||'Verifikasi gagal');
+    accs.push({email,pass,count:0});
+    saveAccs(accs);
+    emailEl.value='';
+    passEl.value='';
+    icoEmail.className='iico';
+    icoPass.className='iico';
+    render();
+    statusUpdate();
+    toast('Akun ditambah','ok');
+  }catch(err){
+    toast(err.message,'error');
+  }finally{
+    btn.innerHTML=oldHtml;
+    btn.disabled=false;
+  }
+});
+
+document.getElementById('senderForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const smtp=available();
+  if(!smtp){toast('Tambah SMTP dulu','error');return;}
+  const nomor=waEl.value.trim().replace(/\D/g,'');
+  const targetEmail=document.getElementById('targetEmail').value;
+  if(!validWa(nomor)){toast('Nomor 7-15 digit','error');return;}
+  const btn=document.getElementById('sendBtn');
+  const box=document.getElementById('alertBox');
+  const old=btn.innerHTML;
+  btn.innerHTML='<i class="ph-bold ph-spinner-gap spin"></i><span>Mengirim...</span>';
+  btn.disabled=true;
+  box.className='alert';
+  try{
+    const res=await fetch('/api/index',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:curName,nomorWa:nomor,targetEmail,smtpUser:smtp.email,smtpPass:smtp.pass,tIdx,tgIdx})
+    });
+    const data=await res.json();
+    if(!res.ok||!data.ok)throw new Error(data.error||'Gagal mengirim');
+    const accs=getAccs();
+    const idx=accs.findIndex(a=>a.email===smtp.email);
+    if(idx>=0){accs[idx].count+=1;saveAccs(accs);}
+    const nextTpl=(tIdx+1)%5;
+    const nextTg=(tgIdx+1)%TARGETS.length;
+    setTpl(nextTpl);
+    setTarget(nextTg);
+    setName(randName());
+    box.className='alert show ok';
+    box.innerHTML=`<i class="ph-fill ph-check-circle"></i><div><div>Terkirim ke <b>${esc(data.sentTo||targetEmail)}</b></div><div style="margin-top:4px;font-size:12px;color:var(--t2)">Next: ${esc(curName)} · ${esc(TARGETS[nextTg].email)} · ${esc(TPL_META[nextTpl].lang)}</div><div style="margin-top:3px;font-size:11px;color:var(--t3);font-family:var(--mono)">Ref: ${esc(data.reference||'')}</div></div>`;
+    render();
+    statusUpdate();
+    toast('Terkirim','ok');
+  }catch(err){
+    box.className='alert show err';
+    box.innerHTML=`<i class="ph-fill ph-warning-circle"></i><span>${esc(err.message.slice(0,200))}</span>`;
+    toast(err.message,'error');
+  }finally{
+    btn.innerHTML=old;
+    btn.disabled=false;
+  }
+});
+
 initStore();
 </script>
 </body>
